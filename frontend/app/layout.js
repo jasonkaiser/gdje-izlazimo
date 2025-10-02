@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono, Manrope } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 
 const manrope = Manrope({
   subsets: ['latin'],
-  weight: ['200', '400','500','600','700'], 
-})
+  weight: ['200', '400', '500', '600', '700'], 
+});
 
 export const metadata = {
   title: "Gdje Izlazimo",
@@ -24,7 +25,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${manrope.className} ${manrope.className}`}>
+      <body className={manrope.className}>
+        <Navbar /> {/* Add Navbar here */}
         {children}
       </body>
     </html>

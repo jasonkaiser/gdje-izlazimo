@@ -169,7 +169,7 @@ export default function Home() {
       <hr className="border-white/15 w-[90%] mx-auto mb-20"></hr>
 
       {/* Category Section */}
-      <section className="w-full max-w-7xl xl:ml-30">
+      <section id="kategorije" className="w-full max-w-7xl xl:ml-30">
         <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left max-sm:text-5xl">
           Kategorije
         </h3>
@@ -193,7 +193,7 @@ export default function Home() {
       </section>
 
       {/* Popular Section */}
-    <section className="w-full max-sm:place-self-center max-w-7xl xl:ml-30 mt-30 mb-10">
+    <section id="najpopularnije" className="w-full max-sm:place-self-center max-w-7xl xl:ml-30 mt-30 mb-10">
       <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left max-sm:text-5xl">
         Najpopularnije
       </h3>
@@ -204,7 +204,7 @@ export default function Home() {
     </section>
 
       {/* Popular Section */}
-    <section className="w-full max-sm:place-self-center max-w-7xl xl:ml-30 mt-30 mb-10">
+    <section id="topdogadjaji" className="w-full max-sm:place-self-center max-w-7xl xl:ml-30 mt-30 mb-10">
       <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left max-sm:text-5xl">
         Top Dogadjaji
       </h3>

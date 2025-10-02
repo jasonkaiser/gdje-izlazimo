@@ -5,6 +5,10 @@
 @import 'swiper/css/pagination';
 
 
+html{
+    scroll-behavior: smooth;
+}
+
  
 body{
 
