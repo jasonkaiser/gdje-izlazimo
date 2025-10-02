@@ -1,17 +1,16 @@
+"use client";
+
 import { StarIcon, ArrowLongRightIcon, ClockIcon } from "@heroicons/react/24/solid";
-import Image from "next/image";
 
-
-export default function VenueCard() {
+export default function VenueCard({ onReserve }) {
   return (
     <div className="bg-[#D9D9D9]/4 border border-white/14 rounded-tl-3xl rounded-br-3xl w-full min-h-[240px]">
       {/* Top Banner */}
-        <img
+      <img
         src="/images/party.jpg"
         alt="Venue"
         className="h-26 w-full object-cover rounded-tl-3xl"
-        />
-
+      />
 
       {/* Content */}
       <div className="p-3 px-4">
@@ -32,7 +31,8 @@ export default function VenueCard() {
         {/* Actions (Button + Time) */}
         <div className="flex items-center gap-5 mt-5">
           <button
-            className="px-4 py-1 rounded-xl text-white font-light text-[14px] flex items-center gap-3 border border-cyan-300/30"
+            onClick={onReserve}
+            className="px-4 py-1 rounded-xl text-white font-light text-[14px] flex items-center gap-3 border border-cyan-300/30 hover:opacity-90 transition-opacity"
             style={{
               background:
                 "radial-gradient(59.39% 586.86% at 57.14% 0%, #0048FF 0%, #002A55 100%)",

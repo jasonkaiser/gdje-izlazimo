@@ -9,7 +9,7 @@ import VenueCard from "./VenueCard";
 import "swiper/css";
 import "swiper/css/navigation";
 
-export default function VenueCarousel() {
+export default function VenueCarousel({ onReserve }) {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const [swiperInstance, setSwiperInstance] = useState(null);
@@ -86,10 +86,10 @@ export default function VenueCarousel() {
           1024: { slidesPerView: 3 }, // desktop
         }}
       >
-        <SwiperSlide><VenueCard /></SwiperSlide>
-        <SwiperSlide><VenueCard /></SwiperSlide>
-        <SwiperSlide><VenueCard /></SwiperSlide>
-        <SwiperSlide><VenueCard /></SwiperSlide>
+        <SwiperSlide><VenueCard onReserve={onReserve} /></SwiperSlide>
+        <SwiperSlide><VenueCard onReserve={onReserve} /></SwiperSlide>
+        <SwiperSlide><VenueCard onReserve={onReserve} /></SwiperSlide>
+        <SwiperSlide><VenueCard onReserve={onReserve} /></SwiperSlide>
       </Swiper>
     </div>
   );
