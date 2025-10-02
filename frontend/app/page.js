@@ -208,7 +208,8 @@ export default function Home() {
       <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left max-sm:text-5xl">
         Top Dogadjaji
       </h3>
-     
+      <VenueCarousel />
+
     
     </section>
 
