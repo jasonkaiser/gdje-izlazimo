@@ -169,16 +169,16 @@ export default function Home() {
      <hr className="border-white/15 w-[90%] place-self-center mb-20"></hr>
 
       {/* Category Section */}
-      <section className="w-full max-sm:place-self-center max-w-7xl xl:ml-30">
+      <section className="w-full max-w-7xl xl:ml-30">
         <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left">
           Kategorije
         </h3>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-10 max-sm:place-self-center p-5">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10 p-5 max-sm:place-self-center">
           {categories.map((cat) => (
             <div
               key={cat.name}
-              className="flex flex-col w-50 max-sm:w-45 gap-4 items-center justify-center border border-b-gray-800 border-white/14 rounded-3xl cursor-pointer hover:scale-105 transition-transform p-6"
+              className="flex flex-col w-50 max-sm:w-40 max-sm:h-50 gap-4 items-center justify-center border border-b-gray-800 border-white/14 rounded-3xl cursor-pointer hover:scale-105 transition-transform p-6"
               style={{
                 background: cat.gradient,
               }}
