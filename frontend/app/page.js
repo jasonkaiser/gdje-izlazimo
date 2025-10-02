@@ -133,9 +133,9 @@ export default function Home() {
               </div>
 
               {/* Rezerviši Section */}
-              <div className="flex items-center gap-10 max-sm:flex-col max-sm:gap-2 mt-20">
+              <div className="flex items-end gap-10 max-sm:flex-col max-sm:gap-2 mt-30 ">
                 <button
-                  className="px-7 py-4 rounded-2xl text-white font-medium text-xl flex gap-5 border border-cyan-300/30"
+                  className="px-7 py-4 max-sm:mb-4 rounded-2xl text-white font-medium text-2xl flex gap-5 border border-cyan-300/30"
                   style={{
                     background:
                       "radial-gradient(59.39% 586.86% at 57.14% 0%, #0048FF 0%, #002A55 100%)",
@@ -170,7 +170,7 @@ export default function Home() {
 
       {/* Category Section */}
       <section className="w-full max-w-7xl xl:ml-30">
-        <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left">
+        <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left max-sm:text-5xl">
           Kategorije
         </h3>
 
