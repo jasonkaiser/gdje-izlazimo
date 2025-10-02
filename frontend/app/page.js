@@ -166,7 +166,7 @@ export default function Home() {
         </div>
       </div>
     
-     <hr className="border-white/15 w-[90%] place-self-center mb-20"></hr>
+      <hr className="border-white/15 w-[90%] mx-auto mb-20"></hr>
 
       {/* Category Section */}
       <section className="w-full max-w-7xl xl:ml-30">
