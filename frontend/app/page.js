@@ -1,8 +1,9 @@
 // app/page.js
 import Image from "next/image";
 import { MagnifyingGlassIcon, ArrowLongRightIcon, MusicalNoteIcon, BeakerIcon } from "@heroicons/react/24/solid";
-import { BuildingStorefrontIcon } from "@heroicons/react/24/outline";
-import HookahIcon from "@/public/images/hookah.svg";
+import { Beer, ForkKnife } from "lucide-react"; 
+
+import VenueCarousel from "@/components/VenueCarousel";
 
 
 export default function Home() {
@@ -15,13 +16,13 @@ export default function Home() {
   },
   {
     name: "Pubovi",
-    icon: <BeakerIcon className="w-12 h-12 text-white" />,
+    icon: <Beer className="w-12 h-12 text-white" />,
     gradient:
       "radial-gradient(circle at 50% 20%, rgba(255,215,0,0.6) 0%, rgba(0,0,0,0.5) 100%)",
   },
   {
     name: "Restorani",
-    icon: <BuildingStorefrontIcon className="w-12 h-12 text-white" />,
+    icon: <ForkKnife className="w-12 h-12 text-white" />,
     gradient:
       "radial-gradient(circle at 50% 20%, rgba(0,255,128,0.6) 0%, rgba(0,0,0,0.5) 100%)",
   },
@@ -42,10 +43,10 @@ export default function Home() {
 ];
 
   return (
-    <div className="w-full bg-[#000A17] overflow-hidden">
+    <div className="w-full h-full bg-[#000A17] overflow-hidden">
 
       {/* Hero Section */}
-      <div className="relative w-full h-screen">
+      <div className="relative w-full mt-50 mb-30">
         {/* Gradient Blurs */}
         <div
           className="absolute opacity-10"
@@ -134,7 +135,7 @@ export default function Home() {
               {/* Rezerviši Section */}
               <div className="flex items-center gap-10 max-sm:flex-col max-sm:gap-2 mt-20">
                 <button
-                  className="px-6 py-3 rounded-2xl text-white font-medium flex gap-5 border border-cyan-300/30"
+                  className="px-7 py-4 rounded-2xl text-white font-medium text-xl flex gap-5 border border-cyan-300/30"
                   style={{
                     background:
                       "radial-gradient(59.39% 586.86% at 57.14% 0%, #0048FF 0%, #002A55 100%)",
@@ -142,7 +143,7 @@ export default function Home() {
                 >
                   Rezerviši <ArrowLongRightIcon className="w-6" />
                 </button>
-                <div className="text-2xl text-white flex gap-3">
+                <div className="text-4xl text-white flex gap-3">
                   izlazak u <b className="text-[#007FFF]">3 klika!</b>
                 </div>
               </div>
@@ -164,31 +165,52 @@ export default function Home() {
           </div>
         </div>
       </div>
+    
+     <hr className="border-white/15 w-[90%] place-self-center mb-20"></hr>
 
       {/* Category Section */}
-<section className="w-full max-w-7xl xl:ml-30  py-20 px-6">
-  <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left">
-    Kategorije
-  </h3>
+      <section className="w-full max-sm:place-self-center max-w-7xl xl:ml-30">
+        <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left">
+          Kategorije
+        </h3>
 
-  <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-10">
-    {categories.map((cat) => (
-      <div
-        key={cat.name}
-        className="flex flex-col w-50 gap-4 items-center justify-center border border-b-gray-900 border-white/14 rounded-3xl cursor-pointer hover:scale-105 transition-transform p-6"
-        style={{
-          background: cat.gradient,
-        }}
-      >
-        <div className="bg-white/8 border border-white/26 rounded-full w-30 h-30 flex items-center justify-center">
-          {cat.icon}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-10 max-sm:place-self-center">
+          {categories.map((cat) => (
+            <div
+              key={cat.name}
+              className="flex flex-col w-50 max-sm:w-45 gap-4 items-center justify-center border border-b-gray-800 border-white/14 rounded-3xl cursor-pointer hover:scale-105 transition-transform p-6"
+              style={{
+                background: cat.gradient,
+              }}
+            >
+              <div className="bg-white/8 border border-white/26 rounded-full w-30 h-30 flex items-center justify-center">
+                {cat.icon}
+              </div>
+              <h4 className="text-[#A6A6A6] font-medium">{cat.name}</h4>
+            </div>
+          ))}
         </div>
-        <h4 className="text-[#A6A6A6] font-medium">{cat.name}</h4>
-      </div>
-    ))}
-  </div>
-</section>
+      </section>
 
+      {/* Popular Section */}
+    <section className="w-full max-sm:place-self-center max-w-7xl xl:ml-30 mt-30 mb-10">
+      <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left">
+        Najpopularnije
+      </h3>
+    <VenueCarousel />
+
+
+    
+    </section>
+
+      {/* Popular Section */}
+    <section className="w-full max-sm:place-self-center max-w-7xl xl:ml-30 mt-30 mb-10">
+      <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left">
+        Top Dogadjaji
+      </h3>
+     
+    
+    </section>
 
     </div>
   );
