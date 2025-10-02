@@ -174,7 +174,7 @@ export default function Home() {
           Kategorije
         </h3>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-10 max-sm:place-self-center">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-10 max-sm:place-self-center p-5">
           {categories.map((cat) => (
             <div
               key={cat.name}
@@ -194,7 +194,7 @@ export default function Home() {
 
       {/* Popular Section */}
     <section className="w-full max-sm:place-self-center max-w-7xl xl:ml-30 mt-30 mb-10">
-      <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left">
+      <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left max-sm:text-5xl">
         Najpopularnije
       </h3>
     <VenueCarousel />
@@ -205,7 +205,7 @@ export default function Home() {
 
       {/* Popular Section */}
     <section className="w-full max-sm:place-self-center max-w-7xl xl:ml-30 mt-30 mb-10">
-      <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left">
+      <h3 className="text-6xl font-extralight text-white mb-16 text-center md:text-left max-sm:text-5xl">
         Top Dogadjaji
       </h3>
      
