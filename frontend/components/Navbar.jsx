@@ -9,7 +9,7 @@ const Navbar = () => {
   const [hover, setHover] = useState(false);
       
   const navigationItems = [
-    { label: 'Kategprije', href: '#kategorije' },
+    { label: 'Kategorije', href: '#kategorije' },
     { label: 'Najpopularnije', href: '#najpopularnije' },
     { label: 'Top Dogadjaji', href: '#topdogadjaji' },
     { label: 'Account', href: '#account' }
@@ -29,7 +29,7 @@ const Navbar = () => {
           </span>
         </div>
         
-        {/* Your Logo Here */}
+      
         <div className="relative h-10 w-13 bg-black/5 border border-gray-700/60 rounded-4xl">
           <Image
             src="/images/logo3.png" 

@@ -6,6 +6,7 @@ import { Navigation } from "swiper/modules";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import VenueCard from "./VenueCard";
 
+
 import "swiper/css";
 import "swiper/css/navigation";
 
