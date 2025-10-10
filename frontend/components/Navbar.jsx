@@ -9,6 +9,7 @@ const Navbar = () => {
   const [hover, setHover] = useState(false);
       
   const navigationItems = [
+    { label: 'Panel', href: '/dashboard/venue' }, 
     { label: 'Kategorije', href: '#kategorije' },
     { label: 'Najpopularnije', href: '#najpopularnije' },
     { label: 'Top Dogadjaji', href: '#topdogadjaji' },
@@ -29,7 +30,6 @@ const Navbar = () => {
           </span>
         </div>
         
-      
         <div className="relative h-10 w-13 bg-black/5 border border-gray-700/60 rounded-4xl">
           <Image
             src="/images/logo3.png" 
@@ -44,11 +44,11 @@ const Navbar = () => {
       <div
         className="flex flex-col gap-2 mt-2 transition-all duration-300 overflow-hidden"
         style={{
-          maxHeight: hover ? '200px' : '0px',
+          maxHeight: hover ? '220px' : '0px', 
         }}
       >
         {navigationItems.map((item, index) => (
-          <a
+          <Link
             key={item.label}
             href={item.href}
             className={`text-left font-normal text-[14px] hover:rounded-2xl px-3 py-1 transition-all cursor-pointer text-[#161616] hover:bg-gray-100 ${
@@ -56,7 +56,7 @@ const Navbar = () => {
             }`}
           >
             {item.label}
-          </a>
+          </Link>
         ))}
       </div>
     </div>
