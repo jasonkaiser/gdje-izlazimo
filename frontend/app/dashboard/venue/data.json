@@ -1,0 +1,452 @@
+[
+  {
+    "id": 1,
+    "name": "Sarah Johnson",
+    "phoneNumber": "+387 61 234 567",
+    "numberOfPeople": 4,
+    "typeOfSeat": "Indoor",
+    "time": "19:00",
+    "status": "Accepted"
+  },
+  {
+    "id": 2,
+    "name": "Michael Chen",
+    "phoneNumber": "+387 62 345 678",
+    "numberOfPeople": 2,
+    "typeOfSeat": "Outdoor",
+    "time": "20:30",
+    "status": "Accepted"
+  },
+  {
+    "id": 3,
+    "name": "Emma Davis",
+    "phoneNumber": "+387 63 456 789",
+    "numberOfPeople": 6,
+    "typeOfSeat": "VIP",
+    "time": "18:30",
+    "status": "Pending"
+  },
+  {
+    "id": 4,
+    "name": "James Wilson",
+    "phoneNumber": "+387 64 567 890",
+    "numberOfPeople": 3,
+    "typeOfSeat": "Indoor",
+    "time": "21:00",
+    "status": "Accepted"
+  },
+  {
+    "id": 5,
+    "name": "Sophia Martinez",
+    "phoneNumber": "+387 65 678 901",
+    "numberOfPeople": 2,
+    "typeOfSeat": "Bar",
+    "time": "22:00",
+    "status": "Declined"
+  },
+  {
+    "id": 6,
+    "name": "David Kim",
+    "phoneNumber": "+387 66 789 012",
+    "numberOfPeople": 8,
+    "typeOfSeat": "VIP",
+    "time": "19:30",
+    "status": "Accepted"
+  },
+  {
+    "id": 7,
+    "name": "Olivia Brown",
+    "phoneNumber": "+387 67 890 123",
+    "numberOfPeople": 4,
+    "typeOfSeat": "Outdoor",
+    "time": "20:00",
+    "status": "Pending"
+  },
+  {
+    "id": 8,
+    "name": "Daniel Garcia",
+    "phoneNumber": "+387 68 901 234",
+    "numberOfPeople": 5,
+    "typeOfSeat": "Indoor",
+    "time": "18:00",
+    "status": "Accepted"
+  },
+  {
+    "id": 9,
+    "name": "Emily Taylor",
+    "phoneNumber": "+387 69 012 345",
+    "numberOfPeople": 2,
+    "typeOfSeat": "Bar",
+    "time": "21:30",
+    "status": "Declined"
+  },
+  {
+    "id": 10,
+    "name": "Alexander Lee",
+    "phoneNumber": "+387 60 123 456",
+    "numberOfPeople": 3,
+    "typeOfSeat": "Indoor",
+    "time": "19:15",
+    "status": "Accepted"
+  },
+  {
+    "id": 11,
+    "name": "Isabella White",
+    "phoneNumber": "+387 61 234 890",
+    "numberOfPeople": 4,
+    "typeOfSeat": "Outdoor",
+    "time": "20:45",
+    "status": "Pending"
+  },
+  {
+    "id": 12,
+    "name": "Lucas Anderson",
+    "phoneNumber": "+387 62 345 901",
+    "numberOfPeople": 2,
+    "typeOfSeat": "Indoor",
+    "time": "22:30",
+    "status": "Accepted"
+  },
+  {
+    "id": 13,
+    "name": "Mia Robinson",
+    "phoneNumber": "+387 63 456 012",
+    "numberOfPeople": 6,
+    "typeOfSeat": "VIP",
+    "time": "19:45",
+    "status": "Accepted"
+  },
+  {
+    "id": 14,
+    "name": "Ethan Harris",
+    "phoneNumber": "+387 64 567 123",
+    "numberOfPeople": 3,
+    "typeOfSeat": "Bar",
+    "time": "21:15",
+    "status": "Pending"
+  },
+  {
+    "id": 15,
+    "name": "Ava Thompson",
+    "phoneNumber": "+387 65 678 234",
+    "numberOfPeople": 5,
+    "typeOfSeat": "Outdoor",
+    "time": "18:45",
+    "status": "Declined"
+  },
+  {
+    "id": 16,
+    "name": "Noah Martinez",
+    "phoneNumber": "+387 66 789 345",
+    "numberOfPeople": 4,
+    "typeOfSeat": "Indoor",
+    "time": "20:15",
+    "status": "Accepted"
+  },
+  {
+    "id": 17,
+    "name": "Charlotte Wilson",
+    "phoneNumber": "+387 67 890 456",
+    "numberOfPeople": 2,
+    "typeOfSeat": "VIP",
+    "time": "19:00",
+    "status": "Accepted"
+  },
+  {
+    "id": 18,
+    "name": "Liam Moore",
+    "phoneNumber": "+387 68 901 567",
+    "numberOfPeople": 7,
+    "typeOfSeat": "VIP",
+    "time": "21:45",
+    "status": "Pending"
+  },
+  {
+    "id": 19,
+    "name": "Amelia Jackson",
+    "phoneNumber": "+387 69 012 678",
+    "numberOfPeople": 3,
+    "typeOfSeat": "Indoor",
+    "time": "18:30",
+    "status": "Accepted"
+  },
+  {
+    "id": 20,
+    "name": "Benjamin Clark",
+    "phoneNumber": "+387 60 123 789",
+    "numberOfPeople": 4,
+    "typeOfSeat": "Outdoor",
+    "time": "22:15",
+    "status": "Declined"
+  },
+  {
+    "id": 21,
+    "name": "Harper Lewis",
+    "phoneNumber": "+387 61 345 678",
+    "numberOfPeople": 2,
+    "typeOfSeat": "Bar",
+    "time": "20:00",
+    "status": "Accepted"
+  },
+  {
+    "id": 22,
+    "name": "William Walker",
+    "phoneNumber": "+387 62 456 789",
+    "numberOfPeople": 5,
+    "typeOfSeat": "Indoor",
+    "time": "19:30",
+    "status": "Accepted"
+  },
+  {
+    "id": 23,
+    "name": "Evelyn Hall",
+    "phoneNumber": "+387 63 567 890",
+    "numberOfPeople": 3,
+    "typeOfSeat": "Outdoor",
+    "time": "21:00",
+    "status": "Pending"
+  },
+  {
+    "id": 24,
+    "name": "Mason Allen",
+    "phoneNumber": "+387 64 678 901",
+    "numberOfPeople": 6,
+    "typeOfSeat": "VIP",
+    "time": "18:15",
+    "status": "Accepted"
+  },
+  {
+    "id": 25,
+    "name": "Abigail Young",
+    "phoneNumber": "+387 65 789 012",
+    "numberOfPeople": 4,
+    "typeOfSeat": "Indoor",
+    "time": "20:30",
+    "status": "Declined"
+  },
+  {
+    "id": 26,
+    "name": "Elijah King",
+    "phoneNumber": "+387 66 890 123",
+    "numberOfPeople": 2,
+    "typeOfSeat": "Bar",
+    "time": "22:45",
+    "status": "Accepted"
+  },
+  {
+    "id": 27,
+    "name": "Sofia Wright",
+    "phoneNumber": "+387 67 901 234",
+    "numberOfPeople": 5,
+    "typeOfSeat": "Outdoor",
+    "time": "19:15",
+    "status": "Accepted"
+  },
+  {
+    "id": 28,
+    "name": "Logan Scott",
+    "phoneNumber": "+387 68 012 345",
+    "numberOfPeople": 3,
+    "typeOfSeat": "Indoor",
+    "time": "21:30",
+    "status": "Pending"
+  },
+  {
+    "id": 29,
+    "name": "Aria Green",
+    "phoneNumber": "+387 69 123 456",
+    "numberOfPeople": 4,
+    "typeOfSeat": "VIP",
+    "time": "18:45",
+    "status": "Accepted"
+  },
+  {
+    "id": 30,
+    "name": "Jackson Adams",
+    "phoneNumber": "+387 60 234 567",
+    "numberOfPeople": 2,
+    "typeOfSeat": "Bar",
+    "time": "20:15",
+    "status": "Declined"
+  },
+  {
+    "id": 31,
+    "name": "Luna Baker",
+    "phoneNumber": "+387 61 456 789",
+    "numberOfPeople": 6,
+    "typeOfSeat": "VIP",
+    "time": "19:45",
+    "status": "Accepted"
+  },
+  {
+    "id": 32,
+    "name": "Sebastian Nelson",
+    "phoneNumber": "+387 62 567 890",
+    "numberOfPeople": 3,
+    "typeOfSeat": "Outdoor",
+    "time": "22:00",
+    "status": "Pending"
+  },
+  {
+    "id": 33,
+    "name": "Chloe Carter",
+    "phoneNumber": "+387 63 678 901",
+    "numberOfPeople": 4,
+    "typeOfSeat": "Indoor",
+    "time": "18:00",
+    "status": "Accepted"
+  },
+  {
+    "id": 34,
+    "name": "Jack Mitchell",
+    "phoneNumber": "+387 64 789 012",
+    "numberOfPeople": 5,
+    "typeOfSeat": "VIP",
+    "time": "21:15",
+    "status": "Accepted"
+  },
+  {
+    "id": 35,
+    "name": "Lily Perez",
+    "phoneNumber": "+387 65 890 123",
+    "numberOfPeople": 2,
+    "typeOfSeat": "Bar",
+    "time": "19:30",
+    "status": "Declined"
+  },
+  {
+    "id": 36,
+    "name": "Henry Roberts",
+    "phoneNumber": "+387 66 901 234",
+    "numberOfPeople": 7,
+    "typeOfSeat": "VIP",
+    "time": "20:45",
+    "status": "Pending"
+  },
+  {
+    "id": 37,
+    "name": "Grace Turner",
+    "phoneNumber": "+387 67 012 345",
+    "numberOfPeople": 3,
+    "typeOfSeat": "Indoor",
+    "time": "18:30",
+    "status": "Accepted"
+  },
+  {
+    "id": 38,
+    "name": "Owen Phillips",
+    "phoneNumber": "+387 68 123 456",
+    "numberOfPeople": 4,
+    "typeOfSeat": "Outdoor",
+    "time": "22:30",
+    "status": "Accepted"
+  },
+  {
+    "id": 39,
+    "name": "Zoey Campbell",
+    "phoneNumber": "+387 69 234 567",
+    "numberOfPeople": 2,
+    "typeOfSeat": "Bar",
+    "time": "19:00",
+    "status": "Accepted"
+  },
+  {
+    "id": 40,
+    "name": "Samuel Parker",
+    "phoneNumber": "+387 60 345 678",
+    "numberOfPeople": 5,
+    "typeOfSeat": "Indoor",
+    "time": "21:45",
+    "status": "Declined"
+  },
+  {
+    "id": 41,
+    "name": "Nora Evans",
+    "phoneNumber": "+387 61 567 890",
+    "numberOfPeople": 3,
+    "typeOfSeat": "Outdoor",
+    "time": "18:15",
+    "status": "Pending"
+  },
+  {
+    "id": 42,
+    "name": "Matthew Edwards",
+    "phoneNumber": "+387 62 678 901",
+    "numberOfPeople": 6,
+    "typeOfSeat": "VIP",
+    "time": "20:00",
+    "status": "Accepted"
+  },
+  {
+    "id": 43,
+    "name": "Scarlett Collins",
+    "phoneNumber": "+387 63 789 012",
+    "numberOfPeople": 4,
+    "typeOfSeat": "Indoor",
+    "time": "19:15",
+    "status": "Accepted"
+  },
+  {
+    "id": 44,
+    "name": "Joseph Stewart",
+    "phoneNumber": "+387 64 890 123",
+    "numberOfPeople": 2,
+    "typeOfSeat": "Bar",
+    "time": "21:00",
+    "status": "Accepted"
+  },
+  {
+    "id": 45,
+    "name": "Hannah Morris",
+    "phoneNumber": "+387 65 901 234",
+    "numberOfPeople": 5,
+    "typeOfSeat": "VIP",
+    "time": "18:45",
+    "status": "Pending"
+  },
+  {
+    "id": 46,
+    "name": "David Rogers",
+    "phoneNumber": "+387 66 012 345",
+    "numberOfPeople": 3,
+    "typeOfSeat": "Outdoor",
+    "time": "22:15",
+    "status": "Declined"
+  },
+  {
+    "id": 47,
+    "name": "Victoria Reed",
+    "phoneNumber": "+387 67 123 456",
+    "numberOfPeople": 4,
+    "typeOfSeat": "Indoor",
+    "time": "19:30",
+    "status": "Accepted"
+  },
+  {
+    "id": 48,
+    "name": "Carter Cook",
+    "phoneNumber": "+387 68 234 567",
+    "numberOfPeople": 2,
+    "typeOfSeat": "Bar",
+    "time": "20:30",
+    "status": "Accepted"
+  },
+  {
+    "id": 49,
+    "name": "Penelope Morgan",
+    "phoneNumber": "+387 69 345 678",
+    "numberOfPeople": 6,
+    "typeOfSeat": "VIP",
+    "time": "18:00",
+    "status": "Accepted"
+  },
+  {
+    "id": 50,
+    "name": "Wyatt Bell",
+    "phoneNumber": "+387 60 456 789",
+    "numberOfPeople": 3,
+    "typeOfSeat": "Indoor",
+    "time": "21:30",
+    "status": "Pending"
+  }
+]
