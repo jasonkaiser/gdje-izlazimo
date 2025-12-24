@@ -4,11 +4,11 @@ import com.gdje_izlazimo.project.dto.request.create.CreateRatingRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateRatingRequest;
 import com.gdje_izlazimo.project.dto.response.RatingResponse;
 import com.gdje_izlazimo.project.entity.Rating;
+import com.gdje_izlazimo.project.exception.custom.RatingAlreadyExistsException;
+import com.gdje_izlazimo.project.exception.custom.RatingNotFoundException;
 import com.gdje_izlazimo.project.mapper.RatingMapper;
 import com.gdje_izlazimo.project.repository.RatingRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +37,7 @@ public class RatingService {
     public RatingResponse findRatingById(UUID id){
 
         Rating response = ratingRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rating does not exist"));
+                () -> new RatingNotFoundException("Rating does not exist"));
 
         return ratingMapper.toResponse(response);
 
@@ -46,7 +46,7 @@ public class RatingService {
     public RatingResponse createRating(CreateRatingRequest dto){
 
         if (ratingRepository.existsByReservationId_IdAndUserId_Id(dto.reservationId(), dto.userId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "You already rated this Reservation");
+            throw new RatingAlreadyExistsException("You already rated this Reservation");
         }
 
         Rating createdRating = ratingMapper.toEntity(dto);
@@ -59,7 +59,7 @@ public class RatingService {
     public RatingResponse updateRating(UpdateRatingRequest dto, UUID id){
 
         Rating rating = ratingRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Rating does not exist"));
+                () -> new RatingNotFoundException("Rating does not exist"));
 
         ratingMapper.updateEntity(dto, rating);
         Rating updatedRating = ratingRepository.save(rating);
@@ -71,7 +71,7 @@ public class RatingService {
     public void deleteRating(UUID id){
 
         if(!ratingRepository.existsById(id)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Rating does not exist");
+            throw new RatingNotFoundException("Rating does not exist");
         }
         ratingRepository.deleteById(id);
 

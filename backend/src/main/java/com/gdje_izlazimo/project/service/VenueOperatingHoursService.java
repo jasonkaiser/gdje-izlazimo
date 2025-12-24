@@ -4,6 +4,7 @@ import com.gdje_izlazimo.project.dto.request.create.CreateVenueOperatingHoursReq
 import com.gdje_izlazimo.project.dto.request.update.UpdateVenueOperatingHoursRequest;
 import com.gdje_izlazimo.project.dto.response.VenueOperatingHoursResponse;
 import com.gdje_izlazimo.project.entity.VenueOperatingHours;
+import com.gdje_izlazimo.project.exception.custom.VenueOperatingHoursNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueOperatingHoursMapper;
 import com.gdje_izlazimo.project.repository.VenueOperatingHoursRepository;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class VenueOperatingHoursService {
     public VenueOperatingHoursResponse findVenueOperatingHoursById(UUID id){
 
         VenueOperatingHours response = venueOperatingHoursRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue Operating Hours does not exist"));
+                () -> new VenueOperatingHoursNotFoundException("Venue Operating Hours does not exist"));
 
         return venueOperatingHoursMapper.toResponse(response);
 
@@ -55,7 +56,7 @@ public class VenueOperatingHoursService {
     public VenueOperatingHoursResponse updateVenueOperatingHours(UpdateVenueOperatingHoursRequest dto, UUID id){
 
         VenueOperatingHours venueOperatingHours = venueOperatingHoursRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue Operating Hours does not exist"));
+                () -> new VenueOperatingHoursNotFoundException("Venue Operating Hours does not exist"));
 
         venueOperatingHoursMapper.updateEntity(dto, venueOperatingHours);
         VenueOperatingHours updatedVenueOperatingHours = venueOperatingHoursRepository.save(venueOperatingHours);
@@ -67,7 +68,7 @@ public class VenueOperatingHoursService {
     public void deleteVenueOperatingHours(UUID id){
 
         if(!venueOperatingHoursRepository.existsById(id)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue Operating Hours does not exist");
+            throw new VenueOperatingHoursNotFoundException("Venue Operating Hours does not exist");
         }
         venueOperatingHoursRepository.deleteById(id);
 

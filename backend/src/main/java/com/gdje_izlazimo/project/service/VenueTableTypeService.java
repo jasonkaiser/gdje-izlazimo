@@ -4,6 +4,8 @@ import com.gdje_izlazimo.project.dto.request.create.CreateVenueTableTypeRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateVenueTableTypeRequest;
 import com.gdje_izlazimo.project.dto.response.VenueTableTypeResponse;
 import com.gdje_izlazimo.project.entity.VenueTableType;
+import com.gdje_izlazimo.project.exception.custom.VenueTableTypeAlreadyExistsException;
+import com.gdje_izlazimo.project.exception.custom.VenueTableTypeNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueTableTypeMapper;
 import com.gdje_izlazimo.project.repository.VenueTableTypeRepository;
 import org.springframework.http.HttpStatus;
@@ -37,7 +39,7 @@ public class VenueTableTypeService {
     public VenueTableTypeResponse findVenueTableTypeById(UUID id){
 
         VenueTableType response = venueTableTypeRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue Table Type does not exist"));
+                () -> new VenueTableTypeNotFoundException("Venue Table Type does not exist"));
 
         return venueTableTypeMapper.toResponse(response);
 
@@ -46,7 +48,7 @@ public class VenueTableTypeService {
     public VenueTableTypeResponse createVenueTableType(CreateVenueTableTypeRequest dto){
 
         if (venueTableTypeRepository.existsByVenueId_IdAndTableTypeId_Id(dto.venueId(), dto.tableTypeId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "This Venue already has this Table Type");
+            throw new VenueTableTypeAlreadyExistsException("This Venue already has this Table Type");
         }
 
         VenueTableType createdVenueTableType = venueTableTypeMapper.toEntity(dto);
@@ -59,7 +61,7 @@ public class VenueTableTypeService {
     public VenueTableTypeResponse updateVenueTableType(UpdateVenueTableTypeRequest dto, UUID id){
 
         VenueTableType venueTableType = venueTableTypeRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue Table Type does not exist"));
+                () -> new VenueTableTypeNotFoundException("Venue Table Type does not exist"));
 
         venueTableTypeMapper.updateEntity(dto, venueTableType);
         VenueTableType updatedVenueTableType = venueTableTypeRepository.save(venueTableType);
@@ -71,7 +73,7 @@ public class VenueTableTypeService {
     public void deleteVenueTableType(UUID id){
 
         if(!venueTableTypeRepository.existsById(id)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue Table Type does not exist");
+            throw new VenueTableTypeNotFoundException("Venue Table Type does not exist");
         }
         venueTableTypeRepository.deleteById(id);
 

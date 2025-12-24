@@ -4,6 +4,7 @@ import com.gdje_izlazimo.project.dto.request.create.CreateVenueImageRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateVenueImageRequest;
 import com.gdje_izlazimo.project.dto.response.VenueImageResponse;
 import com.gdje_izlazimo.project.entity.VenueImage;
+import com.gdje_izlazimo.project.exception.custom.VenueImageNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueImageMapper;
 import com.gdje_izlazimo.project.repository.VenueImageRepository;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class VenueImageService {
     public VenueImageResponse findVenueImageById(UUID id){
 
         VenueImage response = venueImageRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue Image does not exist"));
+                () -> new VenueImageNotFoundException("Venue Image does not exist"));
 
         return venueImageMapper.toResponse(response);
 
@@ -55,7 +56,7 @@ public class VenueImageService {
     public VenueImageResponse updateVenueImage(UpdateVenueImageRequest dto, UUID id){
 
         VenueImage venueImage = venueImageRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue Image does not exist"));
+                () -> new VenueImageNotFoundException("Venue Image does not exist"));
 
         venueImageMapper.updateEntity(dto, venueImage);
         VenueImage updatedVenueImage = venueImageRepository.save(venueImage);
@@ -67,7 +68,7 @@ public class VenueImageService {
     public void deleteVenueImage(UUID id){
 
         if(!venueImageRepository.existsById(id)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue Image does not exist");
+            throw new VenueImageNotFoundException("Venue Image does not exist");
         }
         venueImageRepository.deleteById(id);
 

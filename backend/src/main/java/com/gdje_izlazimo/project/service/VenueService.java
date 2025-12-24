@@ -5,6 +5,8 @@ import com.gdje_izlazimo.project.dto.request.update.UpdateVenueRequest;
 import com.gdje_izlazimo.project.dto.response.VenueResponse;
 import com.gdje_izlazimo.project.entity.Venue;
 import com.gdje_izlazimo.project.enums.VenueCategory;
+import com.gdje_izlazimo.project.exception.custom.VenueAlreadyExistsException;
+import com.gdje_izlazimo.project.exception.custom.VenueNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueMapper;
 import com.gdje_izlazimo.project.repository.VenueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,7 @@ public class VenueService {
 
     public VenueResponse findVenueById(UUID id){
         Venue venueEntity = venueRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue does not exist"));
+                () -> new VenueNotFoundException("Venue does not exist"));
 
         return venueMapper.toResponse(venueEntity);
     }
@@ -50,7 +52,7 @@ public class VenueService {
 
     public VenueResponse createVenue(CreateVenueRequest dto){
         if(venueRepository.existsByName(dto.name())){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Venue with this name already exists");
+            throw new VenueAlreadyExistsException("Venue with this name already exists");
         }
 
         Venue newVenue = venueMapper.toEntity(dto);
@@ -61,7 +63,7 @@ public class VenueService {
 
     public VenueResponse updateVenue(UpdateVenueRequest dto, UUID id){
         Venue venue = venueRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue not found"));
+                () -> new VenueNotFoundException("Venue does not exist"));
 
         venueMapper.updateEntity(venue, dto);
         Venue updatedVenue = venueRepository.save(venue);
@@ -71,7 +73,7 @@ public class VenueService {
 
     public void deleteVenue(UUID id){
         if(!venueRepository.existsById(id)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Venue does not exist");
+            throw new VenueNotFoundException("Venue does not exist");
         }
         venueRepository.deleteById(id);
     }

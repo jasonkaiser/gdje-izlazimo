@@ -5,6 +5,8 @@ import com.gdje_izlazimo.project.dto.request.update.UpdateUserRequest;
 import com.gdje_izlazimo.project.dto.response.UserResponse;
 import com.gdje_izlazimo.project.entity.User;
 import com.gdje_izlazimo.project.enums.Role;
+import com.gdje_izlazimo.project.exception.custom.EmailAlreadyExistsException;
+import com.gdje_izlazimo.project.exception.custom.UserNotFoundException;
 import com.gdje_izlazimo.project.mapper.UserMapper;
 import com.gdje_izlazimo.project.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,7 @@ public class UserService {
     public UserResponse findUserById(UUID id){
 
         User userEntity = userRepository.findById(id).
-                orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                orElseThrow( () -> new UserNotFoundException("User not found"));
 
         return UserMapper.toResponse(userEntity);
 
@@ -58,7 +60,7 @@ public class UserService {
 
         if(userRepository.existsByEmail(user.email())){
 
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+            throw new EmailAlreadyExistsException("Email already exists");
 
         }
 
@@ -72,8 +74,7 @@ public class UserService {
     public UserResponse updateUser(UUID id, UpdateUserRequest request){
 
         User existingUser = userRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-        );
+                () -> new UserNotFoundException("User not found"));
 
         UserMapper.updateEntity(existingUser, request);
         User updatedUser = userRepository.save(existingUser);
@@ -85,7 +86,7 @@ public class UserService {
     public void deleteUser(UUID id){
 
         if(!userRepository.existsById(id)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist");
+            throw new UserNotFoundException("User not found");
         }
 
         userRepository.deleteById(id);

@@ -4,11 +4,10 @@ import com.gdje_izlazimo.project.dto.request.create.CreateTableTypeRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateTableTypeRequest;
 import com.gdje_izlazimo.project.dto.response.TableTypeResponse;
 import com.gdje_izlazimo.project.entity.TableType;
+import com.gdje_izlazimo.project.exception.custom.TableTypeNotFoundException;
 import com.gdje_izlazimo.project.mapper.TableTypeMapper;
 import com.gdje_izlazimo.project.repository.TableTypeRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +36,7 @@ public class TableTypeService {
     public TableTypeResponse findTableTypeById(UUID id){
 
         TableType response = tableTypeRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Table Type does not exist"));
+                () -> new TableTypeNotFoundException("Table Type does not exist"));
 
         return tableTypeMapper.toResponse(response);
 
@@ -55,7 +54,7 @@ public class TableTypeService {
     public TableTypeResponse updateTableType(UpdateTableTypeRequest dto, UUID id){
 
         TableType tableType = tableTypeRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Table Type does not exist"));
+                () -> new TableTypeNotFoundException("Table Type does not exist"));
 
         tableTypeMapper.updateEntity(dto, tableType);
         TableType updatedTableType = tableTypeRepository.save(tableType);
@@ -67,7 +66,7 @@ public class TableTypeService {
     public void deleteTableType(UUID id){
 
         if(!tableTypeRepository.existsById(id)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Table Type does not exist");
+            throw new TableTypeNotFoundException("Table Type does not exist");
         }
         tableTypeRepository.deleteById(id);
 

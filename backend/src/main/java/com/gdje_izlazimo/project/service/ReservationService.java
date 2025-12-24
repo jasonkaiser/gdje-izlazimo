@@ -4,11 +4,11 @@ import com.gdje_izlazimo.project.dto.request.create.CreateReservationRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateReservationRequest;
 import com.gdje_izlazimo.project.dto.response.ReservationResponse;
 import com.gdje_izlazimo.project.entity.Reservation;
+import com.gdje_izlazimo.project.exception.custom.ReservationAlreadyExistsException;
+import com.gdje_izlazimo.project.exception.custom.ReservationNotFoundException;
 import com.gdje_izlazimo.project.mapper.ReservationMapper;
 import com.gdje_izlazimo.project.repository.ReservationRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +37,7 @@ public class ReservationService {
     public ReservationResponse findReservationById(UUID id){
 
         Reservation response = reservationRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation does not exist"));
+                () -> new ReservationNotFoundException("Reservation does not exist"));
 
         return reservationMapper.toResponse(response);
 
@@ -46,7 +46,7 @@ public class ReservationService {
     public ReservationResponse createReservation(CreateReservationRequest dto){
 
         if (reservationRepository.existsByUserId_IdAndVenueId_Id(dto.userId(), dto.venueId())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "You already have a Reservation in this Venue");
+            throw new ReservationAlreadyExistsException("Reservation already exists");
         }
 
         Reservation createdReservation = reservationMapper.toEntity(dto);
@@ -59,7 +59,7 @@ public class ReservationService {
     public ReservationResponse updateReservation(UpdateReservationRequest dto, UUID id){
 
         Reservation reservation = reservationRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation does not exist"));
+                () -> new ReservationNotFoundException("Reservation does not exist"));
 
         reservationMapper.updateEntity(dto, reservation);
         Reservation updatedReservation = reservationRepository.save(reservation);
@@ -71,7 +71,7 @@ public class ReservationService {
     public void deleteReservation(UUID id){
 
         if(!reservationRepository.existsById(id)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation does not exist");
+            throw new ReservationNotFoundException("Reservation does not exist");
         }
         reservationRepository.deleteById(id);
 

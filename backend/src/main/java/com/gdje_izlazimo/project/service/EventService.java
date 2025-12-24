@@ -4,11 +4,10 @@ import com.gdje_izlazimo.project.dto.request.create.CreateEventRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateEventRequest;
 import com.gdje_izlazimo.project.dto.response.EventResponse;
 import com.gdje_izlazimo.project.entity.Event;
+import com.gdje_izlazimo.project.exception.custom.EventNotFoundException;
 import com.gdje_izlazimo.project.mapper.EventMapper;
 import com.gdje_izlazimo.project.repository.EventRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +36,7 @@ public class EventService {
     public EventResponse findEventById(UUID id){
 
         Event response = eventRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event does not exist"));
+                () -> new EventNotFoundException("Event does not exist"));
 
         return eventMapper.toResponse(response);
 
@@ -55,7 +54,7 @@ public class EventService {
     public EventResponse updateEvent(UpdateEventRequest dto, UUID id){
 
         Event event = eventRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event does not exist"));
+                () -> new EventNotFoundException("Event does not exist"));
 
         eventMapper.updateEntity(dto, event);
         Event updatedEvent = eventRepository.save(event);
@@ -67,7 +66,7 @@ public class EventService {
     public void deleteEvent(UUID id){
 
         if(!eventRepository.existsById(id)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Event does not exist");
+            throw new EventNotFoundException("Event does not exist");
         }
         eventRepository.deleteById(id);
 
