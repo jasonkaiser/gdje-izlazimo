@@ -17,7 +17,6 @@ public class RatingMapper {
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
 
-    @Autowired
     public RatingMapper(ReservationRepository reservationRepository, UserRepository userRepository) {
         this.reservationRepository = reservationRepository;
         this.userRepository = userRepository;

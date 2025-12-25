@@ -42,7 +42,7 @@ public class EventController {
 
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<EventResponse> createEvent(@Valid @RequestBody CreateEventRequest entity){
 
@@ -51,7 +51,7 @@ public class EventController {
 
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
     public ResponseEntity<EventResponse> updateEvent(@PathVariable UUID id,
                                                      @Valid @RequestBody UpdateEventRequest request){
@@ -59,7 +59,7 @@ public class EventController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner','admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable UUID id){
 

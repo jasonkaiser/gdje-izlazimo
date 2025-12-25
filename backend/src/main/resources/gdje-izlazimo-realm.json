@@ -1,0 +1,65 @@
+{
+  "realm": "gdje-izlazimo",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      {
+        "name": "admin"
+      },
+      {
+        "name": "venue_owner"
+      },
+      {
+        "name": "user"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "gdje-izlazimo",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": ["http://localhost:8081/*"],
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true
+    }
+  ],
+  "users": [
+    {
+      "username": "admin_user",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"]
+    },
+    {
+      "username": "venue_owner_1",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["venue_owner"]
+    },
+    {
+      "username": "user_1",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"]
+    }
+  ]
+}

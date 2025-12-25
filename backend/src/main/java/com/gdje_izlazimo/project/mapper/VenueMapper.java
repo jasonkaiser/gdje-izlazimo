@@ -14,7 +14,6 @@ public class VenueMapper {
 
     private final UserRepository userRepository;
 
-    @Autowired
     public VenueMapper(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

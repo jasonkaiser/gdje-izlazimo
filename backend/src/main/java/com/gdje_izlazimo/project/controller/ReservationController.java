@@ -25,7 +25,7 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAllReservations(){
 
@@ -34,7 +34,7 @@ public class ReservationController {
 
     }
 
-    @PreAuthorize("hasAnyRole('user', 'venue_owner')")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponse> findReservationById(@PathVariable UUID id){
 
@@ -43,7 +43,7 @@ public class ReservationController {
 
     }
 
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody CreateReservationRequest entity){
 
@@ -52,7 +52,7 @@ public class ReservationController {
 
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
     public ResponseEntity<ReservationResponse> updateReservation(@PathVariable UUID id,
                                                    @Valid @RequestBody UpdateReservationRequest request){
@@ -60,7 +60,7 @@ public class ReservationController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable UUID id){
 

@@ -56,7 +56,7 @@ public class VenueController {
         return ResponseEntity.ok(venueResponse);
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
     public ResponseEntity<VenueResponse> updateVenue(@Valid @RequestBody UpdateVenueRequest dto,
                                                      @PathVariable UUID id){

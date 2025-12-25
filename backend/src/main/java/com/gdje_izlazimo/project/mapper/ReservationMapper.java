@@ -17,7 +17,6 @@ public class ReservationMapper  {
     private final VenueRepository venueRepository;
     private final UserRepository userRepository;
 
-    @Autowired
     public ReservationMapper(VenueRepository venueRepository, UserRepository userRepository) {
         this.venueRepository = venueRepository;
         this.userRepository = userRepository;

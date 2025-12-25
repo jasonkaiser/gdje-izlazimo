@@ -24,7 +24,7 @@ public class VenueTableTypeController {
         this.venueTableTypeService = venueTableTypeService;
     }
 
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('user','venue_owner', 'admin')")
     @GetMapping
     public ResponseEntity<List<VenueTableTypeResponse>> findAllVenueTableTypes(){
 
@@ -33,7 +33,7 @@ public class VenueTableTypeController {
 
     }
 
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('user','venue_owner', 'admin')")
     @GetMapping("/{id}")
     public ResponseEntity<VenueTableTypeResponse> findVenueTableTypeById(@PathVariable UUID id){
 

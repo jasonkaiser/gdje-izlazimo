@@ -23,7 +23,7 @@ public class VenueService {
     private final VenueRepository venueRepository;
     private final VenueMapper venueMapper;
 
-    @Autowired
+
     public VenueService(VenueRepository venueRepository, VenueMapper venueMapper) {
         this.venueRepository = venueRepository;
         this.venueMapper = venueMapper;

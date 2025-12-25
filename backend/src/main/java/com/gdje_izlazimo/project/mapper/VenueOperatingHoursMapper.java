@@ -14,7 +14,6 @@ public class VenueOperatingHoursMapper {
 
     private final VenueRepository venueRepository;
 
-    @Autowired
     public VenueOperatingHoursMapper(VenueRepository venueRepository) {
         this.venueRepository = venueRepository;
     }

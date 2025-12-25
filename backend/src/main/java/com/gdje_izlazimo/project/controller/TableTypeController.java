@@ -24,7 +24,7 @@ public class TableTypeController {
         this.tableTypeService = tableTypeService;
     }
 
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @GetMapping
     public ResponseEntity<List<TableTypeResponse>> findAllTableTypes(){
 
@@ -33,7 +33,7 @@ public class TableTypeController {
 
     }
 
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @GetMapping("/{id}")
     public ResponseEntity<TableTypeResponse> findTableTypeById(@PathVariable UUID id){
 
@@ -42,7 +42,7 @@ public class TableTypeController {
 
     }
 
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<TableTypeResponse> createTableType(@Valid @RequestBody CreateTableTypeRequest entity){
 

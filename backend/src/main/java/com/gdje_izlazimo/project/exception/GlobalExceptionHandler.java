@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RatingAlreadyExistsException.class)
-    public ResponseEntity<ApiError> handleRatingAlreadyExists(RatingNotFoundException ex){
+    public ResponseEntity<ApiError> handleRatingAlreadyExists(RatingAlreadyExistsException ex){
 
         HttpStatus status = HttpStatus.CONFLICT;
 

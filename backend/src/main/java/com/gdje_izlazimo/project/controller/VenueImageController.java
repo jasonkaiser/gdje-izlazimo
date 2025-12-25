@@ -43,7 +43,7 @@ public class VenueImageController {
 
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<VenueImageResponse> createVenueImage(@Valid @RequestBody CreateVenueImageRequest entity){
 
@@ -52,7 +52,7 @@ public class VenueImageController {
 
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
     public ResponseEntity<VenueImageResponse> updateVenueImage(@PathVariable UUID id,
                                                                @Valid @RequestBody UpdateVenueImageRequest request){
@@ -60,7 +60,7 @@ public class VenueImageController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVenueImage(@PathVariable UUID id){
 

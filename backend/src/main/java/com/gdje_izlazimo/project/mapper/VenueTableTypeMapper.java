@@ -17,7 +17,6 @@ public class VenueTableTypeMapper {
     private final VenueRepository venueRepository;
     private final TableTypeRepository tableTypeRepository;
 
-    @Autowired
     public VenueTableTypeMapper(VenueRepository venueRepository, TableTypeRepository tableTypeRepository) {
         this.venueRepository = venueRepository;
         this.tableTypeRepository = tableTypeRepository;

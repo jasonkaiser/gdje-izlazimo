@@ -14,7 +14,6 @@ public class VenueImageMapper {
 
     private final VenueRepository venueRepository;
 
-    @Autowired
     public VenueImageMapper(VenueRepository venueRepository) {
         this.venueRepository = venueRepository;
     }

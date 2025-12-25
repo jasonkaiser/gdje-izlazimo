@@ -24,7 +24,7 @@ public class RatingController {
         this.ratingService = ratingService;
     }
 
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @GetMapping
     public ResponseEntity<List<RatingResponse>> findAllRatings(){
 
@@ -33,7 +33,7 @@ public class RatingController {
 
     }
 
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @GetMapping("/{id}")
     public ResponseEntity<RatingResponse> findRatingById(@PathVariable UUID id){
 
@@ -41,7 +41,7 @@ public class RatingController {
         return ResponseEntity.ok(response);
 
     }
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<RatingResponse> createRating(@Valid @RequestBody CreateRatingRequest entity){
 
@@ -49,7 +49,7 @@ public class RatingController {
         return ResponseEntity.ok(ratingResponse);
 
     }
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @PutMapping("/{id}")
     public ResponseEntity<RatingResponse> updateRating(@PathVariable UUID id,
                                                        @Valid @RequestBody UpdateRatingRequest request){

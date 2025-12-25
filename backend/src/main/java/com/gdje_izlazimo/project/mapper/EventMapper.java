@@ -17,7 +17,6 @@ public class EventMapper {
     private final VenueRepository venueRepository;
     private final TableTypeRepository tableTypeRepository;
 
-    @Autowired
     public EventMapper(VenueRepository venueRepository, TableTypeRepository tableTypeRepository) {
         this.venueRepository = venueRepository;
         this.tableTypeRepository = tableTypeRepository;

@@ -43,7 +43,7 @@ public class VenueOperatingHoursController {
 
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<VenueOperatingHoursResponse> createVenueOperatingHours(@Valid @RequestBody CreateVenueOperatingHoursRequest entity){
 
@@ -52,7 +52,7 @@ public class VenueOperatingHoursController {
 
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
     public ResponseEntity<VenueOperatingHoursResponse> updateVenueOperatingHours(@PathVariable UUID id,
                                                                                  @Valid @RequestBody UpdateVenueOperatingHoursRequest request){
@@ -60,7 +60,7 @@ public class VenueOperatingHoursController {
         return ResponseEntity.ok(response);
     }
 
-    @PreAuthorize("hasRole('venue_owner')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVenueOperatingHours(@PathVariable UUID id){
 

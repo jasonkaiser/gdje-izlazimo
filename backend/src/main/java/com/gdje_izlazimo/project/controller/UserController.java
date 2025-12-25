@@ -55,7 +55,7 @@ public class UserController {
 
     }
 
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id,
                                                    @Valid @RequestBody UpdateUserRequest request){
