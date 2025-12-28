@@ -44,10 +44,29 @@ public class ReservationService {
 
     }
 
+    public List<ReservationResponse> findReservationsByVenueId(UUID venueId, Pageable pageable) {
+        List<Reservation> reservations = reservationRepository.findByVenueId_Id(venueId, pageable).getContent();
+
+        return reservations.stream()
+                .map(reservationMapper::toResponse)
+                .toList();
+    }
+
+    public List<ReservationResponse> findReservationsByUserId(UUID userId, Pageable pageable) {
+        List<Reservation> reservations = reservationRepository.findByUserId_Id(userId, pageable).getContent();
+
+        return reservations.stream()
+                .map(reservationMapper::toResponse)
+                .toList();
+    }
+
     public ReservationResponse createReservation(CreateReservationRequest dto){
 
-        if (reservationRepository.existsByUserId_IdAndVenueId_Id(dto.userId(), dto.venueId())) {
-            throw new ReservationAlreadyExistsException("Reservation already exists");
+        if (reservationRepository.existsByUserId_IdAndVenueId_IdAndReservationDate(
+                dto.userId(),
+                dto.venueId(),
+                dto.reservationDate())) {
+            throw new ReservationAlreadyExistsException("You already have a reservation at this venue for this date");
         }
 
         Reservation createdReservation = reservationMapper.toEntity(dto);
@@ -76,7 +95,6 @@ public class ReservationService {
         }
         reservationRepository.deleteById(id);
 
-    };
-
+    }
 
 }

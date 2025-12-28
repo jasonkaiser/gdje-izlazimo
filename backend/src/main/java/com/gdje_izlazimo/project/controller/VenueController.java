@@ -66,6 +66,28 @@ public class VenueController {
 
     }
 
+    @PermitAll
+    @GetMapping("/search")
+    public ResponseEntity<List<VenueResponse>> searchVenues(@RequestParam(required = false) String query,
+                                                            @RequestParam(required = false) VenueCategory category,
+                                                            @RequestParam(required = false, defaultValue = "1") int pageNo,
+                                                            @RequestParam(required = false, defaultValue = "10") int pageSize,
+                                                            @RequestParam(required = false, defaultValue = "name") String sortBy,
+                                                            @RequestParam(required = false, defaultValue = "ASC") String sortDir) {
+
+        Sort sort = sortDir.equalsIgnoreCase("ASC")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
+
+        List<VenueResponse> venueResponses = venueService.searchVenues(query, category, pageable);
+        return ResponseEntity.ok(venueResponses);
+
+
+
+    };
+
     @PreAuthorize("hasRole('admin')")
     @PostMapping
     public ResponseEntity<VenueResponse> createVenue(@Valid @RequestBody CreateVenueRequest dto){

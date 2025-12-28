@@ -1,6 +1,5 @@
 package com.gdje_izlazimo.project.controller;
 
-
 import com.gdje_izlazimo.project.dto.request.create.CreateReservationRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateReservationRequest;
 import com.gdje_izlazimo.project.dto.response.ReservationResponse;
@@ -28,21 +27,18 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    // findAllReservationsByVenue API is needed as soon as possible!
-
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findAllReservations(@RequestParam(required = false, defaultValue = "1") int pageNo,
-                                                                         @RequestParam(required = false, defaultValue = "10") int pageSize,
-                                                                         @RequestParam(required = false, defaultValue = "id") String sortBy,
-                                                                         @RequestParam(required = false, defaultValue = "ASC") String sortDir){
-
+    public ResponseEntity<List<ReservationResponse>> findAllReservations(
+            @RequestParam(required = false, defaultValue = "1") int pageNo,
+            @RequestParam(required = false, defaultValue = "10") int pageSize,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
+            @RequestParam(required = false, defaultValue = "ASC") String sortDir){
 
         Sort sort = null;
 
         if(sortDir.equalsIgnoreCase("ASC")){
             sort = Sort.by(sortBy).ascending();
-
         } else {
             sort = Sort.by(sortBy).descending();
         }
@@ -50,7 +46,6 @@ public class ReservationController {
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
         List<ReservationResponse> responses = reservationService.findAllReservations(pageable);
         return ResponseEntity.ok(responses);
-
     }
 
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
@@ -59,7 +54,50 @@ public class ReservationController {
 
         ReservationResponse response = reservationService.findReservationById(id);
         return ResponseEntity.ok(response);
+    }
 
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
+    @GetMapping("/venue/{venueId}")
+    public ResponseEntity<List<ReservationResponse>> findReservationsByVenue(
+            @PathVariable UUID venueId,
+            @RequestParam(required = false, defaultValue = "1") int pageNo,
+            @RequestParam(required = false, defaultValue = "10") int pageSize,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
+            @RequestParam(required = false, defaultValue = "ASC") String sortDir) {
+
+        Sort sort = null;
+
+        if(sortDir.equalsIgnoreCase("ASC")){
+            sort = Sort.by(sortBy).ascending();
+        } else {
+            sort = Sort.by(sortBy).descending();
+        }
+
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
+        List<ReservationResponse> responses = reservationService.findReservationsByVenueId(venueId, pageable);
+        return ResponseEntity.ok(responses);
+    }
+
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ReservationResponse>> findReservationsByUser(
+            @PathVariable UUID userId,
+            @RequestParam(required = false, defaultValue = "1") int pageNo,
+            @RequestParam(required = false, defaultValue = "10") int pageSize,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
+            @RequestParam(required = false, defaultValue = "ASC") String sortDir) {
+
+        Sort sort = null;
+
+        if(sortDir.equalsIgnoreCase("ASC")){
+            sort = Sort.by(sortBy).ascending();
+        } else {
+            sort = Sort.by(sortBy).descending();
+        }
+
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
+        List<ReservationResponse> responses = reservationService.findReservationsByUserId(userId, pageable);
+        return ResponseEntity.ok(responses);
     }
 
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
@@ -68,13 +106,12 @@ public class ReservationController {
 
         ReservationResponse reservationResponse = reservationService.createReservation(entity);
         return ResponseEntity.ok(reservationResponse);
-
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
     public ResponseEntity<ReservationResponse> updateReservation(@PathVariable UUID id,
-                                                   @Valid @RequestBody UpdateReservationRequest request){
+                                                                 @Valid @RequestBody UpdateReservationRequest request){
         ReservationResponse response = reservationService.updateReservation(request, id);
         return ResponseEntity.ok(response);
     }

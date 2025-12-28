@@ -2,6 +2,7 @@ package com.gdje_izlazimo.project.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -30,6 +31,13 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+
+                        .requestMatchers(HttpMethod.GET, "/venues/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/venue-images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/venue/operating-hours/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/users/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

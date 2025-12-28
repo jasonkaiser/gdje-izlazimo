@@ -9,6 +9,7 @@ import com.gdje_izlazimo.project.exception.custom.VenueAlreadyExistsException;
 import com.gdje_izlazimo.project.exception.custom.VenueNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueMapper;
 import com.gdje_izlazimo.project.repository.VenueRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +47,15 @@ public class VenueService {
         return venues.stream()
                 .map(venueMapper::toResponse)
                 .toList();
+    }
+
+    public List<VenueResponse> searchVenues(String query, VenueCategory category, Pageable pageable){
+        List<Venue> venues = venueRepository.searchVenues(query, category, pageable).getContent();
+
+        return venues.stream()
+                .map(venueMapper::toResponse)
+                .toList();
+
     }
 
     public VenueResponse createVenue(CreateVenueRequest dto){
