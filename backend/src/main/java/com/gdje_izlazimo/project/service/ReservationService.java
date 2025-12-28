@@ -8,6 +8,7 @@ import com.gdje_izlazimo.project.exception.custom.ReservationAlreadyExistsExcept
 import com.gdje_izlazimo.project.exception.custom.ReservationNotFoundException;
 import com.gdje_izlazimo.project.mapper.ReservationMapper;
 import com.gdje_izlazimo.project.repository.ReservationRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public class ReservationService {
         this.reservationMapper = reservationMapper;
     }
 
-    public List<ReservationResponse> findAllReservations(){
+    public List<ReservationResponse> findAllReservations(Pageable pageable){
 
-        List<Reservation> responses = reservationRepository.findAll();
+        List<Reservation> responses = reservationRepository.findAll(pageable).getContent();
 
         return responses.stream()
                 .map(reservationMapper::toResponse)

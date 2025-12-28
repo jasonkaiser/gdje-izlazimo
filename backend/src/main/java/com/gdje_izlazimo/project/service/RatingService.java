@@ -8,6 +8,7 @@ import com.gdje_izlazimo.project.exception.custom.RatingAlreadyExistsException;
 import com.gdje_izlazimo.project.exception.custom.RatingNotFoundException;
 import com.gdje_izlazimo.project.mapper.RatingMapper;
 import com.gdje_izlazimo.project.repository.RatingRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public class RatingService {
         this.ratingMapper = ratingMapper;
     }
 
-    public List<RatingResponse> findAllRatings(){
+    public List<RatingResponse> findAllRatings(Pageable pageable){
 
-        List<Rating> responses = ratingRepository.findAll();
+        List<Rating> responses = ratingRepository.findAll(pageable).getContent();
 
         return responses.stream()
                 .map(ratingMapper::toResponse)

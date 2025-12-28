@@ -9,10 +9,8 @@ import com.gdje_izlazimo.project.exception.custom.EmailAlreadyExistsException;
 import com.gdje_izlazimo.project.exception.custom.UserNotFoundException;
 import com.gdje_izlazimo.project.mapper.UserMapper;
 import com.gdje_izlazimo.project.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,9 +33,9 @@ public class UserService {
 
     };
 
-    public List<UserResponse> findAllUsers(){
+    public List<UserResponse> findAllUsers(Pageable pageable){
 
-        List<User> userEntity = userRepository.findAll();
+        List<User> userEntity = userRepository.findAll(pageable).getContent();
 
         return userEntity.stream()
                 .map(UserMapper::toResponse)
@@ -45,9 +43,9 @@ public class UserService {
 
     }
 
-    public List<UserResponse> findUserByRole(Role role){
+    public List<UserResponse> findUserByRole(Role role, Pageable pageable){
 
-        List<User> userEntity = userRepository.findByRole(role);
+        List<User> userEntity = userRepository.findByRole(role, pageable).getContent();
 
         return userEntity.stream()
                 .map(UserMapper::toResponse)

@@ -7,6 +7,7 @@ import com.gdje_izlazimo.project.entity.Event;
 import com.gdje_izlazimo.project.exception.custom.EventNotFoundException;
 import com.gdje_izlazimo.project.mapper.EventMapper;
 import com.gdje_izlazimo.project.repository.EventRepository;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,9 +24,9 @@ public class EventService {
         this.eventMapper = eventMapper;
     }
 
-    public List<EventResponse> findAllEvents(){
+    public List<EventResponse> findAllEvents(Pageable pageable){
 
-        List<Event> responses = eventRepository.findAll();
+        List<Event> responses = eventRepository.findAll(pageable).getContent();
 
         return responses.stream()
                 .map(eventMapper::toResponse)

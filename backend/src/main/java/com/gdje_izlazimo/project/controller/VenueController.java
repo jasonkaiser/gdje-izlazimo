@@ -8,6 +8,9 @@ import com.gdje_izlazimo.project.service.VenueService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,14 +31,29 @@ public class VenueController {
 
     @PermitAll
     @GetMapping
-    public ResponseEntity<List<VenueResponse>> findAllVenues(@RequestParam(required = false) VenueCategory venueType){
+    public ResponseEntity<List<VenueResponse>> findAllVenues( @RequestParam(required = false, defaultValue = "1") int pageNo,
+                                                              @RequestParam(required = false, defaultValue = "5") int pageSize,
+                                                              @RequestParam(required = false) VenueCategory venueType,
+                                                              @RequestParam(required = false, defaultValue = "id") String sortBy,
+                                                              @RequestParam(required = false, defaultValue = "ASC") String sortDir){
+
+        Sort sort = null;
+
+        if(sortDir.equalsIgnoreCase("ASC")){
+            sort = Sort.by(sortBy).ascending();
+
+        } else {
+            sort = Sort.by(sortBy).descending();
+        }
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
+
         if(venueType != null){
 
-            List<VenueResponse> venueResponses = venueService.findByVenueType(venueType);
+            List<VenueResponse> venueResponses = venueService.findByVenueType(pageable, venueType);
             return ResponseEntity.ok(venueResponses);
         }
 
-        List<VenueResponse> venueResponses = venueService.findAllVenues();
+        List<VenueResponse> venueResponses = venueService.findAllVenues(pageable);
         return ResponseEntity.ok(venueResponses);
     }
 

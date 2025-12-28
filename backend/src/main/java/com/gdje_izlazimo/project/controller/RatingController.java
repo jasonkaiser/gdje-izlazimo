@@ -6,6 +6,8 @@ import com.gdje_izlazimo.project.dto.response.RatingResponse;
 import com.gdje_izlazimo.project.service.RatingService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +28,12 @@ public class RatingController {
 
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @GetMapping
-    public ResponseEntity<List<RatingResponse>> findAllRatings(){
+    public ResponseEntity<List<RatingResponse>> findAllRatings(@RequestParam(required = false, defaultValue = "1") int pageNo,
+                                                               @RequestParam(required = false, defaultValue = "5") int pageSize){
 
-        List<RatingResponse> responses = ratingService.findAllRatings();
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
+
+        List<RatingResponse> responses = ratingService.findAllRatings(pageable);
         return ResponseEntity.ok(responses);
 
     }

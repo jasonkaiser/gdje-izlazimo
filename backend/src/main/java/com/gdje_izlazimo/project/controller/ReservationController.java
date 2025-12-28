@@ -7,6 +7,9 @@ import com.gdje_izlazimo.project.dto.response.ReservationResponse;
 import com.gdje_izlazimo.project.service.ReservationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -25,11 +28,27 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
+    // findAllReservationsByVenue API is needed as soon as possible!
+
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @GetMapping
-    public ResponseEntity<List<ReservationResponse>> findAllReservations(){
+    public ResponseEntity<List<ReservationResponse>> findAllReservations(@RequestParam(required = false, defaultValue = "1") int pageNo,
+                                                                         @RequestParam(required = false, defaultValue = "10") int pageSize,
+                                                                         @RequestParam(required = false, defaultValue = "id") String sortBy,
+                                                                         @RequestParam(required = false, defaultValue = "ASC") String sortDir){
 
-        List<ReservationResponse> responses = reservationService.findAllReservations();
+
+        Sort sort = null;
+
+        if(sortDir.equalsIgnoreCase("ASC")){
+            sort = Sort.by(sortBy).ascending();
+
+        } else {
+            sort = Sort.by(sortBy).descending();
+        }
+
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
+        List<ReservationResponse> responses = reservationService.findAllReservations(pageable);
         return ResponseEntity.ok(responses);
 
     }

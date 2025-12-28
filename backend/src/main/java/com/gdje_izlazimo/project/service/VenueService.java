@@ -9,10 +9,8 @@ import com.gdje_izlazimo.project.exception.custom.VenueAlreadyExistsException;
 import com.gdje_izlazimo.project.exception.custom.VenueNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueMapper;
 import com.gdje_izlazimo.project.repository.VenueRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,8 +27,8 @@ public class VenueService {
         this.venueMapper = venueMapper;
     }
 
-    public List<VenueResponse> findAllVenues(){
-        List<Venue> venueEntity = venueRepository.findAll();
+    public List<VenueResponse> findAllVenues(Pageable pageable){
+        List<Venue> venueEntity = venueRepository.findAll(pageable).getContent();
         return venueEntity.stream()
                 .map(venueMapper::toResponse)
                 .toList();
@@ -43,8 +41,8 @@ public class VenueService {
         return venueMapper.toResponse(venueEntity);
     }
 
-    public List<VenueResponse> findByVenueType(VenueCategory venueType){
-        List<Venue> venues = venueRepository.findByVenueType(venueType);
+    public List<VenueResponse> findByVenueType(Pageable pageable, VenueCategory venueType){
+        List<Venue> venues = venueRepository.findByVenueType(pageable, venueType).getContent();
         return venues.stream()
                 .map(venueMapper::toResponse)
                 .toList();
