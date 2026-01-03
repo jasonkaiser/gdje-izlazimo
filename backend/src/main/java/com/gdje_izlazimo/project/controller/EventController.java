@@ -31,56 +31,45 @@ public class EventController {
 
     @PermitAll
     @GetMapping
-    public ResponseEntity<List<EventResponse>> findAllEvents(@RequestParam(required = false, defaultValue = "1") int pageNo,
-                                                             @RequestParam(required = false, defaultValue = "7") int pageSize,
-                                                             @RequestParam(required = false, defaultValue = "id") String sortBy,
-                                                             @RequestParam(required = false, defaultValue = "ASC") String sortDir){
+    public ResponseEntity<List<EventResponse>> findAllEvents(@RequestParam(defaultValue = "1") int pageNo,
+                                                             @RequestParam(defaultValue = "7") int pageSize,
+                                                             @RequestParam(defaultValue = "id") String sortBy,
+                                                             @RequestParam(defaultValue = "ASC") String sortDir){
 
 
-        Sort sort = null;
+        Pageable pageable = PageRequest.of(
+                pageNo - 1,
+                           pageSize,
+                           Sort.Direction.fromString(sortDir),
+                           sortBy
+        );
 
-        if(sortDir.equalsIgnoreCase("ASC")){
-            sort = Sort.by(sortBy).ascending();
-
-        } else {
-            sort = Sort.by(sortBy).descending();
-        }
-
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
-        List<EventResponse> responses = eventService.findAllEvents(pageable);
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(eventService.findAllEvents(pageable));
 
     }
     @PermitAll
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> findEventById(@PathVariable UUID id){
-
-        EventResponse response = eventService.findEventById(id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(eventService.findEventById(id));
 
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<EventResponse> createEvent(@Valid @RequestBody CreateEventRequest entity){
-
-        EventResponse eventResponse = eventService.createEvent(entity);
-        return ResponseEntity.ok(eventResponse);
+        return ResponseEntity.ok(eventService.createEvent(entity));
 
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
-    public ResponseEntity<EventResponse> updateEvent(@PathVariable UUID id,
-                                                     @Valid @RequestBody UpdateEventRequest request){
-        EventResponse response = eventService.updateEvent(request, id);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<EventResponse> updateEvent(@PathVariable UUID id, @Valid @RequestBody UpdateEventRequest request){
+        return ResponseEntity.ok(eventService.updateEvent(request, id));
     }
 
     @PreAuthorize("hasAnyRole('venue_owner','admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable UUID id){
-
         eventService.deleteEvent(id);
         return ResponseEntity.noContent().build();
     }

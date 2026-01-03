@@ -29,63 +29,48 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping({"/{id}"})
+    @GetMapping("/{id}")
     public ResponseEntity<UserResponse> findUserById(@PathVariable UUID id) {
-
-        UserResponse userResponse = userService.findUserById(id);
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.ok(userService.findUserById(id));
     }
 
     @PreAuthorize("hasRole('admin')")
     @GetMapping
-    public ResponseEntity<List<UserResponse>> findAllUsers(@RequestParam(required = false, defaultValue = "1") int pageNo,
-                                                           @RequestParam(required = false, defaultValue = "10") int pageSize,
+    public ResponseEntity<List<UserResponse>> findAllUsers(@RequestParam(defaultValue = "1") int pageNo,
+                                                           @RequestParam(defaultValue = "10") int pageSize,
                                                            @RequestParam(required = false) Role role,
-                                                           @RequestParam(required = false, defaultValue = "id") String sortBy,
-                                                           @RequestParam(required = false, defaultValue = "ASC") String sortDir) {
+                                                           @RequestParam(defaultValue = "id") String sortBy,
+                                                           @RequestParam(defaultValue = "ASC") String sortDir) {
 
-        Sort sort = null;
+        Pageable pageable = PageRequest.of(
+                pageNo - 1,
+                pageSize,
+                Sort.Direction.fromString(sortDir),
+                sortBy
+        );
 
-        if(sortDir.equalsIgnoreCase("ASC")){
-            sort = Sort.by(sortBy).ascending();
-
-        } else {
-            sort = Sort.by(sortBy).descending();
+        if (role != null) {
+            return ResponseEntity.ok(userService.findUserByRole(role, pageable));
         }
 
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
-
-        if(role != null){
-
-            List<UserResponse> userResponses = userService.findUserByRole(role, pageable);
-            return ResponseEntity.ok(userResponses);
-        }
-        List<UserResponse> userResponse = userService.findAllUsers(pageable);
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.ok(userService.findAllUsers(pageable));
     }
-
 
     @PermitAll
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest user){
-
-        UserResponse userResponse = userService.createUser(user);
-        return ResponseEntity.ok(userResponse);
-
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest user) {
+        return ResponseEntity.ok(userService.createUser(user));
     }
 
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id,
-                                                   @Valid @RequestBody UpdateUserRequest request){
-        UserResponse response = userService.updateUser(id, request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id, @Valid @RequestBody UpdateUserRequest request) {
+        return ResponseEntity.ok(userService.updateUser(id, request));
     }
 
     @PreAuthorize("hasRole('admin')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id){
-
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

@@ -28,42 +28,33 @@ public class VenueImageController {
     @PermitAll
     @GetMapping
     public ResponseEntity<List<VenueImageResponse>> findAllVenueImages(){
-
-        List<VenueImageResponse> responses = venueImageService.findAllVenueImages();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(venueImageService.findAllVenueImages());
 
     }
 
     @PermitAll
     @GetMapping("/{id}")
     public ResponseEntity<VenueImageResponse> findVenueImageById(@PathVariable UUID id){
-
-        VenueImageResponse response = venueImageService.findVenueImageById(id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(venueImageService.findVenueImageById(id));
 
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<VenueImageResponse> createVenueImage(@Valid @RequestBody CreateVenueImageRequest entity){
-
-        VenueImageResponse venueImageResponse = venueImageService.createVenueImage(entity);
-        return ResponseEntity.ok(venueImageResponse);
+        return ResponseEntity.ok(venueImageService.createVenueImage(entity));
 
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
-    public ResponseEntity<VenueImageResponse> updateVenueImage(@PathVariable UUID id,
-                                                               @Valid @RequestBody UpdateVenueImageRequest request){
-        VenueImageResponse response = venueImageService.updateVenueImage(request, id);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<VenueImageResponse> updateVenueImage(@PathVariable UUID id, @Valid @RequestBody UpdateVenueImageRequest request){
+        return ResponseEntity.ok(venueImageService.updateVenueImage(request, id));
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVenueImage(@PathVariable UUID id){
-
         venueImageService.deleteVenueImage(id);
         return ResponseEntity.noContent().build();
     }

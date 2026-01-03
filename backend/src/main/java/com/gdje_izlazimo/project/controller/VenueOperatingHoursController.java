@@ -28,42 +28,33 @@ public class VenueOperatingHoursController {
     @PermitAll
     @GetMapping
     public ResponseEntity<List<VenueOperatingHoursResponse>> findAllVenueOperatingHours(){
-
-        List<VenueOperatingHoursResponse> responses = venueOperatingHoursService.findAllVenueOperatingHours();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(venueOperatingHoursService.findAllVenueOperatingHours());
 
     }
 
     @PermitAll
     @GetMapping("/{id}")
     public ResponseEntity<VenueOperatingHoursResponse> findVenueOperatingHoursById(@PathVariable UUID id){
-
-        VenueOperatingHoursResponse response = venueOperatingHoursService.findVenueOperatingHoursById(id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(venueOperatingHoursService.findVenueOperatingHoursById(id));
 
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<VenueOperatingHoursResponse> createVenueOperatingHours(@Valid @RequestBody CreateVenueOperatingHoursRequest entity){
-
-        VenueOperatingHoursResponse venueOperatingHoursResponse = venueOperatingHoursService.createVenueOperatingHours(entity);
-        return ResponseEntity.ok(venueOperatingHoursResponse);
+        return ResponseEntity.ok(venueOperatingHoursService.createVenueOperatingHours(entity));
 
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
-    public ResponseEntity<VenueOperatingHoursResponse> updateVenueOperatingHours(@PathVariable UUID id,
-                                                                                 @Valid @RequestBody UpdateVenueOperatingHoursRequest request){
-        VenueOperatingHoursResponse response = venueOperatingHoursService.updateVenueOperatingHours(request, id);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<VenueOperatingHoursResponse> updateVenueOperatingHours(@PathVariable UUID id, @Valid @RequestBody UpdateVenueOperatingHoursRequest request){
+        return ResponseEntity.ok(venueOperatingHoursService.updateVenueOperatingHours(request, id));
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVenueOperatingHours(@PathVariable UUID id){
-
         venueOperatingHoursService.deleteVenueOperatingHours(id);
         return ResponseEntity.noContent().build();
     }

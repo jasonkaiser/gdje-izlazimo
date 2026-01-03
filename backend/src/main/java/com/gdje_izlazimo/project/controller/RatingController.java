@@ -28,38 +28,30 @@ public class RatingController {
 
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @GetMapping
-    public ResponseEntity<List<RatingResponse>> findAllRatings(@RequestParam(required = false, defaultValue = "1") int pageNo,
-                                                               @RequestParam(required = false, defaultValue = "5") int pageSize){
+    public ResponseEntity<List<RatingResponse>> findAllRatings(@RequestParam(defaultValue = "1") int pageNo,
+                                                               @RequestParam(defaultValue = "5") int pageSize){
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-
-        List<RatingResponse> responses = ratingService.findAllRatings(pageable);
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(ratingService.findAllRatings(pageable));
 
     }
 
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @GetMapping("/{id}")
     public ResponseEntity<RatingResponse> findRatingById(@PathVariable UUID id){
-
-        RatingResponse response = ratingService.findRatingById(id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ratingService.findRatingById(id));
 
     }
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<RatingResponse> createRating(@Valid @RequestBody CreateRatingRequest entity){
-
-        RatingResponse ratingResponse = ratingService.createRating(entity);
-        return ResponseEntity.ok(ratingResponse);
+        return ResponseEntity.ok(ratingService.createRating(entity));
 
     }
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @PutMapping("/{id}")
-    public ResponseEntity<RatingResponse> updateRating(@PathVariable UUID id,
-                                                       @Valid @RequestBody UpdateRatingRequest request){
-        RatingResponse response = ratingService.updateRating(request, id);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<RatingResponse> updateRating(@PathVariable UUID id, @Valid @RequestBody UpdateRatingRequest request){
+        return ResponseEntity.ok(ratingService.updateRating(request, id));
     }
 
     @PreAuthorize("hasRole('admin')")

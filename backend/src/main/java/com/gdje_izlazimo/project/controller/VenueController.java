@@ -31,86 +31,67 @@ public class VenueController {
 
     @PermitAll
     @GetMapping
-    public ResponseEntity<List<VenueResponse>> findAllVenues( @RequestParam(required = false, defaultValue = "1") int pageNo,
-                                                              @RequestParam(required = false, defaultValue = "5") int pageSize,
-                                                              @RequestParam(required = false) VenueCategory venueType,
-                                                              @RequestParam(required = false, defaultValue = "id") String sortBy,
-                                                              @RequestParam(required = false, defaultValue = "ASC") String sortDir){
+    public ResponseEntity<List<VenueResponse>> findAllVenues(@RequestParam(defaultValue = "1") int pageNo,
+                                                             @RequestParam(defaultValue = "5") int pageSize,
+                                                             @RequestParam(required = false) VenueCategory venueType,
+                                                             @RequestParam(defaultValue = "id") String sortBy,
+                                                             @RequestParam(defaultValue = "ASC") String sortDir) {
 
-        Sort sort = null;
+        Pageable pageable = PageRequest.of(
+                pageNo - 1,
+                pageSize,
+                Sort.Direction.fromString(sortDir),
+                sortBy
+        );
 
-        if(sortDir.equalsIgnoreCase("ASC")){
-            sort = Sort.by(sortBy).ascending();
-
-        } else {
-            sort = Sort.by(sortBy).descending();
-        }
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
-
-        if(venueType != null){
-
-            List<VenueResponse> venueResponses = venueService.findByVenueType(pageable, venueType);
-            return ResponseEntity.ok(venueResponses);
+        if (venueType != null) {
+            return ResponseEntity.ok(venueService.findByVenueType(pageable, venueType));
         }
 
-        List<VenueResponse> venueResponses = venueService.findAllVenues(pageable);
-        return ResponseEntity.ok(venueResponses);
+        return ResponseEntity.ok(venueService.findAllVenues(pageable));
     }
 
     @PermitAll
     @GetMapping("/{id}")
-    public ResponseEntity<VenueResponse> findVenueById(UUID id){
-
-        VenueResponse venueResponse = venueService.findVenueById(id);
-        return ResponseEntity.ok(venueResponse);
-
+    public ResponseEntity<VenueResponse> findVenueById(@PathVariable UUID id) {
+        return ResponseEntity.ok(venueService.findVenueById(id));
     }
 
     @PermitAll
     @GetMapping("/search")
     public ResponseEntity<List<VenueResponse>> searchVenues(@RequestParam(required = false) String query,
                                                             @RequestParam(required = false) VenueCategory category,
-                                                            @RequestParam(required = false, defaultValue = "1") int pageNo,
-                                                            @RequestParam(required = false, defaultValue = "10") int pageSize,
-                                                            @RequestParam(required = false, defaultValue = "name") String sortBy,
-                                                            @RequestParam(required = false, defaultValue = "ASC") String sortDir) {
+                                                            @RequestParam(defaultValue = "1") int pageNo,
+                                                            @RequestParam(defaultValue = "10") int pageSize,
+                                                            @RequestParam(defaultValue = "name") String sortBy,
+                                                            @RequestParam(defaultValue = "ASC") String sortDir) {
 
-        Sort sort = sortDir.equalsIgnoreCase("ASC")
-                ? Sort.by(sortBy).ascending()
-                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(
+                pageNo - 1,
+                pageSize,
+                Sort.Direction.fromString(sortDir),
+                sortBy
+        );
 
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, sort);
-
-        List<VenueResponse> venueResponses = venueService.searchVenues(query, category, pageable);
-        return ResponseEntity.ok(venueResponses);
-
-
-
-    };
+        return ResponseEntity.ok(venueService.searchVenues(query, category, pageable));
+    }
 
     @PreAuthorize("hasRole('admin')")
     @PostMapping
-    public ResponseEntity<VenueResponse> createVenue(@Valid @RequestBody CreateVenueRequest dto){
-
-        VenueResponse venueResponse = venueService.createVenue(dto);
-        return ResponseEntity.ok(venueResponse);
+    public ResponseEntity<VenueResponse> createVenue(@Valid @RequestBody CreateVenueRequest dto) {
+        return ResponseEntity.ok(venueService.createVenue(dto));
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
-    public ResponseEntity<VenueResponse> updateVenue(@Valid @RequestBody UpdateVenueRequest dto,
-                                                     @PathVariable UUID id){
-
-        VenueResponse venueResponse = venueService.updateVenue(dto, id);
-        return ResponseEntity.ok(venueResponse);
+    public ResponseEntity<VenueResponse> updateVenue(@Valid @RequestBody UpdateVenueRequest dto, @PathVariable UUID id) {
+        return ResponseEntity.ok(venueService.updateVenue(dto, id));
     }
 
     @PreAuthorize("hasRole('admin')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteVenue(@PathVariable UUID id){
-
+    public ResponseEntity<Void> deleteVenue(@PathVariable UUID id) {
         venueService.deleteVenue(id);
         return ResponseEntity.noContent().build();
     }
-
 }

@@ -27,42 +27,33 @@ public class VenueTableTypeController {
     @PreAuthorize("hasAnyRole('user','venue_owner', 'admin')")
     @GetMapping
     public ResponseEntity<List<VenueTableTypeResponse>> findAllVenueTableTypes(){
-
-        List<VenueTableTypeResponse> responses = venueTableTypeService.findAllVenueTableTypes();
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(venueTableTypeService.findAllVenueTableTypes());
 
     }
 
     @PreAuthorize("hasAnyRole('user','venue_owner', 'admin')")
     @GetMapping("/{id}")
     public ResponseEntity<VenueTableTypeResponse> findVenueTableTypeById(@PathVariable UUID id){
-
-        VenueTableTypeResponse response = venueTableTypeService.findVenueTableTypeById(id);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(venueTableTypeService.findVenueTableTypeById(id));
 
     }
 
     @PreAuthorize("hasRole('admin')")
     @PostMapping
     public ResponseEntity<VenueTableTypeResponse> createVenueTableType(@Valid @RequestBody CreateVenueTableTypeRequest entity){
-
-        VenueTableTypeResponse venueTableTypeResponse = venueTableTypeService.createVenueTableType(entity);
-        return ResponseEntity.ok(venueTableTypeResponse);
+        return ResponseEntity.ok(venueTableTypeService.createVenueTableType(entity));
 
     }
 
     @PreAuthorize("hasRole('admin')")
     @PutMapping("/{id}")
-    public ResponseEntity<VenueTableTypeResponse> updateVenueTableType(@PathVariable UUID id,
-                                                                       @Valid @RequestBody UpdateVenueTableTypeRequest request){
-        VenueTableTypeResponse response = venueTableTypeService.updateVenueTableType(request, id);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<VenueTableTypeResponse> updateVenueTableType(@PathVariable UUID id, @Valid @RequestBody UpdateVenueTableTypeRequest request){
+        return ResponseEntity.ok(venueTableTypeService.updateVenueTableType(request, id));
     }
 
     @PreAuthorize("hasRole('admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVenueTableType(@PathVariable UUID id){
-
         venueTableTypeService.deleteVenueTableType(id);
         return ResponseEntity.noContent().build();
     }
