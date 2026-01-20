@@ -32,7 +32,7 @@ public class VenueController {
     @PermitAll
     @GetMapping
     public ResponseEntity<List<VenueResponse>> findAllVenues(@RequestParam(defaultValue = "1") int pageNo,
-                                                             @RequestParam(defaultValue = "5") int pageSize,
+                                                             @RequestParam(defaultValue = "6") int pageSize,
                                                              @RequestParam(required = false) VenueCategory venueType,
                                                              @RequestParam(defaultValue = "id") String sortBy,
                                                              @RequestParam(defaultValue = "ASC") String sortDir) {
@@ -62,7 +62,7 @@ public class VenueController {
     public ResponseEntity<List<VenueResponse>> searchVenues(@RequestParam(required = false) String query,
                                                             @RequestParam(required = false) VenueCategory category,
                                                             @RequestParam(defaultValue = "1") int pageNo,
-                                                            @RequestParam(defaultValue = "10") int pageSize,
+                                                            @RequestParam(defaultValue = "6") int pageSize,
                                                             @RequestParam(defaultValue = "name") String sortBy,
                                                             @RequestParam(defaultValue = "ASC") String sortDir) {
 
