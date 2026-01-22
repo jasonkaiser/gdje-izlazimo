@@ -1,0 +1,14 @@
+<div [ngClass]="wrapperClasses">
+  <div [ngClass]="iconClasses" aria-hidden="true">
+    <span class="font-extrabold">{{ icon }}</span>
+  </div>
+
+  <div class="pt-0.5 ">
+    <div class="text-[13px] font-semibold leading-snug">
+      <ng-content></ng-content>
+    </div>
+    <div class="text-[11px] text-white/60 mt-0.5">
+      Upravo sada
+    </div>
+  </div>
+</div>

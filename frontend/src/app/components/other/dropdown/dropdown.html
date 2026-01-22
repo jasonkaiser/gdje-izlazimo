@@ -1,0 +1,69 @@
+<div class="w-full">
+  @if (label) {
+    <label class="block text-white/70 text-[12px] mb-1.5">
+      {{ label }}
+    </label>
+  }
+
+  <div class="relative">
+    <!-- Dropdown Button -->
+    <div 
+      [ngClass]="shellClasses"
+      (click)="toggleDropdown()"
+    >
+      <div class="flex items-center justify-between pr-10">
+        <span 
+          [class.text-white]="value"
+          [class.text-white/35]="!value"
+          class="text-[14px]"
+        >
+          {{ selectedLabel }}
+        </span>
+      </div>
+
+      <!-- Right Icon -->
+      <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/50">
+        <ng-content select="[rightIcon]"></ng-content>
+      </div>
+
+      <!-- Chevron Icon -->
+      <div 
+        class="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 text-white/50 transition-transform"
+        [class.rotate-180]="isOpen"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none">
+          <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Dropdown Menu -->
+    @if (isOpen) {
+      <div 
+        class="absolute z-50 w-full mt-2 rounded-xl overflow-hidden
+               border border-white/10 bg-[#0B1220]/95 backdrop-blur-2xl
+               shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]
+               max-h-[240px] overflow-y-auto"
+      >
+        @for (opt of options; track opt.value) {
+          <div
+            class="px-4 py-3 cursor-pointer transition
+                   text-white/70 hover:bg-white/5 hover:text-white
+                   text-[14px]"
+            [class.bg-[#7C3AED]/20]="value === opt.value"
+            [class.text-[#7C3AED]]="value === opt.value"
+            (click)="selectOption(opt.value)"
+          >
+            {{ opt.label }}
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  @if (error) {
+    <p class="mt-1 text-[12px] text-[#EF4444]">
+      {{ error }}
+    </p>
+  }
+</div>

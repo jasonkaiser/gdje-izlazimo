@@ -1,3 +1,45 @@
 import { Routes } from '@angular/router';
+import { Dashboard } from './pages/dashboard/dashboard';
+import { VenueDetails } from './pages/venue-details/venue-details';
+import { Reservations } from './pages/reservations/reservations';
+import { VenuePanel } from './pages/venue-panel/venue-panel';
+import { AdminPanel } from './pages/admin-panel/admin-panel';
+import { NotFound } from './pages/not-found/not-found';
+import { authGuard } from './core/auth/auth.guard';
+import { roleGuard } from './core/auth/role.guard';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+
+        {
+            path: '',
+            component: Dashboard
+        },
+        {
+            path: 'venue-details',
+            component: VenueDetails
+        },
+        {
+            path: 'reservations',
+            component: Reservations,
+            canActivate: [authGuard]
+
+        },
+        {
+            path: 'venue-panel',
+            component: VenuePanel,
+            canActivate: [authGuard, roleGuard(['venue_owner'])]
+
+        },
+        {
+            path: 'admin-panel',
+            component: AdminPanel,
+            canActivate: [authGuard, roleGuard(['admin'])]
+
+        },
+        {
+            path: '**',
+            component: NotFound
+        }
+
+
+];

@@ -1,32 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthService } from './core/auth/auth.service';
+import { AuthNavbar } from './core/layout/auth-navbar/auth-navbar';
+import { PublicNavbar } from './core/layout/public-navbar/public-navbar';
+import { VenueCard } from "./components/cards/venue-card/venue-card";
+import { ButtonComponent } from './components/buttons/button-component/button-component';
+import { Toast } from './components/other/toast/toast';
+import { ReservationCard } from './components/cards/reservation-card/reservation-card';
+import { ReservationModal } from './components/modals/reservation-modal/reservation-modal';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, AuthNavbar, PublicNavbar, VenueCard, ButtonComponent, Toast, ReservationCard, ReservationModal],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App implements OnInit {
 
-  constructor(public authService: AuthService) {
-    console.log('App constructor - AuthService initialized:', this.authService.getInitializationStatus());
-  }
+  open = true;
 
-  ngOnInit() {
-    console.log('App ngOnInit - AuthService initialized:', this.authService.getInitializationStatus());
-    console.log('Is authenticated:', this.authService.isAuthenticated());
-  }
+  constructor(public authService: AuthService) {}
 
-  login() {
-    console.log('Login button clicked');
-    this.authService.login();
-  }
-
-  logout() {
-    console.log('Logout button clicked');
-    this.authService.logout();
-  }
+  ngOnInit() {}
 }

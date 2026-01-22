@@ -1,0 +1,42 @@
+
+<div
+  class="w-110 h-50 rounded-3xl overflow-hidden border border-white/10 bg-[#0B1220] relative group shadow-lg hover:shadow-2xl transition-all duration-300"
+>
+  <!-- Background image -->
+  <img
+    src="https://unsplash.com/photos/_LoTWL3ko94/download?force=true"
+    alt="Viking Pub"
+    class="absolute inset-0 w-full h-full object-cover scale-100 group-hover:scale-105 transition-transform duration-500"
+  />
+
+  <!-- Better overlay: gradient + soft blur layer -->
+  <div class="absolute inset-0 bg-linear-to-t from-black/80 via-black/35 to-black/10"></div>
+
+  <!-- Content -->
+  <div class="relative flex flex-col h-full">
+    <!-- Tag -->
+    <app-badge variant="category" class="m-4"> {{ category }} </app-badge>
+
+    <!-- Bottom info (glass) -->
+    <div
+      class="mt-auto mx-4 mb-4 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl
+             p-4 flex items-center justify-between"
+    >
+      <div class="pr-4">
+        <div class="text-white text-[22px] font-semibold leading-tight">
+          {{ title }}
+        </div>
+        <div class="text-white/60 text-[11px] mt-1">
+          {{ location }}
+        </div>
+      </div>
+
+      <app-button-component variant="outline" size="sm" fullWidth>
+      Vidi detaljno
+      </app-button-component>
+
+
+      
+    </div>
+  </div>
+</div>

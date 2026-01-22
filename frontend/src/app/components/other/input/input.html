@@ -1,0 +1,65 @@
+<div class="w-full">
+  @if (label) {
+    <label class="block text-white/70 text-[12px] mb-1.5">
+      {{ label }}
+    </label>
+  }
+
+  <div [ngClass]="shellClasses">
+    @if (kind === 'input') {
+      <input
+        class="pr-10"
+        [ngClass]="controlBase"
+        [type]="type"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        [value]="value ?? ''"
+        (input)="handleInput($any($event.target).value)"
+        (blur)="markTouched()"
+      />
+    }
+
+    @if (kind === 'select') {
+      <select
+        class="pr-10 appearance-none"
+        [ngClass]="controlBase"
+        [disabled]="disabled"
+        [value]="value ?? ''"
+        (change)="handleSelect($any($event.target).value)"
+        (blur)="markTouched()"
+      >
+        <option value="" disabled class="bg-[#0F172A] text-white/50">
+          {{ selectPlaceholder }}
+        </option>
+
+        @for (opt of options; track opt.value) {
+          <option [value]="opt.value" class="bg-[#0F172A]">
+            {{ opt.label }}
+          </option>
+        }
+      </select>
+    }
+
+    @if (kind === 'textarea') {
+      <textarea
+        rows="4"
+        class="pr-10 resize-none"
+        [ngClass]="controlBase"
+        [placeholder]="placeholder"
+        [disabled]="disabled"
+        (input)="handleInput($any($event.target).value)"
+        (blur)="markTouched()"
+      >{{ value ?? '' }}</textarea>
+    }
+
+    <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/50">
+      <ng-content select="[rightIcon]"></ng-content>
+    </div>
+  </div>
+
+  @if (error) {
+    <p class="mt-1 text-[12px] text-[#EF4444]">
+      {{ error }}
+    </p>
+  }
+</div>

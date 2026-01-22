@@ -1,15 +1,20 @@
-import { inject } from '@angular/core';
+import { inject, PLATFORM_ID } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from './auth.service';
-
 
 export function roleGuard(allowedRoles: string[]): CanActivateFn {
   return (route, state) => {
+    const platformId = inject(PLATFORM_ID);
+    
+    if (!isPlatformBrowser(platformId)) {
+      return true;
+    }
+
     const authService = inject(AuthService);
     const router = inject(Router);
 
     if (!authService.isAuthenticated()) {
-      console.log('Access denied - User not authenticated');
       router.navigate(['/']);
       return false;
     }
@@ -19,13 +24,11 @@ export function roleGuard(allowedRoles: string[]): CanActivateFn {
     
     const hasRole = allowedRoles.some(role => userRoles.includes(role));
 
-    if (hasRole) {
-      console.log('Access granted - User has required role');
-      return true;
+    if (!hasRole) {
+      router.navigate(['/']);
+      return false;
     }
 
-    console.log('Access denied - User lacks required role. Required:', allowedRoles, 'Has:', userRoles);
-    router.navigate(['/unauthorized']);
-    return false;
+    return true;
   };
 }

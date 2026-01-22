@@ -1,13 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import Keycloak from 'keycloak-js';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private keycloak: Keycloak;
   private initialized = false;
+  private initPromise: Promise<boolean> | null = null;
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser: boolean;
 
   constructor() {
-    console.log('AuthService constructor called');
+    this.isBrowser = isPlatformBrowser(this.platformId);
+    
     this.keycloak = new Keycloak({
       url: 'http://localhost:8080',
       realm: 'gdje-izlazimo',
@@ -16,53 +21,55 @@ export class AuthService {
   }
 
   async init(): Promise<boolean> {
-    console.log('AuthService init() called');
-    
-    if (this.initialized) {
-      console.log('Already initialized');
+    if (!this.isBrowser) {
       return true;
     }
 
-    try {
-      // keycloak.init() returns true if user is authenticated, false if not
-      // But in both cases, the initialization is successful
-      const authenticated = await this.keycloak.init({
-        onLoad: 'check-sso',
-        checkLoginIframe: false,
-        pkceMethod: 'S256'
-      });
-      
-      // Mark as initialized regardless of authentication status
-      this.initialized = true;
-      
-      console.log('Keycloak initialized successfully');
-      console.log('User authenticated:', authenticated);
-      console.log('Token present:', !!this.keycloak.token);
-      
+    if (this.initialized) {
       return true;
-    } catch (error) {
-      console.error('Keycloak initialization failed', error);
-      this.initialized = false;
-      return false;
     }
+
+    if (this.initPromise) {
+      return this.initPromise;
+    }
+
+    this.initPromise = (async () => {
+      try {
+        const authenticated = await this.keycloak.init({
+          onLoad: 'check-sso',
+          checkLoginIframe: false,
+          pkceMethod: 'S256'
+        });
+
+        this.initialized = true;
+        return true;
+      } catch (error) {
+        console.error('Keycloak initialization failed', error);
+        this.initialized = false;
+        return false;
+      } finally {
+        this.initPromise = null;
+      }
+    })();
+
+    return this.initPromise;
   }
 
   login(): void {
-    console.log('Login called, initialized:', this.initialized);
-    if (!this.initialized) {
-      console.error('Keycloak not initialized');
+    if (!this.isBrowser || !this.initialized || this.isAuthenticated()) {
       return;
     }
+    
     this.keycloak.login();
   }
 
-  logout(): void {
-    console.log('Logout called, initialized:', this.initialized);
-    if (!this.initialized) {
-      console.error('Keycloak not initialized');
-      return;
-    }
-    this.keycloak.logout({ redirectUri: window.location.origin });
+  async logout(): Promise<void> {
+    const ok = await this.init();
+    if (!ok) return;
+
+    await this.keycloak.logout({
+      redirectUri: window.location.origin
+    });
   }
 
   async getToken(): Promise<string | undefined> {

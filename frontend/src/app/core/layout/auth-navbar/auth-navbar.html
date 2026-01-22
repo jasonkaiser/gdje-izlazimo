@@ -1,0 +1,77 @@
+<header class="sticky top-0 z-50 border-b border-black/10 bg-[#d9d9d9]/80 backdrop-blur">
+  <div class="mx-auto flex max-w-[85%] items-center justify-between px-6 py-4">
+    <!-- Brand -->
+    <a routerLink="/" class="flex items-center gap-3">
+      <div class="h-9 w-9 rounded-xl bg-black/10"></div>
+      <div class="leading-tight">
+        <div class="text-base font-semibold tracking-tight">gdje-izlazimo</div>
+        <div class="text-xs text-black/60">your night, organized</div>
+      </div>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden items-center gap-7 md:flex">
+      <a
+        routerLink="/reservations"
+        routerLinkActive="text-black"
+        class="text-sm font-semibold text-black/70 hover:text-black transition"
+      >
+        Rezervacije
+      </a>
+
+      <a
+        routerLink="/"
+        routerLinkActive="text-black"
+        class="text-sm font-semibold text-black/70 hover:text-black transition"
+      >
+        Lokali
+      </a>
+
+      <a
+        routerLink="/profile"
+        routerLinkActive="text-black"
+        class="text-sm font-semibold text-black/70 hover:text-black transition"
+      >
+        Profil
+      </a>
+
+      @if (hasRole('venue_owner')) {
+        <a
+          routerLink="/venue-panel"
+          routerLinkActive="text-black"
+          class="text-sm font-semibold text-black/70 hover:text-black transition"
+        >
+          Venue panel
+        </a>
+      }
+
+      @if (hasRole('admin')) {
+        <a
+          routerLink="/admin-panel"
+          routerLinkActive="text-black"
+          class="text-sm font-semibold text-black/70 hover:text-black transition"
+        >
+          Admin
+        </a>
+      }
+
+      <!-- Logout -->
+      <button
+        type="button"
+        (click)="logout()"
+        class="rounded-xl bg-black/15 px-4 py-2 text-sm font-semibold text-black hover:bg-black/20 transition"
+      >
+        Odjava
+      </button>
+    </nav>
+
+    <!-- Mobile logout -->
+    <button
+      type="button"
+      (click)="logout()"
+      class="md:hidden rounded-xl bg-black/15 px-4 py-2 text-sm font-semibold text-black"
+    >
+      Odjava
+    </button>
+  </div>
+</header>

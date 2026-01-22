@@ -1,35 +1,25 @@
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn } from '@angular/router';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from './auth.service';
 
+export const authGuard: CanActivateFn = async (route, state) => {
+  const platformId = inject(PLATFORM_ID);
+  
+  if (!isPlatformBrowser(platformId)) {
+    return true;
+  }
 
-export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
-  const router = inject(Router);
+
+  if (!authService.getInitializationStatus()) {
+    await authService.init();
+  }
 
   if (authService.isAuthenticated()) {
-    console.log('Access granted to protected route:', state.url);
     return true;
   }
 
-  console.log('Access denied to protected route:', state.url, '- User not authenticated');
-  
-  router.navigate(['/']);
-  return false;
-};
-
-
-export const noAuthGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-
-  if (!authService.isAuthenticated()) {
-    console.log('Access granted to public route:', state.url);
-    return true;
-  }
-
-  console.log('Access denied to public route:', state.url, '- User already authenticated');
-  
-  router.navigate(['/dashboard']);
+  authService.login();
   return false;
 };

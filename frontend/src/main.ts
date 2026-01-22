@@ -5,21 +5,6 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideAppInitializer } from '@angular/core';
 import { inject } from '@angular/core';
 import { AuthService } from './app/core/auth/auth.service';
+import { appConfig } from './app/app.config';
 
-bootstrapApplication(App, {
-  providers: [
-    provideRouter([]),
-    provideHttpClient(),
-    provideAppInitializer(() => {
-      const initializerFn = () => {
-        const authService = inject(AuthService);
-        console.log('Initializing Keycloak...');
-        return authService.init().then(result => {
-          console.log('Keycloak initialization result:', result);
-          return result;
-        });
-      };
-      return initializerFn();
-    })
-  ]
-}).catch(err => console.error(err));
+bootstrapApplication(App, appConfig)

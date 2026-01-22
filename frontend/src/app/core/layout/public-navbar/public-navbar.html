@@ -1,0 +1,48 @@
+<header class="sticky top-5 z-50 border-b border-black/10 bg-[#d9d9d9]/3 backdrop-blur rounded-2xl w-[95%] place-self-center">
+  <div class="mx-auto flex max-w-[85%] items-center justify-between px-6 py-4">
+    <!-- Brand -->
+    <a routerLink="/" class="flex items-center gap-3">
+      <div class="h-9 w-9 rounded-xl bg-black/10"></div>
+      <div class="leading-tight">
+        <div class="text-base font-semibold text-white tracking-tight">gdje-izlazimo</div>
+        <div class="text-xs text-white/60">discover • reserve</div>
+      </div>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden items-center gap-7 md:flex">
+      <a
+        routerLink="/"
+        routerLinkActive="text-black"
+        class="text-sm font-medium text-white/70 hover:text-white transition"
+      >
+        Lokali
+      </a>
+
+      <a
+        routerLink="/venue-details"
+        routerLinkActive="text-white"
+        class="text-sm font-medium text-white/70 hover:text-white transition"
+      >
+        Detalji
+      </a>
+
+      <button
+        type="button"
+        (click)="login()"
+        class="rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-black/90 transition"
+      >
+        Prijava
+      </button>
+    </nav>
+
+    <!-- Mobile CTA -->
+    <button
+      type="button"
+      (click)="login()"
+      class="md:hidden rounded-xl bg-black px-4 py-2 text-sm font-semibold text-white"
+    >
+      Prijava
+    </button>
+  </div>
+</header>
