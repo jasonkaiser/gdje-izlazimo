@@ -89,4 +89,11 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public UserResponse findByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        return UserMapper.toResponse(user);
+    }
+
 }

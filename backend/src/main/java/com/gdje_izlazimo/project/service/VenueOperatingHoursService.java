@@ -35,6 +35,13 @@ public class VenueOperatingHoursService {
 
     }
 
+
+    public VenueOperatingHoursResponse findByVenueId(UUID venueId) {
+        return venueOperatingHoursRepository.findByVenueId_Id(venueId)
+                .map(venueOperatingHoursMapper::toResponse)
+                .orElseThrow(() -> new RuntimeException("Operating hours not found for venue: " + venueId));
+    }
+
     public VenueOperatingHoursResponse findVenueOperatingHoursById(UUID id){
 
         VenueOperatingHours response = venueOperatingHoursRepository.findById(id).orElseThrow(

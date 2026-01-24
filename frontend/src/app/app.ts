@@ -8,6 +8,7 @@ import { ButtonComponent } from './components/buttons/button-component/button-co
 import { Toast } from './components/other/toast/toast';
 import { ReservationCard } from './components/cards/reservation-card/reservation-card';
 import { ReservationModal } from './components/modals/reservation-modal/reservation-modal';
+import { VenueService } from './core/api/venue-service';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,20 @@ export class App implements OnInit {
 
   open = true;
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService, private venueService: VenueService) {}
 
-  ngOnInit() {}
+  getVenues(){
+    this.venueService.getVenues().subscribe({
+
+        next: (data) => console.log('VENUES', data),
+        error: (err) => console.error(err)
+
+    })
+  }
+
+  ngOnInit() {
+
+      this.getVenues();
+
+  }
 }

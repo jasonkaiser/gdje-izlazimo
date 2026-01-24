@@ -33,6 +33,13 @@ public class VenueOperatingHoursController {
     }
 
     @PermitAll
+    @GetMapping("/venue/{venueId}")
+    public ResponseEntity<VenueOperatingHoursResponse> findByVenueId(@PathVariable UUID venueId) {
+        return ResponseEntity.ok(venueOperatingHoursService.findVenueOperatingHoursById(venueId));
+    }
+
+
+    @PermitAll
     @GetMapping("/{id}")
     public ResponseEntity<VenueOperatingHoursResponse> findVenueOperatingHoursById(@PathVariable UUID id){
         return ResponseEntity.ok(venueOperatingHoursService.findVenueOperatingHoursById(id));
