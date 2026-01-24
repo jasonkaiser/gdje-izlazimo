@@ -1,78 +1,43 @@
-@if (authService.isAuthenticated()) {
+<app-loading-bar></app-loading-bar>
+
+@if (authService.authenticated()) {
   <app-auth-navbar></app-auth-navbar>
 } @else {
   <app-public-navbar></app-public-navbar>
 }
 
-<main class="mx-auto max-w-8xl px-15 py-8">
+<app-toast-host></app-toast-host>
+
+<main class="mx-auto max-w-8xl px-6 py-8">
   <router-outlet></router-outlet>
-  <app-venue-card title="Sloga" category="Club" location="Sarajevske Brigade 23"></app-venue-card>
 
-  
-  <div class="flex gap-10 mt-20 mb-20">
-      <app-button-component variant="outline" size="md" fullWidth>
-      Vidi detaljno
-      </app-button-component>
-      <app-button-component variant="filled" size="md" fullWidth>
-      Rezervisi
-      </app-button-component>
-      <app-button-component variant="special" size="md" fullWidth>
-      Special
-      </app-button-component>
+  <section class="mt-8 rounded-2xl border border-white/10 bg-white/5 p-5">
+    <h2 class="text-white font-semibold text-sm mb-3">Dev tests</h2>
 
-      <app-toast variant="success">
-  Rezervacija uspješno kreirana 
-</app-toast>
+    <div class="flex items-center gap-3">
+      <button
+        class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-sm"
+        (click)="loadVenues()"
+      >
+        Load venues
+      </button>
 
-<app-toast variant="error">
-  Greška prilikom rezervacije
-</app-toast>
+      <button
+        class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-sm"
+        (click)="testError()"
+      >
+        Trigger error toast
+      </button>
 
-<app-toast variant="warning">
-  Popuni sva obavezna polja
-</app-toast>
+      @if (loading) {
+        <span class="text-white/60 text-sm">Loading...</span>
+      }
+    </div>
 
-
-
-
-
-  </div>
-
-  <div class="flex gap-20">
-      <app-reservation-card
-    venueName="Viking Pub"
-    category="Pub"
-    status="ACCEPTED"
-    dateLabel="Petak - 19.02.2023"
-    timeLabel="20:00"
-  ></app-reservation-card>
-
-  <app-reservation-card
-    venueName="Club Noir"
-    category="Club"
-    status="PENDING"
-    dateLabel="Subota - 20.02.2023"
-    timeLabel="22:30"
-  ></app-reservation-card>
-
-  <app-reservation-card
-    venueName="Lounge 44"
-    category="Lounge"
-    status="REJECTED"
-    dateLabel="Nedjelja - 21.02.2023"
-    timeLabel="21:00"
-  ></app-reservation-card>
-  </div>
-
-
-
-
-  
-
-  </main> 
-  
-  <app-reservation-modal
-    [open]="open"
-    venueName="Viking Pub"
-    (close)="open = false"
-  ></app-reservation-modal>
+    @if (!loading && venues.length) {
+      <div class="mt-4 text-white/70 text-sm">
+        Loaded: <span class="text-white">{{ venues.length }}</span> venues
+      </div>
+    }
+  </section>
+</main>

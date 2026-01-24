@@ -9,32 +9,51 @@ import { Toast } from './components/other/toast/toast';
 import { ReservationCard } from './components/cards/reservation-card/reservation-card';
 import { ReservationModal } from './components/modals/reservation-modal/reservation-modal';
 import { VenueService } from './core/api/venue-service';
+import { ToastHost } from './core/ui/toast-host/toast-host';
+import { VenueResponseDto } from './core/models/venues/venue-response.dto';
+import { LoadingBar } from './components/other/loading-bar/loading-bar';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AuthNavbar, PublicNavbar, VenueCard, ButtonComponent, Toast, ReservationCard, ReservationModal],
+  imports: [RouterOutlet, AuthNavbar, PublicNavbar, VenueCard, ButtonComponent, Toast, ReservationCard, ReservationModal, ToastHost, LoadingBar],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App implements OnInit {
-
-  open = true;
+  loading = false;
+  venues: VenueResponseDto[] = [];
 
   constructor(public authService: AuthService, private venueService: VenueService) {}
 
-  getVenues(){
+  loadVenues() {
+    this.loading = true;
+
     this.venueService.getVenues().subscribe({
+      next: (data) => {
+        this.venues = data;
+        this.loading = false;
+        console.log('VENUES', data);
+      },
+      error: () => {
+        // toast is shown by errorInterceptor
+        this.loading = false;
+      },
+    });
+  }
 
-        next: (data) => console.log('VENUES', data),
-        error: (err) => console.error(err)
+  // This intentionally triggers an HTTP error so you can confirm the toast works
+  testError() {
+    this.loading = true;
 
-    })
+    // @ts-ignore - intentional wrong call for testing
+    this.venueService['http'].get('http://localhost:8081/THIS_ROUTE_DOES_NOT_EXIST').subscribe({
+      next: () => (this.loading = false),
+      error: () => (this.loading = false), // toast should appear
+    });
   }
 
   ngOnInit() {
-
-      this.getVenues();
-
+    this.loadVenues();
   }
 }

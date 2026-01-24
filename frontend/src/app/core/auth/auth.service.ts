@@ -1,4 +1,4 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import Keycloak from 'keycloak-js';
 
@@ -10,9 +10,12 @@ export class AuthService {
   private platformId = inject(PLATFORM_ID);
   private isBrowser: boolean;
 
+  private _authenticated = signal(false);
+  authenticated = this._authenticated.asReadonly();
+
   constructor() {
     this.isBrowser = isPlatformBrowser(this.platformId);
-    
+
     this.keycloak = new Keycloak({
       url: 'http://localhost:8080',
       realm: 'gdje-izlazimo',
@@ -20,32 +23,34 @@ export class AuthService {
     });
   }
 
+  private syncAuthState() {
+    const isAuth =
+      this.initialized && !!this.keycloak.token && !this.keycloak.isTokenExpired();
+    this._authenticated.set(isAuth);
+  }
+
   async init(): Promise<boolean> {
-    if (!this.isBrowser) {
-      return true;
-    }
-
-    if (this.initialized) {
-      return true;
-    }
-
-    if (this.initPromise) {
-      return this.initPromise;
-    }
+    if (!this.isBrowser) return true;
+    if (this.initialized) return true;
+    if (this.initPromise) return this.initPromise;
 
     this.initPromise = (async () => {
       try {
-        const authenticated = await this.keycloak.init({
+        await this.keycloak.init({
           onLoad: 'check-sso',
           checkLoginIframe: false,
           pkceMethod: 'S256'
         });
 
         this.initialized = true;
+
+        queueMicrotask(() => this.syncAuthState());
+
         return true;
       } catch (error) {
         console.error('Keycloak initialization failed', error);
         this.initialized = false;
+        queueMicrotask(() => this.syncAuthState());
         return false;
       } finally {
         this.initPromise = null;
@@ -56,10 +61,7 @@ export class AuthService {
   }
 
   login(): void {
-    if (!this.isBrowser || !this.initialized || this.isAuthenticated()) {
-      return;
-    }
-    
+    if (!this.isBrowser || !this.initialized || this.authenticated()) return;
     this.keycloak.login();
   }
 
@@ -67,29 +69,32 @@ export class AuthService {
     const ok = await this.init();
     if (!ok) return;
 
-    await this.keycloak.logout({
-      redirectUri: window.location.origin
-    });
+    await this.keycloak.logout({ redirectUri: window.location.origin });
+
+    queueMicrotask(() => this.syncAuthState());
   }
 
   async getToken(): Promise<string | undefined> {
     if (!this.initialized) return undefined;
-    
+    if (!this.keycloak.authenticated) return undefined;
+
     try {
       await this.keycloak.updateToken(30);
-      return this.keycloak.token;
+      queueMicrotask(() => this.syncAuthState());
+      return this.keycloak.token ?? undefined;
     } catch (error) {
       console.error('Failed to refresh token', error);
-      return undefined;
+      queueMicrotask(() => this.syncAuthState());
+      return this.keycloak.token ?? undefined;
     }
+  }
+
+  isAuthenticated(): boolean {
+    return this.authenticated();
   }
 
   getUserId(): string | undefined {
     return this.keycloak.subject;
-  }
-
-  isAuthenticated(): boolean {
-    return this.initialized && !!this.keycloak.token && !this.keycloak.isTokenExpired();
   }
 
   getUserProfile() {
