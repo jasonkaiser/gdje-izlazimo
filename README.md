@@ -137,22 +137,6 @@ The MVP is considered successful if it achieves:
 
 ---
 
-## 🚫 Out of Scope (MVP)
-
-The following features were intentionally excluded to reduce complexity:
-
-- Payments and monetization
-- Ratings and reviews
-- Favorites system
-- Push notifications
-- QR code check-in
-- Advanced analytics
-- Mobile application
-- Automatic reservation expiry
-- Location-based recommendations
-
----
-
 ## 🚀 Post-MVP / Planned Features
 
 - Online payments
