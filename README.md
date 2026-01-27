@@ -1,8 +1,8 @@
 # gdje-izlazimo.ba — MVP
 
-A web application that helps users discover venues (clubs, bars, restaurants) and make table reservations without relying on Instagram messages or phone calls.
+A web application that helps users **discover venues** (clubs, bars, restaurants) and make table reservations without relying on Instagram messages or phone calls.
 
-This project represents a real-world MVP, built to validate the core reservation workflow for both users and venues.
+This project represents a **real-world MVP**, built to validate the core reservation workflow for both users and venues.
 
 ![Landing Page](spm/images/venue-landing-page.png)
 ---
