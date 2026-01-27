@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,7 +29,27 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
+    @PreAuthorize("hasRole('user')")
+    @GetMapping("/me")
+    public ResponseEntity<List<ReservationResponse>> findMyReservations(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam(defaultValue = "1") int pageNo,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir
+    ) {
+        Pageable pageable = PageRequest.of(
+                pageNo - 1,
+                pageSize,
+                Sort.Direction.fromString(sortDir),
+                sortBy
+        );
+
+        UUID userId = UUID.fromString(jwt.getSubject());
+        return ResponseEntity.ok(reservationService.findReservationsByUserId(userId, pageable));
+    }
+
+    @PreAuthorize("hasAnyRole('admin')")
     @GetMapping
     public ResponseEntity<List<ReservationResponse>> findAllReservations( @RequestParam(defaultValue = "1") int pageNo,
                                                                           @RequestParam(defaultValue = "10") int pageSize,
@@ -43,7 +65,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findAllReservations(pageable));
     }
 
-    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponse> findReservationById(@PathVariable UUID id){
         return ResponseEntity.ok(reservationService.findReservationById(id));
@@ -66,7 +88,7 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findReservationsByVenueId(venueId, pageable));
     }
 
-    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
+    @PreAuthorize("hasAnyRole('admin')")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ReservationResponse>> findReservationsByUser( @PathVariable UUID userId,
                                                                              @RequestParam(defaultValue = "1") int pageNo,
@@ -83,10 +105,11 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.findReservationsByUserId(userId, pageable));
     }
 
-    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
+    @PreAuthorize("hasRole('user')")
     @PostMapping
-    public ResponseEntity<ReservationResponse> createReservation(@Valid @RequestBody CreateReservationRequest entity){
-        return ResponseEntity.ok(reservationService.createReservation(entity));
+    public ResponseEntity<ReservationResponse> createReservation(@AuthenticationPrincipal Jwt jwt,
+                                                                 @Valid @RequestBody CreateReservationRequest entity){
+        return ResponseEntity.ok(reservationService.createReservation(entity, jwt.getSubject()));
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")

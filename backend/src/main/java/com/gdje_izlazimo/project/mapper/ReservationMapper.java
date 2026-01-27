@@ -27,14 +27,8 @@ public class ReservationMapper  {
             createdEntity.setPhone(dto.phone());
             createdEntity.setReservationDate(dto.reservationDate());
             createdEntity.setReservationTime(dto.reservationTime());
-            createdEntity.setStatus(dto.status());
             createdEntity.setTableType(dto.tableType());
             createdEntity.setSpecialRequests(dto.specialRequests());
-
-            User user_id = userRepository.findById(dto.userId()).orElseThrow(
-                    () -> new RuntimeException("User not found"));
-
-            createdEntity.setUserId(user_id);
 
             Venue venue_id = venueRepository.findById(dto.venueId()).orElseThrow(
                     () -> new RuntimeException("Venue not found"));

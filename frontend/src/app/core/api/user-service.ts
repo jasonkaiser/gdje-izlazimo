@@ -42,10 +42,6 @@ export class UserService {
         return this.http.get<UserResponseDto>(`${this.baseUrl}/${id}`);
     }
 
-    createUser(request : CreateUserRequest){
-      return this.http.post<UserResponseDto>(this.baseUrl, request);
-    }
-
     updateUser(request : UpdateUserRequest, id: string){
       return this.http.put<UserResponseDto>(`${this.baseUrl}/${id}`, request);
     }

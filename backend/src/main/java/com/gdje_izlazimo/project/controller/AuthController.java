@@ -6,6 +6,7 @@ import com.gdje_izlazimo.project.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,11 +27,11 @@ public class AuthController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
-    public ResponseEntity<UserResponse> getCurrentUser(Authentication authentication) {
-        Jwt jwt = (Jwt) authentication.getPrincipal();
+    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
 
-        String email = jwt.getClaimAsString("email");
-        UserResponse userResponse = userService.findByEmail(email);
+        UUID userId = UUID.fromString(jwt.getSubject());
+
+        UserResponse userResponse = userService.getOrCreateResponse(userId);
 
         return ResponseEntity.ok(userResponse);
     }

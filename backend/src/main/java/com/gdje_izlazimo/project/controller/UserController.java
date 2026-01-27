@@ -1,11 +1,9 @@
 package com.gdje_izlazimo.project.controller;
 
-import com.gdje_izlazimo.project.dto.request.create.CreateUserRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateUserRequest;
 import com.gdje_izlazimo.project.dto.response.UserResponse;
 import com.gdje_izlazimo.project.enums.Role;
 import com.gdje_izlazimo.project.service.UserService;
-import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -54,12 +52,6 @@ public class UserController {
         }
 
         return ResponseEntity.ok(userService.findAllUsers(pageable));
-    }
-
-    @PermitAll
-    @PostMapping
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest user) {
-        return ResponseEntity.ok(userService.createUser(user));
     }
 
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")

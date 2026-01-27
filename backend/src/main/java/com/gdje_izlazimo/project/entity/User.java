@@ -24,24 +24,20 @@ public class User {
 
     @Id
     @Column(name = "id", nullable = false, updatable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
-    // unique constraint
-    @Column(name = "email", nullable = false, updatable = false)
+
+    @Column(name = "email")
     private String email;
 
-    @Column(name = "phone", nullable = false)
+    @Column(name = "phone")
     private String phone;
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role;
-
-    @Column(name = "password", nullable = false)
-    private String password;
+    private Role role = Role.USER;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

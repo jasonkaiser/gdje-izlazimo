@@ -1,6 +1,5 @@
 package com.gdje_izlazimo.project.service;
 
-import com.gdje_izlazimo.project.dto.request.create.CreateUserRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateUserRequest;
 import com.gdje_izlazimo.project.dto.response.UserResponse;
 import com.gdje_izlazimo.project.entity.User;
@@ -22,6 +21,21 @@ public class UserService {
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    public User getOrCreate(UUID id) {
+        return userRepository.findById(id)
+                .orElseGet(() -> {
+                    User u = new User();
+                    u.setId(id);
+                    u.setRole(Role.USER);
+                    return userRepository.save(u);
+                });
+    }
+
+    public UserResponse getOrCreateResponse(UUID id) {
+        User user = getOrCreate(id);
+        return UserMapper.toResponse(user);
     }
 
     public UserResponse findUserById(UUID id){
@@ -52,21 +66,6 @@ public class UserService {
                 .toList();
 
     }
-
-    public UserResponse createUser(CreateUserRequest user){
-
-        if(userRepository.existsByEmail(user.email())){
-
-            throw new EmailAlreadyExistsException("Email already exists");
-
-        }
-
-        User newUser = UserMapper.toEntity(user);
-        User savedUser = userRepository.save(newUser);
-
-        return UserMapper.toResponse(savedUser);
-
-    };
 
     public UserResponse updateUser(UUID id, UpdateUserRequest request){
 
