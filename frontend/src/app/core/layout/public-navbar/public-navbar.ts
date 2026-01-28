@@ -6,10 +6,21 @@ import { AuthService } from '../../auth/auth.service';
   selector: 'app-public-navbar',
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
-  templateUrl: './public-navbar.html'
+  templateUrl: './public-navbar.html',
 })
 export class PublicNavbar {
-  constructor(public authService: AuthService) {}
+
+  constructor(private authService: AuthService){}
+
+  mobileOpen = false;
+
+  toggleMobile() {
+    this.mobileOpen = !this.mobileOpen;
+  }
+
+  closeMobile() {
+    this.mobileOpen = false;
+  }
 
   login() {
     this.authService.login();

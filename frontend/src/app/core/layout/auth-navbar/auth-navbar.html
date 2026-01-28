@@ -1,77 +1,190 @@
-<header class="sticky top-0 z-50 border-b border-black/10 bg-[#d9d9d9]/80 backdrop-blur">
-  <div class="mx-auto flex max-w-[85%] items-center justify-between px-6 py-4">
-    <!-- Brand -->
-    <a routerLink="/" class="flex items-center gap-3">
-      <div class="h-9 w-9 rounded-xl bg-black/10"></div>
-      <div class="leading-tight">
-        <div class="text-base font-semibold tracking-tight">gdje-izlazimo</div>
-        <div class="text-xs text-black/60">your night, organized</div>
-      </div>
+<header class="sticky top-5 z-50 w-[95%] place-self-center">
+  <div class="mx-auto flex items-center justify-between rounded-2xl px-5 py-3">
+    <!-- LOGO -->
+    <a routerLink="/" class="font-sora font-semibold tracking-tight text-[var(--text-primary)]">
+      GDJE-IZLAZIMO
     </a>
 
-    <!-- Desktop nav -->
-    <nav class="hidden items-center gap-7 md:flex">
+    <!-- DESKTOP: center pill navigation -->
+    <nav
+      class="hidden md:flex items-center gap-8 rounded-full border border-white/10 bg-black px-8 py-2"
+      aria-label="Primary"
+    >
+      <!-- REZERVACIJE -->
       <a
         routerLink="/reservations"
-        routerLinkActive="text-black"
-        class="text-sm font-semibold text-black/70 hover:text-black transition"
+        routerLinkActive="!text-[var(--text-primary)] after:scale-x-100 after:opacity-100"
+        class="relative font-dm font-light text-sm tracking-wide
+               text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition
+               after:content-[''] after:absolute after:left-0 after:-bottom-2
+               after:h-[2px] after:w-full after:rounded-full
+               after:bg-[var(--color-primary)]
+               after:scale-x-0 after:opacity-0 after:origin-left
+               after:transition after:duration-300"
       >
-        Rezervacije
+        REZERVACIJE
       </a>
 
+      <!-- LOKALI -->
       <a
-        routerLink="/"
-        routerLinkActive="text-black"
-        class="text-sm font-semibold text-black/70 hover:text-black transition"
+        routerLink="/lokali"
+        routerLinkActive="!text-[var(--text-primary)] after:scale-x-100 after:opacity-100"
+        class="relative font-dm font-light text-sm tracking-wide
+               text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition
+               after:content-[''] after:absolute after:left-0 after:-bottom-2
+               after:h-[2px] after:w-full after:rounded-full
+               after:bg-[var(--color-primary)]
+               after:scale-x-0 after:opacity-0 after:origin-left
+               after:transition after:duration-300"
       >
-        Lokali
+        LOKALI
       </a>
 
+      <!-- PROFIL -->
       <a
         routerLink="/profile"
-        routerLinkActive="text-black"
-        class="text-sm font-semibold text-black/70 hover:text-black transition"
+        routerLinkActive="!text-[var(--text-primary)] after:scale-x-100 after:opacity-100"
+        class="relative font-dm font-light text-sm tracking-wide
+               text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition
+               after:content-[''] after:absolute after:left-0 after:-bottom-2
+               after:h-[2px] after:w-full after:rounded-full
+               after:bg-[var(--color-primary)]
+               after:scale-x-0 after:opacity-0 after:origin-left
+               after:transition after:duration-300"
       >
-        Profil
+        PROFIL
       </a>
 
       @if (hasRole('venue_owner')) {
         <a
           routerLink="/venue-panel"
-          routerLinkActive="text-black"
-          class="text-sm font-semibold text-black/70 hover:text-black transition"
+          routerLinkActive="!text-[var(--text-primary)] after:scale-x-100 after:opacity-100"
+          class="relative font-dm font-light text-sm tracking-wide
+                 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition
+                 after:content-[''] after:absolute after:left-0 after:-bottom-2
+                 after:h-[2px] after:w-full after:rounded-full
+                 after:bg-[var(--color-primary)]
+                 after:scale-x-0 after:opacity-0 after:origin-left
+                 after:transition after:duration-300"
         >
-          Venue panel
+          VENUE PANEL
         </a>
       }
 
       @if (hasRole('admin')) {
         <a
           routerLink="/admin-panel"
-          routerLinkActive="text-black"
-          class="text-sm font-semibold text-black/70 hover:text-black transition"
+          routerLinkActive="!text-[var(--text-primary)] after:scale-x-100 after:opacity-100"
+          class="relative font-dm font-light text-sm tracking-wide
+                 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition
+                 after:content-[''] after:absolute after:left-0 after:-bottom-2
+                 after:h-[2px] after:w-full after:rounded-full
+                 after:bg-[var(--color-primary)]
+                 after:scale-x-0 after:opacity-0 after:origin-left
+                 after:transition after:duration-300"
         >
-          Admin
+          ADMIN
         </a>
       }
-
-      <!-- Logout -->
-      <button
-        type="button"
-        (click)="logout()"
-        class="rounded-xl bg-black/15 px-4 py-2 text-sm font-semibold text-black hover:bg-black/20 transition"
-      >
-        Odjava
-      </button>
     </nav>
 
-    <!-- Mobile logout -->
+    <!-- DESKTOP: logout button -->
     <button
       type="button"
       (click)="logout()"
-      class="md:hidden rounded-xl bg-black/15 px-4 py-2 text-sm font-semibold text-black"
+      class="hidden md:inline-flex items-center gap-2 rounded-full bg-white/10 px-5 py-2 font-dm font-medium text-sm text-[var(--text-primary)] hover:bg-white/15 transition"
     >
-      Odjava
+      ODJAVA
     </button>
+
+    <!-- MOBILE: hamburger + logout -->
+    <div class="flex items-center gap-3 md:hidden">
+      <button
+        type="button"
+        (click)="logout()"
+        class="inline-flex items-center rounded-full bg-white/10 px-4 py-2 font-dm font-medium text-sm text-[var(--text-primary)]"
+      >
+        ODJAVA
+      </button>
+
+      <button
+        type="button"
+        (click)="toggleMobile()"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[var(--text-primary)]"
+        aria-label="Open menu"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M4 7H20M4 12H20M4 17H20"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </button>
+    </div>
   </div>
+
+  <!-- MOBILE DROPDOWN -->
+  @if (mobileOpen) {
+    <div
+      class="mt-3 rounded-2xl border border-white/10 bg-white/5 backdrop-blur px-4 py-4 shadow-[0_12px_60px_rgba(0,0,0,0.45)] md:hidden"
+    >
+      <nav class="flex flex-col gap-2" aria-label="Mobile primary">
+        <a
+          routerLink="/reservations"
+          (click)="closeMobile()"
+          routerLinkActive="!text-[var(--text-primary)] bg-white/5"
+          class="rounded-xl px-3 py-3 font-dm font-light text-sm tracking-wide
+                 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"
+        >
+          REZERVACIJE
+        </a>
+
+        <a
+          routerLink="/lokali"
+          (click)="closeMobile()"
+          routerLinkActive="!text-[var(--text-primary)] bg-white/5"
+          class="rounded-xl px-3 py-3 font-dm font-light text-sm tracking-wide
+                 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"
+        >
+          LOKALI
+        </a>
+
+        <a
+          routerLink="/profile"
+          (click)="closeMobile()"
+          routerLinkActive="!text-[var(--text-primary)] bg-white/5"
+          class="rounded-xl px-3 py-3 font-dm font-light text-sm tracking-wide
+                 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"
+        >
+          PROFIL
+        </a>
+
+        @if (hasRole('venue_owner')) {
+          <a
+            routerLink="/venue-panel"
+            (click)="closeMobile()"
+            routerLinkActive="!text-[var(--text-primary)] bg-white/5"
+            class="rounded-xl px-3 py-3 font-dm font-light text-sm tracking-wide
+                   text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"
+          >
+            VENUE PANEL
+          </a>
+        }
+
+        @if (hasRole('admin')) {
+          <a
+            routerLink="/admin-panel"
+            (click)="closeMobile()"
+            routerLinkActive="!text-[var(--text-primary)] bg-white/5"
+            class="rounded-xl px-3 py-3 font-dm font-light text-sm tracking-wide
+                   text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition"
+          >
+            ADMIN
+          </a>
+        }
+      </nav>
+    </div>
+  }
 </header>

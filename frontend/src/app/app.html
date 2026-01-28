@@ -1,43 +1,36 @@
 <app-loading-bar></app-loading-bar>
 
-@if (authService.authenticated()) {
-  <app-auth-navbar></app-auth-navbar>
-} @else {
-  <app-public-navbar></app-public-navbar>
-}
+<!-- Global background glow (behind navbar + pages) -->
+<div class="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+  <div
+    class="
+      absolute left-1/2 -translate-x-1/2
+      top-[-240px] sm:top-[-380px] lg:top-[-620px]
+      w-[680px] h-[680px]
+      sm:w-[820px] sm:h-[820px]
+      lg:w-[862px] lg:h-[910px]
+      opacity-10 sm:opacity-20
+      blur-4xl
+    "
+    style="background: radial-gradient(circle at center, rgba(217,217,217,0.40) 0%, rgba(115,115,115,0) 70%);"
+  ></div>
+</div>
 
-<app-toast-host></app-toast-host>
 
-<main class="mx-auto max-w-8xl px-6 py-8">
+
+
+<!-- App content above the glow -->
+<div class="relative z-10">
+  @if (authService.authenticated()) {
+    <app-auth-navbar></app-auth-navbar>
+  } @else {
+    <app-public-navbar></app-public-navbar>
+  }
+
+  <app-toast-host></app-toast-host>
+
+<main class="mx-auto max-w-8xl px-6 sm:px-8 lg:px-16 py-8">
   <router-outlet></router-outlet>
-
-  <section class="mt-8 rounded-2xl border border-white/10 bg-white/5 p-5">
-    <h2 class="text-white font-semibold text-sm mb-3">Dev tests</h2>
-
-    <div class="flex items-center gap-3">
-      <button
-        class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-sm"
-        (click)="loadVenues()"
-      >
-        Load venues
-      </button>
-
-      <button
-        class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white text-sm"
-        (click)="testError()"
-      >
-        Trigger error toast
-      </button>
-
-      @if (loading) {
-        <span class="text-white/60 text-sm">Loading...</span>
-      }
-    </div>
-
-    @if (!loading && venues.length) {
-      <div class="mt-4 text-white/70 text-sm">
-        Loaded: <span class="text-white">{{ venues.length }}</span> venues
-      </div>
-    }
-  </section>
 </main>
+
+</div>

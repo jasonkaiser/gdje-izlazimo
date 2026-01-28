@@ -1,0 +1,123 @@
+<div class="relative mt-16">
+  <div class="[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] overflow-hidden">
+
+    <!-- Card Row 1 -->
+    <div class="flex w-max gap-6 marquee-left pointer-events-none">
+      @for (v of venues; track v.id) {
+        <div
+          (click)="setActive('r1-' + v.id)"
+          class="pointer-events-auto cursor-pointer select-none
+                 relative rounded-[20px] overflow-hidden
+                 w-[260px] h-[150px]
+                 sm:w-[320px] sm:h-[180px]
+                 lg:w-[411px] lg:h-[220px]
+                 opacity-15 bg-card transition duration-300"
+          [class.card-active]="activeId === ('r1-' + v.id)"
+          [style.background-image]="
+            'linear-gradient(173.73deg, rgba(74,74,74,0) -10.29%, #000000 88.89%), url(' + v.imageUrl + ')'
+          "
+          style="background-size: cover; background-position: center;"
+        ></div>
+      }
+
+      @for (v of venues; track 'r1dup-' + v.id) {
+        <div
+          (click)="setActive('r1dup-' + v.id)"
+          class="pointer-events-auto cursor-pointer select-none
+                 relative rounded-[20px] overflow-hidden
+                 w-[260px] h-[150px]
+                 sm:w-[320px] sm:h-[180px]
+                 lg:w-[411px] lg:h-[220px]
+                 opacity-15 bg-card transition duration-300"
+          [class.card-active]="activeId === ('r1dup-' + v.id)"
+          [style.background-image]="
+            'linear-gradient(173.73deg, rgba(74,74,74,0) -10.29%, #000000 88.89%), url(' + v.imageUrl + ')'
+          "
+          style="background-size: cover; background-position: center;"
+        ></div>
+      }
+    </div>
+<!-- Title Row (2 lines, opposite directions) -->
+<div class="mt-10 mb-10 overflow-hidden">
+  <!-- Line 1: left -->
+  <div class="flex w-max gap-16 marquee-left pointer-events-none">
+    @for (name of venueNames; track name) {
+      <div
+        class="font-dm font-light text-[16px] tracking-wide whitespace-nowrap"
+        style="color: rgba(255,255,255,0.47);"
+      >
+        {{ name }}
+      </div>
+    }
+    @for (name of venueNames; track 'dup-top-' + name) {
+      <div
+        class="font-dm font-light text-[16px] tracking-wide whitespace-nowrap"
+        style="color: rgba(255,255,255,0.47);"
+      >
+        {{ name }}
+      </div>
+    }
+  </div>
+
+  <!-- Line 2: right + upside down -->
+  <div class="mt-4 flex w-max gap-16 marquee-right pointer-events-none [transform:rotateX(180deg)] opacity-70">
+    @for (name of venueNames; track 'bot-' + name) {
+      <div
+        class="font-dm font-light text-[16px] tracking-wide whitespace-nowrap"
+        style="color: rgba(255,255,255,0.47);"
+      >
+        {{ name }}
+      </div>
+    }
+    @for (name of venueNames; track 'dup-bot-' + name) {
+      <div
+        class="font-dm font-light text-[16px] tracking-wide whitespace-nowrap"
+        style="color: rgba(255,255,255,0.47);"
+      >
+        {{ name }}
+      </div>
+    }
+  </div>
+</div>
+
+
+    <!-- Card Row 2 -->
+    @if (twoRows) {
+      <div class="flex w-max gap-6 marquee-right pointer-events-none">
+        @for (v of venues; track 'r2-' + v.id) {
+          <div
+            (click)="setActive('r2-' + v.id)"
+            class="pointer-events-auto cursor-pointer select-none
+                   relative rounded-[20px] overflow-hidden
+                   w-[260px] h-[150px]
+                   sm:w-[320px] sm:h-[180px]
+                   lg:w-[411px] lg:h-[220px]
+                   opacity-15 bg-card transition duration-300"
+            [class.card-active]="activeId === ('r2-' + v.id)"
+            [style.background-image]="
+              'linear-gradient(173.73deg, rgba(74,74,74,0) -10.29%, #000000 88.89%), url(' + v.imageUrl + ')'
+            "
+            style="background-size: cover; background-position: center;"
+          ></div>
+        }
+
+        @for (v of venues; track 'r2dup-' + v.id) {
+          <div
+            (click)="setActive('r2dup-' + v.id)"
+            class="pointer-events-auto cursor-pointer select-none
+                   relative rounded-[20px] overflow-hidden
+                   w-[260px] h-[150px]
+                   sm:w-[320px] sm:h-[180px]
+                   lg:w-[411px] lg:h-[220px]
+                   opacity-15 bg-card transition duration-300"
+            [class.card-active]="activeId === ('r2dup-' + v.id)"
+            [style.background-image]="
+              'linear-gradient(173.73deg, rgba(74,74,74,0) -10.29%, #000000 88.89%), url(' + v.imageUrl + ')'
+            "
+            style="background-size: cover; background-position: center;"
+          ></div>
+        }
+      </div>
+    }
+  </div>
+</div>

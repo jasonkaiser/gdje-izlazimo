@@ -16,7 +16,7 @@ export class Toast {
     const base =
       'flex items-start gap-3 rounded-2xl px-4 py-3 ' +
       'min-w-[300px] max-w-[420px] ' +
-      'bg-[#1E293B]/80 backdrop-blur-xl text-white ' +
+      'bg-[#FFFFFF]/3 backdrop-blur-xl text-white ' +
       'border shadow-[0_24px_70px_-28px_rgba(0,0,0,0.85)]';
 
     const borders: Record<Variant, string> = {

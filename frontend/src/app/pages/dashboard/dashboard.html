@@ -1,0 +1,56 @@
+<section class="relative overflow-hidden min-h-[720px]">
+  <!-- lights (behind content, but still visible) -->
+  <div class="hero-lights pointer-events-none absolute inset-0 z-0"></div>
+
+  <!-- main hero content -->
+  <div class="relative z-10 justify-self-center">
+    <div class="max-w-[700px] mt-35 max-sm:mt-30 mb-20">
+      <h1 class="text-white font-sora font-semibold text-8xl max-sm:text-center max-sm:text-6xl">
+        Gdje Izlazimo
+      </h1>
+
+      <p
+        class="text-[var(--text-secondary)] text-[22px] justify-self-end italic font-light
+               max-sm:text-[14.5px] max-sm:mt-2 max-sm:justify-self-center"
+      >
+        Pronađi lokal i <span class="text-white">rezerviši</span> sto u
+        <span class="text-white">30 sekundi</span>
+      </p>
+    </div>
+
+    <app-search-bar></app-search-bar>
+
+    <!-- TRUST US -->
+    <div class="mt-54 flex flex-col items-center">
+      <div
+        class="font-sheftira italic text-[57px] leading-[1.0611] opacity-90
+               bg-[radial-gradient(circle_at_center,#F2E5FF_0%,#7C3AED_100%)]
+               bg-clip-text text-transparent
+               max-sm:text-[46px]"
+      >
+        Sarajevo
+      </div>
+
+      <div class="mt-3 flex items-center gap-10 max-sm:gap-6">
+        <div class="font-dm italic font-medium text-[20px] leading-[1.0611] text-white/80 max-sm:text-[16px]">
+          10.000+ <span class="font-light text-white/50">rezervacija</span>
+        </div>
+
+        <div class="font-dm italic font-medium text-[20px] leading-[1.0611] text-white/80 max-sm:text-[16px]">
+          100+ <span class="font-light text-white/50">lokala</span>
+        </div>
+      </div>
+
+      <div class="mt-5 flex items-center">
+        <div class="h-[5px] w-[5px] rounded-full bg-white/20"></div>
+        <div class="h-px w-[537px] bg-white/20 max-sm:w-[280px]"></div>
+        <div class="h-[5px] w-[5px] rounded-full bg-white/20"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- marquee layer (behind content, above lights) -->
+  <div class="relative z-[5]">
+    <app-bg-cards-marquee [venues]="venues" [twoRows]="true"></app-bg-cards-marquee>
+  </div>
+</section>

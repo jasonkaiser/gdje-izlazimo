@@ -1,0 +1,110 @@
+<div class="w-full flex justify-center">
+  <!-- Full-bleed on mobile (pulls out of container padding), centered on desktop -->
+  <div class="relative w-full max-w-[554px] max-sm:mx-[-24px]">
+    <!-- Main pill -->
+    <div
+      class="flex items-center gap-3 rounded-full border border-white/5 bg-[#080808]
+             shadow-[4px_3px_10px_3px_rgba(0,0,0,0.7)]
+             px-2.5 py-2.5 sm:px-4 sm:py-3"
+    >
+      <!-- Input pill (button inside) -->
+      <div
+        class="relative flex-1 rounded-full border border-white/10 h-[46px] flex items-center"
+        style="background: rgba(255,255,255,0.03);"
+      >
+        <input
+          type="text"
+          class="w-full bg-transparent outline-none
+                 font-dm font-light text-[13px] sm:text-[14px]
+                 text-[var(--text-primary)]
+                 placeholder:text-white/40
+                 pl-5 pr-[72px]"
+          placeholder="Pretraži lokale..."
+          [(ngModel)]="query"
+          (keydown.enter)="onSearch()"
+        />
+
+        <!-- Search button: tight to edge -->
+        <button
+          type="button"
+          (click)="onSearch()"
+          class="absolute right-[0px] top-1/2 -translate-y-1/2
+                  h-[45px] w-[65px] rounded-full
+                  flex items-center justify-center
+                  shadow-[0_0_86.94px_rgba(109,51,209,1),_0_0_43.47px_rgba(109,51,209,1)]
+                  hover:shadow-none active:shadow-none
+                  transition-shadow duration-300"
+          style="background: radial-gradient(120% 900% at 42% -13%, #7C3AED 0%, #472187 100%);"
+          aria-label="Search"
+        >
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z"
+              stroke="white"
+              stroke-width="2"
+            />
+            <path
+              d="M21 21l-4.3-4.3"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Divider -->
+      <div class="h-10 w-px bg-white/10"></div>
+
+      <!-- Sort button (fixed width on mobile so input stays wide) -->
+      <button
+        type="button"
+        (click)="toggleTypes()"
+        class="shrink-0 w-[78px] sm:w-auto
+               flex items-center justify-center gap-2
+               rounded-full px-3 sm:px-4 h-[46px]
+               font-dm font-light text-[13px]
+               text-white/40 hover:text-[var(--text-primary)] transition"
+        aria-label="Tip lokala"
+      >
+        <span class="sm:hidden">Tip</span>
+        <span class="hidden sm:inline">Tip lokala</span>
+
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="opacity-80">
+          <path
+            d="M6 9l6 6 6-6"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Dropdown OUTSIDE main pill -->
+    @if (typesOpen) {
+  <div
+    class="absolute left-0 right-0 top-full mt-2 z-50
+           w-full sm:left-auto sm:right-0 sm:w-[220px]
+           rounded-4xl border border-white/5 bg-white/2 backdrop-blur
+           p-2
+           shadow-[4px_3px_10px_3px_rgba(0,0,0,0.7)]"
+  >
+    @for (t of types; track t.value) {
+      <button
+        type="button"
+        (click)="selectType(t)"
+        class="w-full text-left px-6 py-3 rounded-4xl
+               font-dm font-light text-sm
+               text-white/55
+               hover:bg-white/5 hover:text-white transition"
+      >
+        {{ t.label }}
+      </button>
+    }
+  </div>
+}
+
+  </div>
+</div>

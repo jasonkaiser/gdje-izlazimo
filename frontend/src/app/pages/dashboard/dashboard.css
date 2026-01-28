@@ -1,0 +1,197 @@
+.hero-lights {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 1 !important;
+  top: 0;
+  left: 0;
+}
+
+.hero-lights::before,
+.hero-lights::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    /* Wide horizontal spread - top area */
+    80px 80px 0 0px rgba(255, 255, 255, 0.7),
+    280px 60px 0 0px rgba(255, 255, 255, 0.5),
+    480px 120px 0 0px rgba(255, 255, 255, 0.6),
+    680px 70px 0 0px rgba(255, 255, 255, 0.65),
+    880px 100px 0 0px rgba(255, 255, 255, 0.55),
+    1080px 90px 0 0px rgba(255, 255, 255, 0.6),
+    1280px 110px 0 0px rgba(255, 255, 255, 0.5),
+    1480px 75px 0 0px rgba(255, 255, 255, 0.65),
+    1680px 95px 0 0px rgba(255, 255, 255, 0.6),
+    1880px 85px 0 0px rgba(255, 255, 255, 0.55),
+    
+    /* Wide horizontal spread - middle area */
+    120px 200px 0 0px rgba(255, 255, 255, 0.6),
+    360px 180px 0 0px rgba(255, 255, 255, 0.55),
+    600px 220px 0 0px rgba(255, 255, 255, 0.65),
+    840px 190px 0 0px rgba(255, 255, 255, 0.5),
+    1080px 210px 0 0px rgba(255, 255, 255, 0.6),
+    1320px 195px 0 0px rgba(255, 255, 255, 0.55),
+    1560px 215px 0 0px rgba(255, 255, 255, 0.65),
+    1800px 205px 0 0px rgba(255, 255, 255, 0.5),
+    
+    /* Wide horizontal spread - bottom area */
+    160px 320px 0 0px rgba(255, 255, 255, 0.5),
+    420px 350px 0 0px rgba(255, 255, 255, 0.6),
+    700px 330px 0 0px rgba(255, 255, 255, 0.55),
+    980px 360px 0 0px rgba(255, 255, 255, 0.65),
+    1260px 340px 0 0px rgba(255, 255, 255, 0.5),
+    1540px 355px 0 0px rgba(255, 255, 255, 0.6),
+    1820px 345px 0 0px rgba(255, 255, 255, 0.55);
+    
+  animation: float1 6s ease-in-out infinite, flash1 3s ease-in-out infinite;
+}
+
+.hero-lights::after {
+  box-shadow: 
+    /* Second layer - more horizontal spread */
+    200px 100px 0 0px rgba(255, 255, 255, 0.65),
+    480px 140px 0 0px rgba(255, 255, 255, 0.5),
+    760px 90px 0 0px rgba(255, 255, 255, 0.6),
+    1040px 130px 0 0px rgba(255, 255, 255, 0.55),
+    1320px 110px 0 0px rgba(255, 255, 255, 0.65),
+    1600px 125px 0 0px rgba(255, 255, 255, 0.5),
+    1880px 115px 0 0px rgba(255, 255, 255, 0.6),
+    
+    240px 240px 0 0px rgba(255, 255, 255, 0.6),
+    540px 260px 0 0px rgba(255, 255, 255, 0.55),
+    840px 230px 0 0px rgba(255, 255, 255, 0.65),
+    1140px 250px 0 0px rgba(255, 255, 255, 0.5),
+    1440px 235px 0 0px rgba(255, 255, 255, 0.6),
+    1740px 245px 0 0px rgba(255, 255, 255, 0.55),
+    
+    320px 380px 0 0px rgba(255, 255, 255, 0.55),
+    620px 370px 0 0px rgba(255, 255, 255, 0.65),
+    920px 390px 0 0px rgba(255, 255, 255, 0.5),
+    1220px 375px 0 0px rgba(255, 255, 255, 0.6),
+    1520px 385px 0 0px rgba(255, 255, 255, 0.55),
+    1820px 365px 0 0px rgba(255, 255, 255, 0.65);
+    
+  animation: float2 7s ease-in-out infinite, flash2 4s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+@keyframes float1 {
+  0%, 100% { 
+    transform: translate(0, 0);
+  }
+  25% { 
+    transform: translate(6px, -12px);
+  }
+  50% { 
+    transform: translate(-5px, -20px);
+  }
+  75% { 
+    transform: translate(4px, -15px);
+  }
+}
+
+@keyframes float2 {
+  0%, 100% { 
+    transform: translate(0, 0);
+  }
+  33% { 
+    transform: translate(-7px, -16px);
+  }
+  66% { 
+    transform: translate(5px, -24px);
+  }
+}
+
+@keyframes flash1 {
+  0%, 100% { 
+    opacity: 0.3;
+  }
+  25% { 
+    opacity: 0.7;
+  }
+  50% { 
+    opacity: 0.4;
+  }
+  75% { 
+    opacity: 0.8;
+  }
+}
+
+@keyframes flash2 {
+  0%, 100% { 
+    opacity: 0.35;
+  }
+  33% { 
+    opacity: 0.75;
+  }
+  66% { 
+    opacity: 0.5;
+  }
+}
+
+/* Mobile - more vertical spread */
+@media (max-width: 768px) {
+  .hero-lights::before {
+    box-shadow: 
+      /* Top section */
+      60px 60px 0 0px rgba(255, 255, 255, 0.7),
+      150px 80px 0 0px rgba(255, 255, 255, 0.6),
+      240px 100px 0 0px rgba(255, 255, 255, 0.65),
+      320px 70px 0 0px rgba(255, 255, 255, 0.55),
+      
+      /* Upper-middle section */
+      80px 180px 0 0px rgba(255, 255, 255, 0.6),
+      180px 200px 0 0px rgba(255, 255, 255, 0.65),
+      280px 170px 0 0px rgba(255, 255, 255, 0.5),
+      
+      /* Middle section */
+      100px 300px 0 0px rgba(255, 255, 255, 0.6),
+      200px 320px 0 0px rgba(255, 255, 255, 0.55),
+      300px 290px 0 0px rgba(255, 255, 255, 0.65),
+      
+      /* Lower-middle section */
+      70px 420px 0 0px rgba(255, 255, 255, 0.6),
+      170px 440px 0 0px rgba(255, 255, 255, 0.65),
+      270px 410px 0 0px rgba(255, 255, 255, 0.55),
+      
+      /* Bottom section */
+      90px 540px 0 0px rgba(255, 255, 255, 0.6),
+      190px 560px 0 0px rgba(255, 255, 255, 0.65),
+      290px 530px 0 0px rgba(255, 255, 255, 0.5);
+  }
+  
+  .hero-lights::after {
+    box-shadow: 
+      /* Offset layer - vertical spread */
+      120px 100px 0 0px rgba(255, 255, 255, 0.65),
+      220px 130px 0 0px rgba(255, 255, 255, 0.5),
+      
+      140px 240px 0 0px rgba(255, 255, 255, 0.6),
+      240px 270px 0 0px rgba(255, 255, 255, 0.65),
+      
+      110px 360px 0 0px rgba(255, 255, 255, 0.55),
+      210px 390px 0 0px rgba(255, 255, 255, 0.6),
+      
+      130px 480px 0 0px rgba(255, 255, 255, 0.65),
+      230px 510px 0 0px rgba(255, 255, 255, 0.5),
+      
+      150px 600px 0 0px rgba(255, 255, 255, 0.6),
+      250px 630px 0 0px rgba(255, 255, 255, 0.65);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-lights::before,
+  .hero-lights::after { 
+    animation: none !important;
+    opacity: 0.5;
+  }
+}

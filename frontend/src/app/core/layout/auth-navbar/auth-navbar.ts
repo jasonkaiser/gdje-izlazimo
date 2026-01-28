@@ -11,8 +11,20 @@ type AppRole = 'user' | 'venue_owner' | 'admin';
   templateUrl: './auth-navbar.html'
 })
 export class AuthNavbar {
+
+  
   constructor(public authService: AuthService) {}
 
+  mobileOpen = false;
+
+  toggleMobile() {
+    this.mobileOpen = !this.mobileOpen;
+  }
+
+  closeMobile() {
+    this.mobileOpen = false;
+  }
+  
   private roles(): string[] {
     const profile: any = this.authService.getUserProfile();
     return profile?.realm_access?.roles ?? [];
