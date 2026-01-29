@@ -6,6 +6,7 @@ import { Badge } from "../../other/badge/badge";
   selector: 'app-venue-card',
   imports: [ButtonComponent, Badge],
   templateUrl: './venue-card.html',
+  standalone: true,
   styleUrl: './venue-card.css',
 })
 export class VenueCard {
@@ -13,6 +14,7 @@ export class VenueCard {
   @Input() title : string = '';
   @Input() category : string = '';
   @Input() location : string = '';
+  @Input() imageUrl : string = '';
 
 
 }

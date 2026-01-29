@@ -21,6 +21,9 @@ body {
 .font-sora { font-family: "Sora", sans-serif; }
 .font-sheftira { font-family: "Sheftira Demo" }
 
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
 
 
 :root {
