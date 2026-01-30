@@ -12,11 +12,12 @@ import { VenueService } from './core/api/venue-service';
 import { ToastHost } from './core/ui/toast-host/toast-host';
 import { VenueResponseDto } from './core/models/venues/venue-response.dto';
 import { LoadingBar } from './components/other/loading-bar/loading-bar';
+import { AppFooterComponent } from "./core/layout/footer/footer";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AuthNavbar, PublicNavbar, VenueCard, ButtonComponent, Toast, ReservationCard, ReservationModal, ToastHost, LoadingBar],
+  imports: [RouterOutlet, AuthNavbar, PublicNavbar, ToastHost, LoadingBar, AppFooterComponent, AppFooterComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

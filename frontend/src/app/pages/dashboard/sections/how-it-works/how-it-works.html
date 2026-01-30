@@ -1,0 +1,445 @@
+<section #section class="relative w-full py-18 sm:py-24">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-35 sm:mb-50">
+      <h2 class="font-sora text-5xl font-semibold tracking-[0.02em] text-white">
+        Kako funkcioniše
+      </h2>
+      <p class="mt-2 font-dm text-sm  font-light italic text-white/60 max-sm:mb-14">
+        Rezerviši lokal u 3 koraka
+      </p>
+    </div>
+
+    <div class="relative mt-12 sm:mt-16">
+  <!-- Track -->
+        <div
+            #track
+            class="absolute top-0 bottom-0 w-[1.5px] bg-[#7C3AED]/15
+                    left-4 sm:left-1/2 sm:-translate-x-1/2 rounded-full overflow-hidden"
+            >
+            <!-- Fill -->
+            <div
+                class="absolute top-0 left-0 w-full rounded-full bg-[#7C3AED] transition-all duration-300 ease-out"
+                [ngStyle]="fillStyle()"
+            ></div>
+
+            <!-- TOP FADE -->
+            <div
+                class="pointer-events-none absolute top-0 left-0 w-full h-14
+                    bg-gradient-to-b from-[#070707] to-transparent"
+            ></div>
+
+            <!-- BOTTOM FADE -->
+            <div
+                class="pointer-events-none absolute bottom-0 left-0 w-full h-14
+                    bg-gradient-to-t from-[#070707] to-transparent"
+            ></div>
+       </div>
+
+
+      <!-- Steps -->
+      <div class="space-y-20 sm:space-y-40">
+        <div *ngFor="let s of steps; let i = index" #stepRow class="relative">
+          <!-- DESKTOP  -->
+          <div class="hidden sm:flex items-center justify-center gap-8">
+            <!-- Left side -->
+            <div
+              class="flex-1 flex"
+              [class.justify-end]="s.side === 'left'"
+              [class.justify-start]="s.side === 'right'"
+            >
+              <!-- Label when on left -->
+              <div
+                *ngIf="s.side === 'left'"
+                class="font-sheftira text-[34px] leading-[1.06] italic grad-text pr-6 transition-all duration-500"
+                [class.step-label-active]="isActiveOrPassed(i)"
+              >
+                {{ s.label }}
+              </div>
+
+              <!-- Card when on right -->
+              <div *ngIf="s.side === 'right'" class="w-full max-w-[520px] pl-6">
+                <div
+                  class="step-card relative rounded-[30px] border border-white/25 bg-[#070707]
+                         px-7 pt-7 pb-6 min-h-[235px]
+                         flex flex-col
+                         transition-all duration-500 ease-out"
+                  [class.step-card-active]="isActiveOrPassed(i)"
+                  [class.step-card-inactive]="!isActiveOrPassed(i)"
+                >
+                  <!-- Icon box -->
+                  <div class="absolute right-6 top-6 transition-transform duration-500"
+                       [class.scale-110]="isActive(i)">
+                    <div
+                      class="h-20 w-[88px] rounded-[20px] bg-[#7C3AED]/12 border-2 border-dashed border-[#7C3AED]
+                             grid place-items-center transition-all duration-500"
+                      [class.icon-glow]="isActive(i)"
+                    >
+                      <ng-container [ngSwitch]="s.icon">
+                        <!-- Eye (thin) -->
+                        <svg
+                          *ngSwitchCase="'eye'"
+                          width="38"
+                          height="38"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          class="text-[#A36DFF] transition-transform duration-500"
+                          [class.scale-110]="isActive(i)"
+                        >
+                          <path
+                            d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M12 15.25A3.25 3.25 0 1 0 12 8.75a3.25 3.25 0 0 0 0 6.5Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+
+                        <!-- Map pin (thin) -->
+                        <svg
+                          *ngSwitchCase="'map'"
+                          width="38"
+                          height="38"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          class="text-[#A36DFF] transition-transform duration-500"
+                          [class.scale-110]="isActive(i)"
+                        >
+                          <path
+                            d="M12 22s7-4.5 7-12a7 7 0 1 0-14 0c0 7.5 7 12 7 12Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+
+                        <!-- Reservation (thin) -->
+                        <svg
+                          *ngSwitchCase="'reservation'"
+                          width="38"
+                          height="38"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          class="text-[#A36DFF] transition-transform duration-500"
+                          [class.scale-110]="isActive(i)"
+                        >
+                          <path
+                            d="M7 3v2M17 3v2"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M4 7h16v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M4 10h16"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M8 14h8"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                          />
+                        </svg>
+                      </ng-container>
+                    </div>
+                  </div>
+
+                  <h3 class="font-sora text-[28px] leading-[1.06] tracking-[0.03em] text-white/85 pr-24">
+                    {{ s.title }}
+                  </h3>
+
+                  <!-- Text block pinned to bottom -->
+                  <div class="mt-auto grid grid-cols-[9px_1fr] gap-x-3 gap-y-2">
+                    <span class="mt-[7px] h-[9px] w-[9px] rounded-full bg-[#11FA6A] border border-black/40"></span>
+                    <p class="font-dm text-[16px] leading-[1.55] font-light text-white/90">
+                      {{ s.mainText }}
+                    </p>
+
+                    <span></span>
+                    <p class="font-dm text-[14px] leading-[1.55] italic font-light text-white/60">
+                      {{ s.subText }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right side -->
+            <div
+              class="flex-1 flex"
+              [class.justify-start]="s.side === 'right'"
+              [class.justify-end]="s.side === 'left'"
+            >
+              <!-- Card when on left -->
+              <div *ngIf="s.side === 'left'" class="w-full max-w-[520px] pr-6">
+                <div
+                  class="step-card relative rounded-[30px] border border-white/25 bg-[#070707]
+                         px-7 pt-7 pb-6 min-h-[235px]
+                         flex flex-col
+                         transition-all duration-500 ease-out"
+                  [class.step-card-active]="isActiveOrPassed(i)"
+                  [class.step-card-inactive]="!isActiveOrPassed(i)"
+                >
+                  <!-- Icon box -->
+                  <div class="absolute right-6 top-6 transition-transform duration-500"
+                       [class.scale-110]="isActive(i)">
+                    <div
+                      class="h-20 w-[88px] rounded-[20px] bg-[#7C3AED]/12 border-2 border-dashed border-[#7C3AED]
+                             grid place-items-center transition-all duration-500"
+                      [class.icon-glow]="isActive(i)"
+                    >
+                      <ng-container [ngSwitch]="s.icon">
+                        <!-- Eye (thin) -->
+                        <svg
+                          *ngSwitchCase="'eye'"
+                          width="38"
+                          height="38"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          class="text-[#A36DFF] transition-transform duration-500"
+                          [class.scale-110]="isActive(i)"
+                        >
+                          <path
+                            d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M12 15.25A3.25 3.25 0 1 0 12 8.75a3.25 3.25 0 0 0 0 6.5Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+
+                        <!-- Map pin (thin) -->
+                        <svg
+                          *ngSwitchCase="'map'"
+                          width="38"
+                          height="38"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          class="text-[#A36DFF] transition-transform duration-500"
+                          [class.scale-110]="isActive(i)"
+                        >
+                          <path
+                            d="M12 22s7-4.5 7-12a7 7 0 1 0-14 0c0 7.5 7 12 7 12Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                        </svg>
+
+                        <!-- Reservation (thin) -->
+                        <svg
+                          *ngSwitchCase="'reservation'"
+                          width="38"
+                          height="38"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          class="text-[#A36DFF] transition-transform duration-500"
+                          [class.scale-110]="isActive(i)"
+                        >
+                          <path
+                            d="M7 3v2M17 3v2"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M4 7h16v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          />
+                          <path
+                            d="M4 10h16"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                          />
+                          <path
+                            d="M8 14h8"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                          />
+                        </svg>
+                      </ng-container>
+                    </div>
+                  </div>
+
+                  <h3 class="font-sora text-[28px] leading-[1.06] tracking-[0.03em] text-white/85 pr-24">
+                    {{ s.title }}
+                  </h3>
+
+                  <!-- Text block pinned to bottom -->
+                  <div class="mt-auto grid grid-cols-[9px_1fr] gap-x-3 gap-y-2">
+                    <span class="mt-[7px] h-[9px] w-[9px] rounded-full bg-[#11FA6A] border border-black/40"></span>
+                    <p class="font-dm text-[16px] leading-[1.55] font-light text-white/90">
+                      {{ s.mainText }}
+                    </p>
+
+                    <span></span>
+                    <p class="font-dm text-[14px] leading-[1.55] italic font-light text-white/60">
+                      {{ s.subText }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Label when on right -->
+              <div *ngIf="s.side === 'right'" 
+                   class="font-sheftira text-[34px] leading-[1.06] italic grad-text pl-6 transition-all duration-500"
+                   [class.step-label-active]="isActiveOrPassed(i)">
+                {{ s.label }}
+              </div>
+            </div>
+          </div>
+
+          <!-- MOBILE LAYOUT -->
+          <div class="sm:hidden flex items-start gap-0">
+            <!-- Timeline dot -->
+            <div class="flex-shrink-0 pt-[7px] pl-[4.5px]">
+              <div class="relative grid place-items-center" [class.dot-active]="isActive(i)">
+                <div class="h-6 w-6 rounded-full bg-[#7C3AED]/25 transition-opacity duration-300" 
+                     [class.opacity-100]="isActive(i)"
+                     [class.opacity-0]="!isActive(i)"></div>
+                <div class="absolute h-3 w-3 rounded-full bg-[#7C3AED] transition-all duration-300"
+                     [class.ring-2]="isActive(i)"
+                     [class.ring-[#7C3AED]/40]="isActive(i)"></div>
+              </div>
+            </div>
+
+            <!-- Content column -->
+            <div class="flex-1 ml-6">
+              <!-- Label -->
+              <div class="mb-6 font-sheftira text-[28px] leading-[1.1] italic grad-text transition-all duration-500"
+                   [class.step-label-active]="isActiveOrPassed(i)">
+                {{ s.label }}
+              </div>
+
+              <!-- Card -->
+              <div
+                class="step-card relative rounded-[26px] border border-white/20 bg-[#070707]
+                       px-5 py-6 min-h-[240px]
+                       flex flex-col
+                       shadow-[0_0_0_1px_rgba(255,255,255,0.05)]
+                       transition-all duration-500 ease-out"
+                [class.step-card-active]="isActiveOrPassed(i)"
+                [class.step-card-inactive]="!isActiveOrPassed(i)"
+              >
+                <!-- top row: title + icon -->
+                <div class="flex items-start justify-between gap-4 mb-8">
+                  <h3 class="font-sora text-[20px] leading-[1.15] tracking-[0.02em] text-white/90 pr-2">
+                    {{ s.title }}
+                  </h3>
+
+                  <div
+                    class="h-14 w-[60px] rounded-2xl bg-[#7C3AED]/12 border border-dashed border-[#7C3AED]
+                           grid place-items-center flex-shrink-0 transition-all duration-500"
+                    [class.icon-glow]="isActive(i)"
+                    [class.scale-105]="isActive(i)"
+                  >
+                    <!-- MOBILE ICONS -->
+                    <ng-container [ngSwitch]="s.icon">
+                      <svg *ngSwitchCase="'eye'" width="32" height="32" viewBox="0 0 24 24" fill="none" 
+                           class="text-[#A36DFF] transition-transform duration-500"
+                           [class.scale-110]="isActive(i)">
+                        <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"
+                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 15.25A3.25 3.25 0 1 0 12 8.75a3.25 3.25 0 0 0 0 6.5Z"
+                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+
+                      <svg *ngSwitchCase="'map'" width="32" height="32" viewBox="0 0 24 24" fill="none" 
+                           class="text-[#A36DFF] transition-transform duration-500"
+                           [class.scale-110]="isActive(i)">
+                        <path d="M12 22s7-4.5 7-12a7 7 0 1 0-14 0c0 7.5 7 12 7 12Z"
+                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"
+                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+
+                      <svg *ngSwitchCase="'reservation'" width="32" height="32" viewBox="0 0 24 24" fill="none" 
+                           class="text-[#A36DFF] transition-transform duration-500"
+                           [class.scale-110]="isActive(i)">
+                        <path d="M7 3v2M17 3v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M4 7h16v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7Z"
+                              stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M4 10h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M8 14h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                      </svg>
+                    </ng-container>
+                  </div>
+                </div>
+
+                <!-- text block  -->
+                <div class="mt-auto grid grid-cols-[9px_1fr] gap-x-3 gap-y-2.5">
+                  <span class="mt-[7px] h-[9px] w-[9px] rounded-full bg-[#11FA6A] border border-black/40"></span>
+                  <p class="font-dm text-[14px] leading-[1.6] font-light text-white/90">
+                    {{ s.mainText }}
+                  </p>
+
+                  <span></span>
+                  <p class="font-dm text-[13px] leading-[1.6] italic font-light text-white/60">
+                    {{ s.subText }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline dot for DESKTOP  -->
+          <div class="hidden sm:block absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2">
+            <div class="relative grid place-items-center" [class.dot-active]="isActive(i)">
+              <div class="h-6 w-6 rounded-full bg-[#7C3AED]/25 transition-opacity duration-300" 
+                   [class.opacity-100]="isActive(i)"
+                   [class.opacity-0]="!isActive(i)"></div>
+              <div class="absolute h-3 w-3 rounded-full bg-[#7C3AED] transition-all duration-300"
+                   [class.ring-2]="isActive(i)"
+                   [class.ring-[#7C3AED]/40]="isActive(i)"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

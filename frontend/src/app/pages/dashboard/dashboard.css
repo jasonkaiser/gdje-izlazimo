@@ -20,7 +20,6 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.6);
   box-shadow: 
-    /* Wide horizontal spread - top area */
     80px 80px 0 0px rgba(255, 255, 255, 0.7),
     280px 60px 0 0px rgba(255, 255, 255, 0.5),
     480px 120px 0 0px rgba(255, 255, 255, 0.6),
@@ -32,7 +31,6 @@
     1680px 95px 0 0px rgba(255, 255, 255, 0.6),
     1880px 85px 0 0px rgba(255, 255, 255, 0.55),
     
-    /* Wide horizontal spread - middle area */
     120px 200px 0 0px rgba(255, 255, 255, 0.6),
     360px 180px 0 0px rgba(255, 255, 255, 0.55),
     600px 220px 0 0px rgba(255, 255, 255, 0.65),
@@ -42,7 +40,6 @@
     1560px 215px 0 0px rgba(255, 255, 255, 0.65),
     1800px 205px 0 0px rgba(255, 255, 255, 0.5),
     
-    /* Wide horizontal spread - bottom area */
     160px 320px 0 0px rgba(255, 255, 255, 0.5),
     420px 350px 0 0px rgba(255, 255, 255, 0.6),
     700px 330px 0 0px rgba(255, 255, 255, 0.55),
@@ -56,7 +53,6 @@
 
 .hero-lights::after {
   box-shadow: 
-    /* Second layer - more horizontal spread */
     200px 100px 0 0px rgba(255, 255, 255, 0.65),
     480px 140px 0 0px rgba(255, 255, 255, 0.5),
     760px 90px 0 0px rgba(255, 255, 255, 0.6),
@@ -137,32 +133,26 @@
   }
 }
 
-/* Mobile - more vertical spread */
 @media (max-width: 768px) {
   .hero-lights::before {
     box-shadow: 
-      /* Top section */
       60px 60px 0 0px rgba(255, 255, 255, 0.7),
       150px 80px 0 0px rgba(255, 255, 255, 0.6),
       240px 100px 0 0px rgba(255, 255, 255, 0.65),
       320px 70px 0 0px rgba(255, 255, 255, 0.55),
       
-      /* Upper-middle section */
       80px 180px 0 0px rgba(255, 255, 255, 0.6),
       180px 200px 0 0px rgba(255, 255, 255, 0.65),
       280px 170px 0 0px rgba(255, 255, 255, 0.5),
       
-      /* Middle section */
       100px 300px 0 0px rgba(255, 255, 255, 0.6),
       200px 320px 0 0px rgba(255, 255, 255, 0.55),
       300px 290px 0 0px rgba(255, 255, 255, 0.65),
       
-      /* Lower-middle section */
       70px 420px 0 0px rgba(255, 255, 255, 0.6),
       170px 440px 0 0px rgba(255, 255, 255, 0.65),
       270px 410px 0 0px rgba(255, 255, 255, 0.55),
       
-      /* Bottom section */
       90px 540px 0 0px rgba(255, 255, 255, 0.6),
       190px 560px 0 0px rgba(255, 255, 255, 0.65),
       290px 530px 0 0px rgba(255, 255, 255, 0.5);
@@ -170,7 +160,6 @@
   
   .hero-lights::after {
     box-shadow: 
-      /* Offset layer - vertical spread */
       120px 100px 0 0px rgba(255, 255, 255, 0.65),
       220px 130px 0 0px rgba(255, 255, 255, 0.5),
       
