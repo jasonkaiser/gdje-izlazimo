@@ -41,7 +41,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/venues/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/events/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/venue-images/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/table-types/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/venue/operating-hours/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/venue/table-types/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

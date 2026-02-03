@@ -25,36 +25,8 @@ export class App implements OnInit {
   loading = false;
   venues: VenueResponseDto[] = [];
 
-  constructor(public authService: AuthService, private venueService: VenueService) {}
-
-  loadVenues() {
-    this.loading = true;
-
-    this.venueService.getVenues().subscribe({
-      next: (data) => {
-        this.venues = data;
-        this.loading = false;
-        console.log('VENUES', data);
-      },
-      error: () => {
-        // toast is shown by errorInterceptor
-        this.loading = false;
-      },
-    });
-  }
-
-  // This intentionally triggers an HTTP error so you can confirm the toast works
-  testError() {
-    this.loading = true;
-
-    // @ts-ignore - intentional wrong call for testing
-    this.venueService['http'].get('http://localhost:8081/THIS_ROUTE_DOES_NOT_EXIST').subscribe({
-      next: () => (this.loading = false),
-      error: () => (this.loading = false), // toast should appear
-    });
-  }
+  constructor(public authService: AuthService) {}
 
   ngOnInit() {
-    this.loadVenues();
   }
 }

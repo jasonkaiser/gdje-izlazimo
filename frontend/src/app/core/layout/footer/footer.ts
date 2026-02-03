@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -8,6 +8,8 @@ import {
   ViewChild,
   inject,
   signal,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
 
 type NavLink = { name: string; href: string };
@@ -23,6 +25,8 @@ type SocialLink = { name: string; href: string; icon: 'linkedin' | 'instagram' |
 })
 export class AppFooterComponent implements AfterViewInit {
   private destroyRef = inject(DestroyRef);
+
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
 
   @ViewChild('footerEl', { static: true }) footerEl!: ElementRef<HTMLElement>;
 
@@ -43,6 +47,9 @@ export class AppFooterComponent implements AfterViewInit {
   ];
 
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (typeof IntersectionObserver === 'undefined') return;
+
     const el = this.footerEl.nativeElement;
 
     const io = new IntersectionObserver(

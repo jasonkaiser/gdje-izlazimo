@@ -10,8 +10,10 @@ import {
   computed,
   inject,
   signal,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 
 type Step = {
   id: number;
@@ -33,6 +35,8 @@ type Step = {
 })
 export class HowItWorksSectionComponent implements AfterViewInit {
   private destroyRef = inject(DestroyRef);
+
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
 
   steps: Step[] = [
     {
@@ -80,11 +84,15 @@ export class HowItWorksSectionComponent implements AfterViewInit {
   }));
 
   ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     this.measure();
 
-    this.ro = new ResizeObserver(() => this.measure());
-    this.ro.observe(this.sectionRef.nativeElement);
-    this.destroyRef.onDestroy(() => this.ro?.disconnect());
+    if (typeof ResizeObserver !== 'undefined') {
+      this.ro = new ResizeObserver(() => this.measure());
+      this.ro.observe(this.sectionRef.nativeElement);
+      this.destroyRef.onDestroy(() => this.ro?.disconnect());
+    }
 
     const onScroll = () => this.scheduleUpdate();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -105,24 +113,30 @@ export class HowItWorksSectionComponent implements AfterViewInit {
   }
 
   private measure(): void {
-    const trackEl = this.trackRef.nativeElement;
+    const trackEl = this.trackRef?.nativeElement;
+    if (!trackEl || typeof trackEl.getBoundingClientRect !== 'function') return;
+
     const trackRect = trackEl.getBoundingClientRect();
     const trackTop = trackRect.top + window.scrollY;
 
     const rows = this.stepRows?.toArray() ?? [];
-    this.stepCenters = rows.map((r) => {
-      const rect = r.nativeElement.getBoundingClientRect();
-      const centerY = rect.top + window.scrollY + rect.height / 2;
-      return Math.max(0, centerY - trackTop);
-    });
+    this.stepCenters = rows
+      .map((r) => r?.nativeElement)
+      .filter((el): el is HTMLElement => !!el && typeof el.getBoundingClientRect === 'function')
+      .map((el) => {
+        const rect = el.getBoundingClientRect();
+        const centerY = rect.top + window.scrollY + rect.height / 2;
+        return Math.max(0, centerY - trackTop);
+      });
 
     this.scheduleUpdate();
   }
 
   private update(): void {
-    const trackEl = this.trackRef.nativeElement;
-    const trackRect = trackEl.getBoundingClientRect();
+    const trackEl = this.trackRef?.nativeElement;
+    if (!trackEl || typeof trackEl.getBoundingClientRect !== 'function') return;
 
+    const trackRect = trackEl.getBoundingClientRect();
     const trackTop = trackRect.top + window.scrollY;
     const trackHeight = Math.max(1, trackRect.height);
 

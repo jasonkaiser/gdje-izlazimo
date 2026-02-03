@@ -7,6 +7,8 @@ import { HowItWorksSectionComponent } from './sections/how-it-works/how-it-works
 import { InViewDirective } from '../../core/animations/in-view.directive';
 import { CommonModule } from '@angular/common';
 import { CtaComponent } from './sections/cta/cta';
+import { Router } from '@angular/router';
+import { VenueCategory } from '../../core/models/venues/venue-category.enum';
 
 @Component({
   selector: 'app-dashboard',
@@ -24,7 +26,7 @@ import { CtaComponent } from './sections/cta/cta';
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnDestroy {
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef, private router: Router) {}
 
   statsShown = false;
 
@@ -170,5 +172,19 @@ export class Dashboard implements OnDestroy {
     if (type === 'res') this.resRaf = id;
     else this.venRaf = id;
   }
+
+    goToVenues(e: { query: string; venueType: VenueCategory | null; sort: 'name_asc' | 'name_desc' }) {
+    this.router.navigate(['/venues'], {
+      queryParams: {
+        query: e.query?.trim() ? e.query.trim() : null,
+        venueType: e.venueType ? e.venueType : null,
+        sort: e.sort || 'name_asc',
+        pageNo: 1,
+      },
+    });
+  }
+
+
+  
 
 }

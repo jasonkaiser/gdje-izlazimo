@@ -4,6 +4,7 @@ import com.gdje_izlazimo.project.dto.request.create.CreateVenueTableTypeRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateVenueTableTypeRequest;
 import com.gdje_izlazimo.project.dto.response.VenueTableTypeResponse;
 import com.gdje_izlazimo.project.service.VenueTableTypeService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,14 +25,14 @@ public class VenueTableTypeController {
         this.venueTableTypeService = venueTableTypeService;
     }
 
-    @PreAuthorize("hasAnyRole('user','venue_owner', 'admin')")
+    @PermitAll
     @GetMapping
     public ResponseEntity<List<VenueTableTypeResponse>> findAllVenueTableTypes(){
         return ResponseEntity.ok(venueTableTypeService.findAllVenueTableTypes());
 
     }
 
-    @PreAuthorize("hasAnyRole('user','venue_owner', 'admin')")
+    @PermitAll
     @GetMapping("/{id}")
     public ResponseEntity<VenueTableTypeResponse> findVenueTableTypeById(@PathVariable UUID id){
         return ResponseEntity.ok(venueTableTypeService.findVenueTableTypeById(id));

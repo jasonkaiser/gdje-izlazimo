@@ -1,21 +1,5 @@
 <app-loading-bar></app-loading-bar>
 
-<div class="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-  <div
-    class="
-      absolute left-1/2 -translate-x-1/2
-      top-[-240px] sm:top-[-380px] lg:top-[-620px]
-      w-[680px] h-[680px]
-      sm:w-[820px] sm:h-[820px]
-      lg:w-[862px] lg:h-[910px]
-      opacity-10 sm:opacity-20
-      blur-4xl
-    "
-    style="background: radial-gradient(circle at center, rgba(217,217,217,0.40) 0%, rgba(115,115,115,0) 70%);"
-  ></div>
-</div>
-
-
 <div class="relative z-10">
   @if (authService.authenticated()) {
     <app-auth-navbar></app-auth-navbar>

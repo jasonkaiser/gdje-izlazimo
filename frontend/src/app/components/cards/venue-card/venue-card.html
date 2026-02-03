@@ -1,5 +1,6 @@
 <div
-  class="w-full h-[400px] rounded-3xl overflow-hidden border border-white/10 bg-[#0B1220] relative group shadow-lg hover:shadow-2xl transition-all duration-300"
+  class="w-full h-[400px] rounded-3xl overflow-hidden border border-white/10 bg-[#0B1220] relative group shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
+  (click)="onViewDetails()"
 >
   <!-- Background image -->
   <img
@@ -30,7 +31,12 @@
         </div>
       </div>
 
-      <app-button-component variant="outline" size="sm" class="shrink-0">
+      <app-button-component 
+        variant="outline" 
+        size="sm" 
+        class="shrink-0"
+        (click)="onViewDetails(); $event.stopPropagation()"
+      >
         Vidi detaljno
       </app-button-component>
     </div>

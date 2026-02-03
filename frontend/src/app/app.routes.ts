@@ -7,6 +7,7 @@ import { AdminPanel } from './pages/admin-panel/admin-panel';
 import { NotFound } from './pages/not-found/not-found';
 import { authGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
+import { VenuesComponent } from './pages/venues/venues';
 
 export const routes: Routes = [
 
@@ -15,13 +16,18 @@ export const routes: Routes = [
             component: Dashboard
         },
         {
-            path: 'venue-details',
+            path: 'venues/:id',
             component: VenueDetails
         },
         {
             path: 'reservations',
             component: Reservations,
             canActivate: [authGuard]
+
+        },
+        {
+            path: 'venues',
+            component: VenuesComponent,
 
         },
         {

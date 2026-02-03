@@ -1,0 +1,29 @@
+.gi-iconbox {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  border: 1px solid #7c3aed;
+  background: rgba(124, 58, 237, 0.12);
+  display: grid;
+  place-items: center;
+}
+
+.gi-accordion--closed {
+  background: rgba(7, 7, 7, 0.29);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+
+.gi-accordion--open {
+  background: radial-gradient(170.65% 170.65% at 76.45% -35.16%, rgba(124, 58, 237, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
+  border-color: #7c3aed;
+  box-shadow: inset 0px 0px 20px 5px rgba(124, 58, 237, 0.19);
+}
+
+.gi-hover-glow {
+  background: radial-gradient(170.65% 170.65% at 76.45% -35.16%, rgba(124, 58, 237, 0.22) 0%, rgba(0, 0, 0, 0) 60%);
+}
+
+.gi-chevron--open {
+  transform: rotate(90deg);
+}

@@ -1,6 +1,6 @@
 export enum VenueCategory {
   CLUB = 'CLUB',
   PUB = 'PUB',
-  BAR = 'BAR',
+  LOUNGE = 'LOUNGE',
   RESTAURANT = 'RESTAURANT'
 }

@@ -4,6 +4,7 @@ import com.gdje_izlazimo.project.dto.request.create.CreateTableTypeRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateTableTypeRequest;
 import com.gdje_izlazimo.project.dto.response.TableTypeResponse;
 import com.gdje_izlazimo.project.service.TableTypeService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,21 +25,21 @@ public class TableTypeController {
         this.tableTypeService = tableTypeService;
     }
 
-    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
+    @PermitAll
     @GetMapping
     public ResponseEntity<List<TableTypeResponse>> findAllTableTypes(){
         return ResponseEntity.ok(tableTypeService.findAllTableTypes());
 
     }
 
-    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
+    @PermitAll
     @GetMapping("/{id}")
     public ResponseEntity<TableTypeResponse> findTableTypeById(@PathVariable UUID id){
         return ResponseEntity.ok(tableTypeService.findTableTypeById(id));
 
     }
 
-    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
+    @PreAuthorize("hasAnyRole('admin')")
     @PostMapping
     public ResponseEntity<TableTypeResponse> createTableType(@Valid @RequestBody CreateTableTypeRequest entity){
         return ResponseEntity.ok(tableTypeService.createTableType(entity));

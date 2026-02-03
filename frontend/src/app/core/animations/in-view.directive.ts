@@ -1,4 +1,14 @@
-import { Directive, ElementRef, EventEmitter, Output, AfterViewInit, OnDestroy } from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  EventEmitter,
+  Output,
+  AfterViewInit,
+  OnDestroy,
+  Inject,
+  PLATFORM_ID,
+} from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 @Directive({ selector: '[inView]', standalone: true })
 export class InViewDirective implements AfterViewInit, OnDestroy {
@@ -6,9 +16,15 @@ export class InViewDirective implements AfterViewInit, OnDestroy {
 
   private io?: IntersectionObserver;
 
-  constructor(private el: ElementRef<HTMLElement>) {}
+  constructor(
+    private el: ElementRef<HTMLElement>,
+    @Inject(PLATFORM_ID) private platformId: object
+  ) {}
 
   ngAfterViewInit() {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (typeof IntersectionObserver === 'undefined') return;
+
     this.io = new IntersectionObserver(
       ([entry]) => this.inViewChange.emit(entry.isIntersecting),
       {

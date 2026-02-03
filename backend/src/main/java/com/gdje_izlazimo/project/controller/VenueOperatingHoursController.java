@@ -35,7 +35,7 @@ public class VenueOperatingHoursController {
     @PermitAll
     @GetMapping("/venue/{venueId}")
     public ResponseEntity<VenueOperatingHoursResponse> findByVenueId(@PathVariable UUID venueId) {
-        return ResponseEntity.ok(venueOperatingHoursService.findVenueOperatingHoursById(venueId));
+        return ResponseEntity.ok(venueOperatingHoursService.findByVenueId(venueId));
     }
 
 

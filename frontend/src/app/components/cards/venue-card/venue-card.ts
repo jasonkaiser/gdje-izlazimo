@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { ButtonComponent } from '../../buttons/button-component/button-component';
 import { Badge } from "../../other/badge/badge";
 
@@ -10,11 +11,18 @@ import { Badge } from "../../other/badge/badge";
   styleUrl: './venue-card.css',
 })
 export class VenueCard {
+  @Input() id: string = '';
+  @Input() title: string = '';
+  @Input() category: string = '';
+  @Input() location: string = '';
+  @Input() imageUrl: string = '';
 
-  @Input() title : string = '';
-  @Input() category : string = '';
-  @Input() location : string = '';
-  @Input() imageUrl : string = '';
+  constructor(private router: Router) {}
 
 
+  onViewDetails(): void {
+    if (this.id) {
+      this.router.navigate(['/venues', this.id]);
+    }
+  }
 }

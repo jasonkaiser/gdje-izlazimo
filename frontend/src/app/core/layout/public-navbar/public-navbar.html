@@ -1,4 +1,4 @@
-<header class="sticky top-5 z-50 w-[95%] place-self-center">
+<header class="sticky top-5 z-60 w-[95%] place-self-center">
   <div class="mx-auto flex items-center justify-between rounded-2xl px-5 py-3">
     <!-- LOGO -->
     <a routerLink="/" class="font-sora font-semibold tracking-tight text-[var(--text-primary)]">
@@ -43,7 +43,7 @@
 
       <!-- LOKALI -->
       <a
-        routerLink="/lokali"
+        routerLink="/venues"
         routerLinkActive="!text-[var(--text-primary)] after:scale-x-100 after:opacity-100"
         class="relative font-dm font-light text-sm tracking-wide
                text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition
@@ -144,7 +144,7 @@
         </a>
 
         <a
-          routerLink="/lokali"
+          routerLink="/venues"
           (click)="closeMobile()"
           routerLinkActive="!text-[var(--text-primary)] bg-white/5"
           class="rounded-xl px-3 py-3 font-dm font-light text-sm tracking-wide

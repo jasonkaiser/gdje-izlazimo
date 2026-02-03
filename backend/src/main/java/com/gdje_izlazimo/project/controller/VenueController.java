@@ -60,7 +60,7 @@ public class VenueController {
     @PermitAll
     @GetMapping("/search")
     public ResponseEntity<List<VenueResponse>> searchVenues(@RequestParam(required = false) String query,
-                                                            @RequestParam(required = false) VenueCategory category,
+                                                            @RequestParam(required = false) VenueCategory venueType,
                                                             @RequestParam(defaultValue = "1") int pageNo,
                                                             @RequestParam(defaultValue = "6") int pageSize,
                                                             @RequestParam(defaultValue = "name") String sortBy,
@@ -73,7 +73,7 @@ public class VenueController {
                 sortBy
         );
 
-        return ResponseEntity.ok(venueService.searchVenues(query, category, pageable));
+        return ResponseEntity.ok(venueService.searchVenues(query, venueType, pageable));
     }
 
     @PreAuthorize("hasRole('admin')")

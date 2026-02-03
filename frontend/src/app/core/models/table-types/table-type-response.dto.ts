@@ -1,5 +1,6 @@
 export interface TableTypeResponseDto {
-  id: string;       
+  id: string; 
+  name: string;      
   description?: string;
   createdAt: string; 
   updatedAt: string; 

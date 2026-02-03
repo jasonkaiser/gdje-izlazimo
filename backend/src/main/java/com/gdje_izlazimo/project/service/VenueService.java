@@ -49,14 +49,25 @@ public class VenueService {
                 .toList();
     }
 
-    public List<VenueResponse> searchVenues(String query, VenueCategory category, Pageable pageable){
-        List<Venue> venues = venueRepository.searchVenues(query, category, pageable).getContent();
+    public List<VenueResponse> searchVenues(String query, VenueCategory category, Pageable pageable) {
 
-        return venues.stream()
+        boolean hasQuery = query != null && !query.isBlank();
+
+        Page<Venue> page;
+
+        if (!hasQuery && category == null) {
+            page = venueRepository.findAll(pageable);
+        } else if (!hasQuery) {
+            page = venueRepository.findByVenueType(pageable, category);
+        } else {
+            page = venueRepository.searchVenues(query, category, pageable);
+        }
+
+        return page.getContent().stream()
                 .map(venueMapper::toResponse)
                 .toList();
-
     }
+
 
     public VenueResponse createVenue(CreateVenueRequest dto){
         if(venueRepository.existsByName(dto.name())){

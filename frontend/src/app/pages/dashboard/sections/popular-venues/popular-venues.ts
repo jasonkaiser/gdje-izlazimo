@@ -8,7 +8,10 @@ import {
   NgZone,
   OnDestroy,
   ViewChild,
+  Inject,
+  PLATFORM_ID,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { VenueCard } from '../../../../components/cards/venue-card/venue-card';
 
 @Component({
@@ -35,12 +38,19 @@ export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy 
   private peekIndexLeft = -1;
   private ro?: ResizeObserver;
 
+  private isBrowser = false;
+
   constructor(
     private cdr: ChangeDetectorRef,
-    private zone: NgZone
-  ) {}
+    private zone: NgZone,
+    @Inject(PLATFORM_ID) private platformId: object
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+  }
 
   ngAfterViewInit() {
+    if (!this.isBrowser) return;
+
     this.updateIsDesktop();
 
     const el = this.scroller?.nativeElement;
@@ -50,20 +60,22 @@ export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy 
       this.updateNavState();
       this.cdr.detectChanges();
     }, 0);
-    
+
     setTimeout(() => {
       this.updateNavState();
       this.cdr.detectChanges();
     }, 250);
 
     this.zone.runOutsideAngular(() => {
-      this.ro = new ResizeObserver(() => {
-        this.zone.run(() => {
-          this.updateIsDesktop();
-          this.updateNavState();
+      if (typeof ResizeObserver !== 'undefined') {
+        this.ro = new ResizeObserver(() => {
+          this.zone.run(() => {
+            this.updateIsDesktop();
+            this.updateNavState();
+          });
         });
-      });
-      this.ro!.observe(el);
+        this.ro.observe(el);
+      }
 
       el.querySelectorAll('img').forEach((img) => {
         if (img.complete) return;
@@ -75,6 +87,8 @@ export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy 
   }
 
   ngOnDestroy() {
+    if (!this.isBrowser) return;
+
     clearTimeout(this.scrollEndTimer);
     this.ro?.disconnect();
     window.removeEventListener('resize', this.onResize);
@@ -87,6 +101,7 @@ export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy 
   }
 
   private onResize = () => {
+    if (!this.isBrowser) return;
     this.zone.run(() => {
       this.updateIsDesktop();
       this.updateNavState();
@@ -94,16 +109,20 @@ export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy 
   };
 
   private onImgLoad = () => {
+    if (!this.isBrowser) return;
     this.zone.run(() => {
       this.updateNavState();
     });
   };
 
   private updateIsDesktop() {
+    if (!this.isBrowser) return;
     this.isDesktop = window.matchMedia('(min-width: 640px)').matches;
   }
 
   onScroll() {
+    if (!this.isBrowser) return;
+
     this.updateNavState();
 
     if (!this.isDesktop) return;
@@ -118,35 +137,25 @@ export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy 
   }
 
   scrollPrev() {
-    console.log('scrollPrev clicked');
     this.scrollByCard(-1);
   }
 
   scrollNext() {
-    console.log('scrollNext clicked');
     this.scrollByCard(1);
   }
 
   private scrollByCard(dir: -1 | 1) {
     const el = this.scroller?.nativeElement;
-    if (!el) {
-      console.log('No scroller element');
-      return;
-    }
+    if (!el) return;
 
-    console.log('Scrolling by card:', dir);
     this.isProgrammaticScroll = true;
     clearTimeout(this.scrollEndTimer);
 
     const cards = Array.from(el.querySelectorAll<HTMLElement>('[data-card]'));
-    if (!cards.length) {
-      console.log('No cards found');
-      return;
-    }
+    if (!cards.length) return;
 
     const currentScroll = el.scrollLeft;
-    const gap = this.getGap(el);
-    
+
     let targetIndex = 0;
     for (let i = 0; i < cards.length; i++) {
       const cardLeft = cards[i].offsetLeft;
@@ -155,13 +164,10 @@ export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy 
       }
     }
 
-    console.log('Current index:', targetIndex, 'Moving to:', targetIndex + dir);
-
     const newIndex = Math.max(0, Math.min(cards.length - 1, targetIndex + dir));
     const targetCard = cards[newIndex];
-    
+
     if (targetCard) {
-      console.log('Scrolling to:', targetCard.offsetLeft);
       el.scrollTo({ left: targetCard.offsetLeft, behavior: 'smooth' });
     }
 
@@ -238,10 +244,9 @@ export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy 
       const cardLeft = cards[i].offsetLeft;
       const cardRight = cardLeft + cards[i].offsetWidth;
 
-
       const isCutOnLeft = cardLeft < viewLeft - eps;
       const isVisibleOnRight = cardRight > viewLeft + eps;
-      
+
       if (isCutOnLeft && isVisibleOnRight && viewLeft > eps) {
         peekLeft = i;
       }
@@ -267,7 +272,7 @@ export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy 
 
   private getGap(el: HTMLElement) {
     const s = getComputedStyle(el);
-    const g = parseFloat(s.gap || s.columnGap || '0');
+    const g = parseFloat(s.gap || (s as any).columnGap || '0');
     return Number.isFinite(g) ? g : 0;
   }
 }
