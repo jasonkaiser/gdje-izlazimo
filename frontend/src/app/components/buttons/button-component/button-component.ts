@@ -14,6 +14,7 @@ export class ButtonComponent {
 
     @Input() variant: Variant = 'outline';
     @Input() size: Size = 'sm';
+    @Input() type: 'button' | 'submit' = 'button';
 
     get classes() : string {
 

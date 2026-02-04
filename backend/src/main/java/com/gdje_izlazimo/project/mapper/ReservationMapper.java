@@ -27,7 +27,6 @@ public class ReservationMapper  {
             createdEntity.setPhone(dto.phone());
             createdEntity.setReservationDate(dto.reservationDate());
             createdEntity.setReservationTime(dto.reservationTime());
-            createdEntity.setTableType(dto.tableType());
             createdEntity.setSpecialRequests(dto.specialRequests());
 
             Venue venue_id = venueRepository.findById(dto.venueId()).orElseThrow(

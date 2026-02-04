@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.nio.file.AccessDeniedException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -84,6 +86,16 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(status)
                 .body(new ApiError(status.value(), ex.getMessage(),"RESERVATION_ALREADY_EXISTS"));
+    }
+
+    @ExceptionHandler(InvalidReservationStatusException.class)
+    public ResponseEntity<ApiError> handleInvalidReservationStatus(InvalidReservationStatusException ex){
+
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        return ResponseEntity
+                .status(status)
+                .body(new ApiError(status.value(), ex.getMessage(),"INVALID_RESERVATION_STATUS"));
 
     }
 
@@ -123,6 +135,17 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(InvalidRoleException.class)
+    public ResponseEntity<ApiError> handleRoleConflict(InvalidRoleException ex){
+
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        return ResponseEntity
+                .status(status)
+                .body(new ApiError(status.value(), ex.getMessage(),"ROLE_CONFLICT"));
+
+    }
+
     // Venue Handlers
 
     @ExceptionHandler(VenueNotFoundException.class)
@@ -144,6 +167,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(status)
                 .body(new ApiError(status.value(), ex.getMessage(),"VENUE_ALREADY_EXISTS"));
+
+    }
+
+    @ExceptionHandler(ReservationAccessDeniedException.class)
+    public ResponseEntity<ApiError> handleInvalidVenueReservation(ReservationAccessDeniedException ex){
+
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        return ResponseEntity
+                .status(status)
+                .body(new ApiError(status.value(), ex.getMessage(),"THIS_IS_NOT_YOUR_VENUE_RESERVATION"));
 
     }
 

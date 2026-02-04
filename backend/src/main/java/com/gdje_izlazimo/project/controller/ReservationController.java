@@ -119,6 +119,27 @@ public class ReservationController {
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
+    @PutMapping("/{id}/accept")
+    public ResponseEntity<ReservationResponse> acceptReservation(@AuthenticationPrincipal Jwt jwt,
+                                                                 @PathVariable UUID id){
+        return ResponseEntity.ok(reservationService.acceptReservation(id, jwt.getSubject()));
+    }
+
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
+    @PutMapping("/{id}/reject")
+    public ResponseEntity<ReservationResponse> rejectReservation(@AuthenticationPrincipal Jwt jwt,
+                                                                 @PathVariable UUID id){
+        return ResponseEntity.ok(reservationService.rejectReservation(id, jwt.getSubject()));
+    }
+
+    @PreAuthorize("hasAnyRole('user', 'admin')")
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<ReservationResponse> cancelReservation(@AuthenticationPrincipal Jwt jwt,
+                                                                 @PathVariable UUID id){
+        return ResponseEntity.ok(reservationService.cancelReservation(id, jwt.getSubject()));
+    }
+
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReservation(@PathVariable UUID id){
         reservationService.deleteReservation(id);

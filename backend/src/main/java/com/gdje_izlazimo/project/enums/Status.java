@@ -3,8 +3,8 @@ package com.gdje_izlazimo.project.enums;
 public enum Status {
 
     ACCEPTED,
-    DECLINED,
+    REJECTED,
     PENDING,
-    CANCELED
+    CANCELLED
 
 }

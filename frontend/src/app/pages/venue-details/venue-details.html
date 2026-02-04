@@ -81,7 +81,7 @@
             <button
               type="button"
               (click)="prevImage(vm.images.length)"
-              class="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 h-[46px] w-[94px] sm:w-[121px] rounded-full border border-[#9F9F9F] bg-[#020202]/80 backdrop-blur flex items-center justify-center transition-all duration-200 hover:border-white/60 hover:bg-[#020202]/95 hover:scale-105 active:scale-95"
+              class="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 h-[46px] w-[60px] sm:w-[121px] rounded-full border border-[#9F9F9F] bg-[#020202]/80 backdrop-blur flex items-center justify-center transition-all duration-200 hover:border-white/60 hover:bg-[#020202]/95 hover:scale-105 active:scale-95"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path d="M15 18l-6-6 6-6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -91,7 +91,7 @@
             <button
               type="button"
               (click)="nextImage(vm.images.length)"
-              class="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 h-[46px] w-[94px] sm:w-[121px] rounded-full border border-[#9F9F9F] bg-[#020202]/80 backdrop-blur flex items-center justify-center transition-all duration-200 hover:border-white/60 hover:bg-[#020202]/95 hover:scale-105 active:scale-95"
+              class="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 h-[46px] w-[60px] sm:w-[121px] rounded-full border border-[#9F9F9F] bg-[#020202]/80 backdrop-blur flex items-center justify-center transition-all duration-200 hover:border-white/60 hover:bg-[#020202]/95 hover:scale-105 active:scale-95"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                 <path d="M9 6l6 6-6 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -124,15 +124,15 @@
                 <div class="flex justify-center lg:justify-start mb-8">
                   <button
                     type="button"
-                    (click)="onReserve(vm.venueId)"
+                    (click)="toggleReservation()"
                     class="group relative px-8 sm:px-10 py-2 rounded-full overflow-hidden
-                           font-dm font-semibold text-xl sm:text-[23px] text-white mb-14
+                           font-dm font-light text-xl sm:text-[23px] text-white mb-14
                            bg-gradient-to-br from-[#7C3AED] to-[#472187]
                            shadow-[0px_0px_150px_rgba(109,51,209,0.8)]
                            transition-all duration-300 hover:shadow-[0px_0px_200px_rgba(109,51,209,1)]
                            hover:scale-105 active:scale-95"
                   >
-                    <span class="relative z-10">REZERVIŠI</span>
+                    <span class="relative z-10">Rezervisi</span>
                     <div class="absolute inset-0 bg-gradient-to-br from-[#8B4FED] to-[#5731A7] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </button>
                 </div>
@@ -389,11 +389,11 @@
 
         <!-- STICKY CTA BUTTON -->
         <div class="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
-          <!-- Desktop: Bottom right -->
+          <!-- Desktop: Bottom right  -->
           <div class="hidden lg:block absolute bottom-8 right-8 pointer-events-auto">
             <button
               type="button"
-              (click)="onReserve(vm.venueId)"
+              (click)="toggleReservation()"
               class="group relative px-10 py-3.5 rounded-full overflow-hidden
                      font-dm font-semibold text-lg text-white
                      bg-gradient-to-br from-[#7C3AED] to-[#472187]
@@ -403,7 +403,7 @@
                      hover:scale-105 active:scale-95
                      border border-[#7C3AED]/30"
             >
-              <span class="relative z-10">REZERVIŠI SAD</span>
+              <span class="relative z-10">Rezervisi Sad</span>
               <div class="absolute inset-0 bg-gradient-to-br from-[#8B4FED] to-[#5731A7] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
           </div>
@@ -413,7 +413,7 @@
             <div class="bg-[#020202]/95 backdrop-blur-xl border-t border-white/10 px-4 py-3 shadow-[0px_-4px_20px_rgba(0,0,0,0.3)]">
               <button
                 type="button"
-                (click)="onReserve(vm.venueId)"
+                (click)="toggleReservation()"
                 class="group relative w-full px-8 py-3.5 rounded-full overflow-hidden
                        font-dm font-semibold text-lg text-white
                        bg-gradient-to-br from-[#7C3AED] to-[#472187]
@@ -422,13 +422,23 @@
                        hover:shadow-[0px_6px_25px_rgba(124,58,237,0.6)]
                        active:scale-95"
               >
-                <span class="relative z-10">REZERVIŠI SAD</span>
+                <span class="relative z-10">Rezervisi Sad</span>
                 <div class="absolute inset-0 bg-gradient-to-br from-[#8B4FED] to-[#5731A7] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
             </div>
           </div>
         </div>
       }
+        @if(reservationModulShown){
+        <app-reservation-modal (close)= "reservationModulShown = false" 
+                               [venueName]="vm.venueName" 
+                               [venueTableTypes]="vm.tableTypes"
+                               [venueId]="vm.venueId"
+                               (submitReservation)="createReservation($event)">
+                               </app-reservation-modal>
+       }
     }
   </div>
+
+
 </section>

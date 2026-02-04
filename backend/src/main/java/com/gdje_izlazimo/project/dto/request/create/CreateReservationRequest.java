@@ -20,7 +20,7 @@ public record CreateReservationRequest(
         @NotNull(message = "Reservation Time is required")
         LocalTime reservationTime,
         @NotNull(message = "Table Type is required")
-        TableType tableType,
+        UUID tableTypeId,
         @Min(value = 1, message = "Number of people must be at least 1")
         int numberOfPeople,
         String specialRequests

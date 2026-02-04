@@ -13,13 +13,18 @@ import { VenueTableTypeService } from '../../core/api/venue-table-type-service';
 import { TableTypeService } from '../../core/api/table-type-service';
 import { VenueOperatingHoursService } from '../../core/api/venue-operating-hours-service';
 
-import { VenueResponseDto } from '../../core/models/venues/venue-response.dto';
 import { VenueTableTypeResponseDto } from '../../core/models/venue-table-types/venue-table-type-response.dto';
 import { TableTypeResponseDto } from '../../core/models/table-types/table-type-response.dto';
 import { VenueOperatingHoursResponseDto } from '../../core/models/venue-operating-hours/venue-operating-hours-response.dto';
 
+import { ReservationModal } from '../../components/modals/reservation-modal/reservation-modal';
+import { AuthService } from '../../core/auth/auth.service';
+import { CreateReservationRequest } from '../../core/models/reservations/create-reservation.request';
+import { ReservationService } from '../../core/api/reservation-service';
+
 type TableTypeVm = {
   id: string;
+  tableTypeId: string;
   title: string;
   description: string;
   capacityLabel: string;
@@ -43,12 +48,13 @@ type Vm = {
 @Component({
   selector: 'app-venue-details',
   standalone: true,
-  imports: [InViewDirective, Badge, AsyncPipe],
+  imports: [InViewDirective, Badge, AsyncPipe, ReservationModal],
   templateUrl: './venue-details.html',
   styleUrls: ['./venue-details.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VenueDetails {
+
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly venueService = inject(VenueService);
@@ -56,16 +62,22 @@ export class VenueDetails {
   private readonly tableTypeService = inject(TableTypeService);
   private readonly venueOperatingHoursService = inject(VenueOperatingHoursService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly authService = inject(AuthService);
+  private readonly reservationService = inject(ReservationService);
 
   sliderIndex = 0;
   openId: string | null = null;
-
+  
   titleShown = false;
   sliderShown = false;
   reserveShown = false;
   tablesShown = false;
   whyUsShown = false;
   aboutShown = false;
+  
+  reservationModulShown = false;
+  reservationErrorMsg = '';
+
 
   private readonly retry$ = new BehaviorSubject<void>(undefined);
 
@@ -249,6 +261,7 @@ export class VenueDetails {
             const title = tt.name ?? 'Sto';
             return {
               id: String(vtt.id),
+              tableTypeId: ttId,
               title,
               description: tt.description ?? 'Detalji će biti dostupni uskoro.',
               capacityLabel: this.formatCapacityLabel(title),
@@ -310,4 +323,45 @@ export class VenueDetails {
     };
     return map[type] ?? ['https://images.unsplash.com/photo-1514933651103-005eec06c04b'];
   }
+
+  toggleReservation() {
+
+    if(!this.authService.authenticated()){
+        this.authService.login();
+
+    } else {
+      
+      this.reservationModulShown = !this.reservationModulShown;
+
+    }
+  }
+
+  createReservation(payload: CreateReservationRequest) {
+    this.reservationErrorMsg = '';
+
+    this.reservationService.createReservation(payload).subscribe({
+      next: () => {
+        this.reservationModulShown = false;
+        console.log('Rezervacija uspješna!');
+      },
+      error: (err) => {
+        console.error(err);
+
+        if (err.status === 409) {
+          this.reservationErrorMsg = 'Već imaš rezervaciju za ovaj lokal danas.';
+          return;
+        }
+
+        if (err.status === 400) {
+          this.reservationErrorMsg = err.error?.message ?? 'Neispravan zahtjev.';
+          return;
+        }
+
+        this.reservationErrorMsg = 'Došlo je do greške. Pokušaj ponovo.';
+      },
+    });
+  }
+
+
+
 }

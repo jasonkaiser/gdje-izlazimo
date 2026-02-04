@@ -42,6 +42,12 @@ public class TableTypeService {
 
     }
 
+    public TableType findEntityById(UUID id){
+
+        return tableTypeRepository.findById(id).orElseThrow(
+                () -> new TableTypeNotFoundException("Table Type does not exist"));
+    };
+
     public TableTypeResponse createTableType(CreateTableTypeRequest dto){
 
         TableType createdTableType = tableTypeMapper.toEntity(dto);
