@@ -1,1 +1,15 @@
-<p>reservations works!</p>
+
+<section class="relative w-full overflow-visible py-16 sm:py-20 mt-15 z-50 px-7 sm:px-18">
+       <h2 class="font-sora text-5xl font-regular tracking-tight max-sm:justify-self-center text-white">
+        Tvoje Rezervacije
+      </h2>
+    
+      <div class="mt-20 flex flex-wrap gap-20">
+
+        @for (r of reservations; track r.id) {
+        <app-reservation-card [reservation]="r" />
+        }
+
+      </div>
+</section>
+

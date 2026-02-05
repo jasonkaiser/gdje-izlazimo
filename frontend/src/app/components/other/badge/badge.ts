@@ -27,27 +27,24 @@ export class Badge {
 
       // Venue category
       category:
-        'text-[#FBBF24] bg-[#FBBF24]/15 border-[#FBBF24]/40',
+        'text-[#FBBF24] bg-[#FBBF24]/15 border border-[#FBBF24]/40',
 
-      // Reservation confirmed
       success:
         'text-[#10B981] bg-[#10B981]/15 border-[#10B981]/40',
 
-      // Reservation pending
       pending:
         'text-[#FBBF24] bg-[#FBBF24]/15 border-[#FBBF24]/40',
 
-      // Reservation cancelled / error
       error:
-        'text-[#EF4444] bg-[#EF4444]/15 border-[#EF4444]/40',
+        'text-[#EF4444] bg-[#EF4444]/15  border border-[#EF4444]/40',
 
       // VIP / Featured
       highlight:
-        'text-black bg-[#FBBF24] border-[#FBBF24]/60',
+        'text-black bg-[#FBBF24] border border-[#FBBF24]/60',
 
       // Neutral info
       neutral:
-        'text-white/80 bg-white/5 border-white/10',
+        'text-white/80 bg-white/5 border border-white/10',
     };
 
     return [base, variants[this.variant]].join(' ');
