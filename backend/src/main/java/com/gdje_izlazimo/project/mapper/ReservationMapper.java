@@ -43,11 +43,16 @@ public class ReservationMapper  {
     }
 
     public ReservationResponse toResponse(Reservation entity){
+
+        var venue = entity.getVenueId();
+
         return new ReservationResponse(
                 entity.getId(),
                 entity.getUserId().getId(),
                 entity.getVenueId().getId(),
                 entity.getPhone(),
+                venue.getName(),
+                venue.getAddressName(),
                 entity.getReservationDate(),
                 entity.getReservationTime(),
                 entity.getNumberOfPeople(),

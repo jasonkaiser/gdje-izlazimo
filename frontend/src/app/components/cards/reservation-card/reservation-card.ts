@@ -1,6 +1,7 @@
-import { Component, Input, computed } from '@angular/core';
+import { Component, Input, Output, computed, EventEmitter } from '@angular/core';
 import { ButtonComponent } from '../../buttons/button-component/button-component';
 import { ReservationStatus } from '../../../core/models/reservations/reservation-status.enum';
+import { ReservationResponseDto } from '../../../core/models/reservations/reservation-response.dto';
 
 
 type StatusStyle = {
@@ -18,15 +19,18 @@ type StatusStyle = {
 })
 export class ReservationCard {
 
-  @Input({ required: true}) reservation!: {
-    venueName: string;
-    address: string;
-    dateLabel: string;
-    timeLabel: string;
-    numberOfPeople: number;
-    status : ReservationStatus | ReservationStatus.PENDING;
+  @Input({ required: true }) reservation: ReservationResponseDto | null = null;
+
+  @Output() cancel = new EventEmitter<string>();
+  @Output() viewDetails = new EventEmitter<string>();
+
+  onCancel(){
+    this.cancel.emit(this.reservation?.id);
   }
 
+  onViewDetails(){
+    this.viewDetails.emit(this.reservation?.id);
+  }
 
   readonly statusStyles: Record<ReservationStatus, StatusStyle> = {
 
@@ -54,7 +58,10 @@ export class ReservationCard {
     };
 
   
-  readonly style = computed(() => this.statusStyles[this.reservation.status]);
+    readonly style = computed(() => {
+      const status = this.reservation?.status;
+      return status ? this.statusStyles[status] : this.statusStyles.PENDING;
+    });
 
   };
 

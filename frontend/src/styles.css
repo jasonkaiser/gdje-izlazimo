@@ -38,6 +38,104 @@ body {
   --bg: #020202;
 }
 
+/* Gradients for Titles / Sections... */
+.gradient-text {
+  position: relative;
+  display: inline-block;
+
+  background: radial-gradient(
+    65% 65% at 50% 45%,
+    #ffffff 0%,
+    #ffffff 32%,
+    #d6d6d6 55%,
+    #a0a0a0 75%,
+    #7a7a7a 100%
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  animation: gradient-breathe 6s ease-in-out infinite;
+}
+
+.gradient-text::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+
+  width: 60%;
+  height: 2px;
+  border-radius: 999px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    #ffffff 35%,
+    #cfcfcf 65%,
+    rgba(255, 255, 255, 0) 100%
+  );
+
+  opacity: 0.45;
+  animation: underline-breathe 6s ease-in-out infinite;
+}
+
+@keyframes gradient-breathe {
+  0% {
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.1));
+  }
+  50% {
+    filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.15));
+  }
+  100% {
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.1));
+  }
+}
+
+@keyframes underline-breathe {
+  0% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.35;
+  }
+}
+
+
+.hero-title {
+  display: inline-block;
+
+  /* ovo sprječava "cutted bottom" */
+  line-height: 1.06;
+  padding-bottom: 0.08em; /* mali buffer za descenders (g, j, z...) */
+
+  /* modern white center + gray edges */
+  background: linear-gradient(
+    90deg,
+    #8a8a8a 0%,
+    #bdbdbd 18%,
+    #ffffff 45%,
+    #ffffff 55%,
+    #bdbdbd 82%,
+    #8a8a8a 100%
+  );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  /* premium depth (bez "glow box") */
+  filter:
+    drop-shadow(0 1px 0 rgba(255,255,255,0.06))
+    drop-shadow(0 22px 70px rgba(0,0,0,0.75));
+}
+
+
 
 
 /* Background Cards Animation */

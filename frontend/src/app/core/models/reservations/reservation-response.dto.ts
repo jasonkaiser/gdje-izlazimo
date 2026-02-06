@@ -5,11 +5,13 @@ export interface ReservationResponseDto {
   id: string;          
   userId: string;      
   venueId: string;    
+  venueName: string;
+  venueAddress: string;
   phone: string;
   reservationDate: string; 
   reservationTime: string;
   numberOfPeople: number;
-  tableTypeId: string;
+  tableTypeId?: any;
   status: ReservationStatus;
   specialRequests?: string;
   createdAt: string;   

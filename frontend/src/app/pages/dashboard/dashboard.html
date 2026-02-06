@@ -50,17 +50,22 @@
   <!-- main hero content -->
   <div class="relative z-10 justify-self-center px-4">
     <div class="mt-35 max-sm:mt-30 mb-20">
-      <h1 class="text-white font-sora font-semibold text-8xl max-sm:text-center max-sm:text-6xl">
-        Gdje Izlazimo
-      </h1>
+  <h1 class="text-white font-sora font-bold text-8xl max-sm:text-6xl hero-title">
+    Gdje Izlazimo
+    
+  </h1>
 
-      <p
-        class="text-[var(--text-secondary)] text-[22px] justify-self-end italic font-light
-               max-sm:text-[14.5px] max-sm:mt-2 max-sm:justify-self-center"
-      >
-        Pronađi lokal i <span class="text-white">rezerviši</span> sto u
-        <span class="text-white">30 sekundi</span>
-      </p>
+  <p
+    class="text-[18px] max-sm:-mt-2  -mt-4 italic font-light text-white/55
+           max-sm:text-[14.5px] max-sm:text-center
+           justify-self-end"
+    style="text-align:right;"
+  >
+    Pronađi lokal i <span class="text-white">rezerviši</span> sto u
+    <span class="text-white">30 sekundi</span>
+  </p>
+
+
     </div>
 
     <app-search-bar [live]="false" (search)="goToVenues($event)"></app-search-bar>

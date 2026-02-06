@@ -13,6 +13,8 @@ public record ReservationResponse(
         UUID id,
         UUID userId,
         UUID venueId,
+        String venueAddress,  // v.addressName
+        String venueName,
         String phone,
         LocalDate reservationDate,
         LocalTime reservationTime,

@@ -12,11 +12,15 @@ import com.gdje_izlazimo.project.exception.custom.*;
 import com.gdje_izlazimo.project.mapper.ReservationMapper;
 import com.gdje_izlazimo.project.repository.ReservationRepository;
 import com.gdje_izlazimo.project.repository.TableTypeRepository;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -67,28 +71,34 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findReservationsByUserId(UUID userId, Pageable pageable) {
-        List<Reservation> reservations = reservationRepository.findByUserId_Id(userId, pageable).getContent();
-
-        return reservations.stream()
-                .map(reservationMapper::toResponse)
-                .toList();
+        return reservationRepository.findResponsesByUserId(userId, pageable).getContent();
     }
 
-    public ReservationResponse createReservation(CreateReservationRequest dto, String keycloakSub){
+
+
+
+    public ReservationResponse createReservation(CreateReservationRequest dto, String keycloakSub) {
+
+        LocalDateTime requested = LocalDateTime.of(dto.reservationDate(), dto.reservationTime());
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Sarajevo")); // ili tvoja zona
+
+        if (requested.isBefore(now)) {
+            throw new InvalidReservationDateException("Reservation date/time cannot be in the past");
+        }
 
         UUID userId = UUID.fromString(keycloakSub);
         TableType table = tableTypeService.findEntityById(dto.tableTypeId());
         User user = userService.getOrCreate(userId);
 
-        if (reservationRepository.existsByUserId_IdAndVenueId_IdAndReservationDate(
+        if (reservationRepository.existsByUserId_IdAndVenueId_IdAndReservationDateAndReservationTime(
                 user.getId(),
                 dto.venueId(),
-                dto.reservationDate())) {
-            throw new ReservationAlreadyExistsException("You already have a reservation at this venue for this date");
+                dto.reservationDate(),
+                dto.reservationTime())) {
+            throw new ReservationAlreadyExistsException("You already have a reservation at this venue for this date/time");
         }
 
         Reservation createdReservation = reservationMapper.toEntity(dto);
-
         createdReservation.setUserId(user);
         createdReservation.setTableType(table);
         createdReservation.setStatus(Status.PENDING);
@@ -96,6 +106,7 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(createdReservation);
         return reservationMapper.toResponse(savedReservation);
     }
+
 
 
     public ReservationResponse updateReservation(UpdateReservationRequest dto, UUID id){
@@ -110,7 +121,7 @@ public class ReservationService {
 
     }
 
-    public ReservationResponse acceptReservation(UUID id, String keycloakSub) {
+    public void acceptReservation(UUID id, String keycloakSub) {
 
         Reservation reservation = reservationRepository.findById(id).orElseThrow(
                 () -> new ReservationNotFoundException("Reservation does not exist")
@@ -136,12 +147,11 @@ public class ReservationService {
 
         reservation.setStatus(Status.ACCEPTED);
 
-        Reservation saved = reservationRepository.save(reservation);
-        return reservationMapper.toResponse(saved);
+        reservationRepository.save(reservation);
     }
 
 
-    public ReservationResponse rejectReservation(UUID id, String keycloakSub) {
+    public void rejectReservation(UUID id, String keycloakSub) {
 
         Reservation reservation = reservationRepository.findById(id).orElseThrow(
                 () -> new ReservationNotFoundException("Reservation does not exist")
@@ -166,21 +176,31 @@ public class ReservationService {
         }
 
         reservation.setStatus(Status.REJECTED);
+        reservationRepository.save(reservation);
 
-        Reservation saved = reservationRepository.save(reservation);
-        return reservationMapper.toResponse(saved);
     }
 
-    public ReservationResponse cancelReservation(UUID id, String keycloakSub) {
+    public void cancelReservation(UUID id, String keycloakSub) {
 
         Reservation reservation = reservationRepository.findById(id).orElseThrow(
                 () -> new ReservationNotFoundException("Reservation does not exist")
         );
 
-        if (reservation.getStatus() != Status.PENDING) {
-            throw new InvalidReservationStatusException("Only PENDING reservations can be cancelled");
-            // later for the status.accepted version
-            // if (reservation.getStatus() != Status.PENDING && reservation.getStatus() != Status.ACCEPTED) ...
+        if (reservation.getStatus() != Status.PENDING && reservation.getStatus() != Status.ACCEPTED) {
+            throw new InvalidReservationStatusException("Only PENDING / ACCEPTED reservations can be cancelled");
+        }
+
+        if(reservation.getStatus() == Status.ACCEPTED){
+            LocalTime reservationTime = reservation.getReservationTime();
+            LocalTime cancelDeadline = reservationTime.minusHours(2);
+
+            if(LocalTime.now().isAfter(cancelDeadline)){
+
+                throw new InvalidReservationDateException("Reservation can be cancelled up to 2 Hours before the start time");
+
+
+            }
+
         }
 
         UUID actorId = UUID.fromString(keycloakSub);
@@ -194,9 +214,7 @@ public class ReservationService {
         }
 
         reservation.setStatus(Status.CANCELLED);
-
-        Reservation saved = reservationRepository.save(reservation);
-        return reservationMapper.toResponse(saved);
+        reservationRepository.save(reservation);
     }
 
 

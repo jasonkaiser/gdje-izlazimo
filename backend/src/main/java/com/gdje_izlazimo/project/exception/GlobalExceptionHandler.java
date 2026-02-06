@@ -181,6 +181,17 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(InvalidReservationDateException.class)
+    public ResponseEntity<ApiError> handleInvalidReservationDate(InvalidReservationDateException ex){
+
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        return ResponseEntity
+                .status(status)
+                .body(new ApiError(status.value(), ex.getMessage(),"YOU_CAN_NOT_MAKE_A_RESERVATION_IN_THE_OAST"));
+
+    }
+
     @ExceptionHandler(VenueImageNotFoundException.class)
     public ResponseEntity<ApiError> handleVenueImageNotFound(VenueImageNotFoundException ex){
 

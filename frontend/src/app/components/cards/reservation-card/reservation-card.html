@@ -1,5 +1,6 @@
-<article
-  class="group relative w-full max-w-[380px] sm:max-w-[400px]
+@if(reservation){
+  <article
+  class="group relative w-full max-w-[380px] sm:max-w-[400px] 
          rounded-3xl overflow-hidden
          bg-[#090909]
          border border-white/10
@@ -124,13 +125,13 @@
              transition-transform duration-300
              group-hover:translate-x-[1px]"
     >
-      {{ reservation.venueName }}
+      {{ reservation.venueName }} 
     </h3>
     <p
       class="mb-5 font-dm font-light text-[12px]
              tracking-[0.02em] text-white/60"
     >
-      {{ reservation.address }}
+      {{ reservation.venueAddress }}
     </p>
   </div>
 
@@ -149,7 +150,7 @@
         <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
         <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="1.8" />
       </svg>
-      <span class="font-dm font-medium text-[12px] text-white/80">{{ reservation.timeLabel }}</span>
+      <span class="font-dm font-medium text-[12px] text-white/80">{{ reservation.reservationTime }}</span>
     </div>
 
     <div
@@ -165,7 +166,7 @@
         <path d="M4 9h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
         <path d="M6 5h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
       </svg>
-      <span class="font-dm font-medium text-[12px] text-white/80">{{ reservation.dateLabel }}</span>
+      <span class="font-dm font-medium text-[12px] text-white/80">{{ reservation.reservationDate }}</span>
     </div>
 
     <div
@@ -186,12 +187,13 @@
 
   <!-- Actions -->
   <div class="relative mt-15 flex items-center justify-between gap-3">
-    <app-button-component class="shrink-0" variance="secondary" size="sm">
+    <app-button-component class="shrink-0" variance="secondary" size="sm" (click)="onViewDetails()">
       Vidi detaljno
     </app-button-component>
     @if (reservation.status === 'PENDING' || reservation.status === 'ACCEPTED') {
       <button
         type="button"
+        (click)="onCancel()"
         class="shrink-0 rounded-xl
               bg-white/5 border border-white/15
               px-4 py-2
@@ -200,6 +202,7 @@
               transition-all duration-300
               hover:text-white/85 hover:bg-white/10 hover:border-white/25
               hover:-translate-y-px"
+              
       >
         Otkaži
       </button>
@@ -207,3 +210,4 @@
 
   </div>
 </article>
+}
