@@ -68,12 +68,15 @@ export class ReservationService {
     return this.http.put<ReservationResponseDto>(`${this.baseUrl}/${id}`, request);
   }
 
-    acceptReservation(id: string) {
+  acceptReservation(id: string) {
     return this.http.put<ReservationResponseDto>(`${this.baseUrl}/${id}/accept`, {});
   }
 
-  rejectReservation(id: string) {
-    return this.http.put<ReservationResponseDto>(`${this.baseUrl}/${id}/reject`, {});
+  rejectReservation(id: string, reason?: string) {
+    return this.http.put<ReservationResponseDto>(
+      `${this.baseUrl}/${id}/reject`, 
+      { reason: reason || null }
+    );
   }
 
   cancelReservation(id: string) {

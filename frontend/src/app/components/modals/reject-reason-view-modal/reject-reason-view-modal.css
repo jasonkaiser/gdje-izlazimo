@@ -1,4 +1,4 @@
-/* reject-reason-modal.css */
+/* reject-reason-view-modal.css */
 
 /* Slide-up animation for modal on mobile */
 @keyframes slide-up {
@@ -14,12 +14,6 @@
 
 .animate-slide-up {
   animation: slide-up 0.3s ease-out;
-}
-
-/* Focus styles for textarea */
-.reject-textarea:focus {
-  background: rgba(255,255,255,0.07) !important;
-  border-color: rgba(255,255,255,0.2) !important;
 }
 
 /* Modal backdrop fade-in */

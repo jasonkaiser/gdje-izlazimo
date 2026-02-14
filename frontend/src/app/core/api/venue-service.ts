@@ -74,4 +74,8 @@ export class VenueService {
 
     }
 
+    getMyVenue() {
+      return this.http.get<VenueResponseDto>(`${this.baseUrl}/my-venue`);
+    }
+
 }

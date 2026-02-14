@@ -1,12 +1,13 @@
-import { Component, Input, forwardRef } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { Component, Input, forwardRef, HostListener, ElementRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-dropdown',
   standalone: true,
-  imports: [NgClass],
+  imports: [CommonModule],
   templateUrl: './dropdown.html',
+  styleUrls: ['./dropdown.css'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -24,9 +25,31 @@ export class AppDropdown implements ControlValueAccessor {
   disabled = false;
   value: string | number | null = '';
   isOpen = false;
+  isClosing = false;
 
   private onChange: (v: any) => void = () => {};
   private onTouched: () => void = () => {};
+
+  constructor(private elementRef: ElementRef) {}
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    const clickedInside = this.elementRef.nativeElement.contains(target);
+    
+    if (this.isOpen && !clickedInside) {
+      this.closeDropdown();
+    }
+  }
+
+  private closeDropdown(): void {
+    this.isClosing = true;
+    
+    setTimeout(() => {
+      this.isOpen = false;
+      this.isClosing = false;
+    }, 150); 
+  }
 
   writeValue(v: any): void {
     this.value = v ?? '';
@@ -44,39 +67,29 @@ export class AppDropdown implements ControlValueAccessor {
     this.disabled = isDisabled;
   }
 
-  toggleDropdown() {
+  toggleDropdown(event: Event): void {
+    event.stopPropagation();
+    
     if (!this.disabled) {
-      this.isOpen = !this.isOpen;
       if (this.isOpen) {
+        this.closeDropdown();
+      } else {
+        this.isOpen = true;
         this.onTouched();
       }
     }
   }
 
-  selectOption(optionValue: string | number) {
+  selectOption(optionValue: string | number, event: Event): void {
+    event.stopPropagation();
+    
     this.value = optionValue;
     this.onChange(optionValue);
-    this.isOpen = false;
+    this.closeDropdown();
   }
 
   get selectedLabel(): string {
     const selected = this.options.find(opt => opt.value === this.value);
     return selected ? selected.label : this.placeholder;
-  }
-
-  get shellClasses(): string {
-    const base =
-      'relative w-full rounded-xl px-4 py-3 cursor-pointer ' +
-      'bg-white/5 border backdrop-blur-md transition ' +
-      'hover:border-white/20 ';
-
-    const focus = this.isOpen 
-      ? 'border-[#7C3AED]/55 shadow-[0_0_0_1px_rgba(124,58,237,0.25)]'
-      : '';
-
-    const border = this.error ? 'border-[#EF4444]/40' : 'border-white/10';
-    const state = this.disabled ? 'opacity-50 pointer-events-none' : '';
-
-    return [base, focus, border, state].join(' ');
   }
 }

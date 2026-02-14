@@ -1,4 +1,5 @@
-import { Component, Input, Output, computed, EventEmitter } from '@angular/core';
+import { Component, Input, Output, computed, EventEmitter, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ButtonComponent } from '../../buttons/button-component/button-component';
 import { ReservationStatus } from '../../../core/models/reservations/reservation-status.enum';
 import { ReservationResponseDto } from '../../../core/models/reservations/reservation-response.dto';
@@ -13,7 +14,7 @@ type StatusStyle = {
 @Component({
   selector: 'app-reservation-card',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, CommonModule],
   templateUrl: './reservation-card.html',
   styleUrl: './reservation-card.css',
 })
@@ -23,6 +24,23 @@ export class ReservationCard {
 
   @Output() cancel = new EventEmitter<string>();
   @Output() viewDetails = new EventEmitter<string>();
+  @Output() viewRejectReason = new EventEmitter<string>();
+
+  menuOpen = false;
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    // Close menu when clicking outside
+    this.menuOpen = false;
+  }
+
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  closeMenu() {
+    this.menuOpen = false;
+  }
 
   onCancel(){
     this.cancel.emit(this.reservation?.id);
@@ -30,6 +48,10 @@ export class ReservationCard {
 
   onViewDetails(){
     this.viewDetails.emit(this.reservation?.id);
+  }
+
+  onViewRejectReason(){
+    this.viewRejectReason.emit(this.reservation?.id);
   }
 
   readonly statusStyles: Record<ReservationStatus, StatusStyle> = {
@@ -60,10 +82,7 @@ export class ReservationCard {
   
     readonly style = computed(() => {
       const status = this.reservation?.status;
-      return status ? this.statusStyles[status] : this.statusStyles.PENDING;
+      return status ? this.statusStyles[status] : this.statusStyles[ReservationStatus.PENDING];
     });
 
-  };
-
- 
-
+  }

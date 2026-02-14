@@ -2,12 +2,12 @@ import { Routes } from '@angular/router';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { VenueDetails } from './pages/venue-details/venue-details';
 import { Reservations } from './pages/reservations/reservations';
-import { VenuePanel } from './pages/venue-panel/venue-panel';
 import { AdminPanel } from './pages/admin-panel/admin-panel';
 import { NotFound } from './pages/not-found/not-found';
 import { authGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
 import { VenuesComponent } from './pages/venues/venues';
+import { VenuePanelComponent } from './pages/venue-panel/venue-panel';
 
 export const routes: Routes = [
 
@@ -32,7 +32,7 @@ export const routes: Routes = [
         },
         {
             path: 'venue-panel',
-            component: VenuePanel,
+            component: VenuePanelComponent,
             canActivate: [authGuard, roleGuard(['venue_owner'])]
 
         },

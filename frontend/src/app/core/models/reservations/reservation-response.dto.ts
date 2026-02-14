@@ -14,6 +14,7 @@ export interface ReservationResponseDto {
   tableTypeId?: any;
   status: ReservationStatus;
   specialRequests?: string;
+  rejectReason?: string;
   createdAt: string;   
   updatedAt: string;  
 }

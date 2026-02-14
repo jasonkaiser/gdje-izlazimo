@@ -1,0 +1,247 @@
+<!-- venue-reservation-card.html — PREMIUM REDESIGN matching reservation-card -->
+
+@if(reservation){
+  <article
+  class="group relative w-full max-w-[380px] sm:max-w-[400px]  
+         rounded-3xl overflow-hidden
+         bg-[#090909]
+         border border-white/10
+         shadow-[0_10px_30px_rgba(0,0,0,0.55)]
+         px-7 sm:px-8 py-4 sm:py-5
+         transition-all duration-300 ease-out
+         hover:-translate-y-1 hover:shadow-[0_18px_55px_rgba(0,0,0,0.70)]
+         hover:border-white/16"
+>
+  <!-- LEFT ACCENT (realistic, follows corners + fades) -->
+  <!-- 1) main vertical glow line with top/bottom fade -->
+<span
+  class="pointer-events-none absolute left-0 top-3 bottom-3 w-[2px]
+         rounded-full
+         opacity-70
+         transition-all duration-300
+         group-hover:opacity-100
+         group-hover:scale-y-[1.02]
+         group-hover:filter-[brightness(1.1)]"
+  [style.background]="
+    'linear-gradient(to bottom,' +
+    style().accent + ',0) 0%,' +
+    style().accent + ',0.95) 18%,' +
+    style().accent + ',0.95) 82%,' +
+    style().accent + ',0) 100%)'
+  "
+  [style.boxShadow]="
+    reservation.status === 'CANCELLED'
+      ? 'none'
+      : '0 0 30px ' + style().accent + ',0.85)'
+  "
+></span>
+
+  <!-- 2) top-left corner stroke (wraps around radius) -->
+    <span
+      class="pointer-events-none absolute left-0 top-0 h-[44px] w-[150px]
+            rounded-tl-3xl
+            border-l-[2px] border-t-[2px]
+            opacity-20
+            transition-opacity duration-300
+            group-hover:opacity-45
+            [mask-image:radial-gradient(circle_at_top_left,black_25%,transparent_75%)]"
+      [style.borderColor]="style().accent + ',1)'"
+    ></span>
+
+    <span
+      class="pointer-events-none absolute left-0 bottom-0 h-[44px] w-[150px]
+            rounded-bl-3xl
+            border-l-[2px] border-b-[2px]
+            opacity-20
+            transition-opacity duration-300
+            group-hover:opacity-45
+            [mask-image:radial-gradient(circle_at_bottom_left,black_25%,transparent_75%)]"
+      [style.borderColor]="style().accent + ',1)'"
+    ></span>
+
+  <!-- SUBTLE hover sheen (modern glass) -->
+  <span
+    class="pointer-events-none absolute inset-0 opacity-0
+           bg-[linear-gradient(120deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_35%,rgba(255,255,255,0.04)_70%,rgba(255,255,255,0)_100%)]
+           transition-opacity duration-300
+           group-hover:opacity-100"
+  ></span>
+
+  <!-- radial highlight overlay -->
+  <span
+    class="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full
+           opacity-60 blur-2xl
+           bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0)_60%)]
+           transition-all duration-300
+           group-hover:opacity-90 group-hover:blur-3xl"
+  ></span>
+
+  <!-- Top row: STATUS BADGE + TIMESTAMP -->
+  <div class="relative flex items-start justify-between gap-3 mb-6">
+    <!-- STATUS BADGE -->
+    <div
+    class="inline-flex items-center rounded-full px-3 py-1 transition-all duration-300"
+    [style.background]="style().badgeBg"
+  >
+    <span
+      class="font-sora text-[10px] sm:text-[11px]
+            font-light tracking-[0.14em] uppercase"
+      [style.color]="style().badgeText"
+    >
+      {{ getStatusLabel(reservation.status) }}
+    </span>
+  </div>
+
+    <!-- Created at timestamp -->
+    <span class="font-dm text-[10px] sm:text-[11px] text-white/40 tracking-wide">
+      {{ reservation.createdAt | date:'dd.MM.yy' }}
+    </span>
+  </div>
+
+  <!-- Guest name / phone -->
+  <div class="relative mt-8">
+    <h3
+      class="font-sora font-semibold text-[26px] sm:text-[30px]
+             tracking-[0.02em] text-white leading-tight
+             transition-transform duration-300
+             group-hover:translate-x-[1px]"
+    >
+      @if (reservation.phone) {
+        {{ reservation.phone }}
+      } @else {
+        Gost #{{ reservation.userId?.slice(-4) ?? '—' }}
+      }
+    </h3>
+    <p
+      class="mb-5 font-dm font-light text-[12px]
+             tracking-[0.02em] text-white/60"
+    >
+      {{ reservation.numberOfPeople }} {{ reservation.numberOfPeople === 1 ? 'osoba' : (reservation.numberOfPeople < 5 ? 'osobe' : 'osoba') }}
+    </p>
+  </div>
+
+  <!-- Info pills -->
+  <div class="relative mt-4 flex flex-wrap gap-3">
+    <!-- Date pill -->
+    <div
+      class="inline-flex items-center gap-2 rounded-full
+             bg-white/5 border border-white/10
+             px-3 py-1.5
+             transition-all duration-300
+             group-hover:bg-white/6 group-hover:border-white/15
+             hover:-translate-y-[1px]"
+    >
+      <svg class="h-4 w-4 text-white/30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M8 3v3M16 3v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <path d="M4 9h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        <path d="M6 5h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+      </svg>
+      <span class="font-dm font-medium text-[12px] text-white/80">
+        {{ reservation.reservationDate | date:'dd.MM.yyyy' }}
+      </span>
+    </div>
+
+    <!-- Time pill -->
+    <div
+      class="inline-flex items-center gap-2 rounded-full
+             bg-white/5 border border-white/10
+             px-3 py-1.5
+             transition-all duration-300
+             group-hover:bg-white/6 group-hover:border-white/15
+             hover:-translate-y-[1px]"
+    >
+      <svg class="h-4 w-4 text-white/30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="1.8" />
+      </svg>
+      <span class="font-dm font-medium text-[12px] text-white/80">
+        {{ reservation.reservationTime ?? '—' }}
+      </span>
+    </div>
+
+    <!-- Phone pill (if exists) -->
+    @if (reservation.phone) {
+      <div
+        class="inline-flex items-center gap-2 rounded-full
+               bg-white/5 border border-white/10
+               px-3 py-1.5
+               transition-all duration-300
+               group-hover:bg-white/6 group-hover:border-white/15
+               hover:-translate-y-[1px]"
+      >
+        <svg class="h-4 w-4 text-white/30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="font-dm font-medium text-[12px] text-white/80 truncate">Telefon</span>
+      </div>
+    }
+  </div>
+
+  <!-- Special requests (if any) -->
+  @if (reservation.specialRequests) {
+    <div class="relative mt-5 rounded-xl bg-white/[0.02] border border-white/[0.06] px-4 py-3">
+      <p class="font-dm text-[11px] text-white/40 mb-1 tracking-[0.12em] uppercase">Posebni zahtjevi</p>
+      <p class="font-dm text-[12px] text-white/60 italic line-clamp-2">
+        "{{ reservation.specialRequests }}"
+      </p>
+    </div>
+  }
+
+  <!-- Actions -->
+  <div class="relative mt-6 flex flex-col gap-3">
+    
+    <!-- PENDING state: Accept + Reject buttons -->
+    @if (reservation.status === 'PENDING') {
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          (click)="onAccept()"
+          class="flex-1 rounded-xl
+                bg-green-500/10 border border-green-500/30
+                px-4 py-2.5
+                font-dm font-medium text-[12px] tracking-[0.08em] uppercase
+                text-green-400
+                transition-all duration-300
+                hover:bg-green-500/20 hover:border-green-500/50
+                hover:-translate-y-px
+                hover:shadow-[0_8px_24px_rgba(34,197,94,0.15)]"
+        >
+          Prihvati
+        </button>
+        <button
+          type="button"
+          (click)="onReject()"
+          class="flex-1 rounded-xl
+                bg-red-500/10 border border-red-500/30
+                px-4 py-2.5
+                font-dm font-medium text-[12px] tracking-[0.08em] uppercase
+                text-red-400
+                transition-all duration-300
+                hover:bg-red-500/20 hover:border-red-500/50
+                hover:-translate-y-px
+                hover:shadow-[0_8px_24px_rgba(239,68,68,0.15)]"
+        >
+          Odbij
+        </button>
+      </div>
+    }
+
+    <!-- Details button (always visible) -->
+    <button
+      type="button"
+      (click)="onViewDetails()"
+      class="w-full rounded-xl
+            bg-white/5 border border-white/15
+            px-4 py-2.5
+            font-dm font-normal text-[12px] tracking-[0.08em] uppercase
+            text-white/60
+            transition-all duration-300
+            hover:text-white/85 hover:bg-white/10 hover:border-white/25
+            hover:-translate-y-px"
+    >
+      Vidi detalje
+    </button>
+
+  </div>
+</article>
+}

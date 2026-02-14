@@ -5,7 +5,6 @@ import { switchMap } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { AuthService } from '../../auth/auth.service';
 
-
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
 
@@ -13,19 +12,44 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const publicPaths = ['/venues', '/venue-images'];
-  const isPublic = publicPaths.some(p => req.url.startsWith(`${environment.apiUrl}${p}`));
-  if (isPublic) return next(req);
+
+  const publicPrefixes = [
+    '/venue-images',
+    '/events',
+    '/table-types',
+    '/venue/operating-hours',
+    '/venue/table-types',
+
+    
+    '/venues', 
+  ];
+
+  
+  const privateExceptions = [
+    '/venues/my-venue',
+  ];
+
+  const isPrivateException = privateExceptions.some(p =>
+    req.url.startsWith(`${environment.apiUrl}${p}`)
+  );
+
+  const isPublic = publicPrefixes.some(p =>
+    req.url.startsWith(`${environment.apiUrl}${p}`)
+  );
+
+  if (isPublic && !isPrivateException) {
+    return next(req);
+  }
 
   return from(auth.getToken()).pipe(
     switchMap((token) => {
       if (!token) return next(req);
 
-      const authReq = req.clone({
-        setHeaders: { Authorization: `Bearer ${token}` }
-      });
-
-      return next(authReq);
+      return next(
+        req.clone({
+          setHeaders: { Authorization: `Bearer ${token}` },
+        })
+      );
     })
   );
 };

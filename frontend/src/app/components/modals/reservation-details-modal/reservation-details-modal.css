@@ -1,0 +1,144 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+
+  padding: 1rem;
+  overflow: hidden;
+
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-shell {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+}
+
+/* Rounded container never gets cut */
+.modal-card {
+  position: relative;
+  width: 100%;
+  max-height: min(90vh, 760px);
+
+  border-radius: 1.5rem; /* rounded-3xl */
+  background: #090909;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.80);
+
+  overflow: hidden;
+
+  display: grid;
+  grid-template-rows: auto 1fr auto; /* header / scroll body / footer */
+}
+
+/* Header is part of the card, no underline, no separate look */
+.modal-header {
+  position: relative;
+  padding: 2rem;
+  padding-bottom: 1.25rem;
+}
+
+.modal-body {
+  position: relative;
+  padding: 0 2rem 1.5rem;
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Footer pinned, no line */
+.modal-footer {
+  position: relative;
+  padding: 1.25rem 2rem 1.75rem;
+
+  display: flex;
+  justify-content: flex-end;
+
+  /* subtle fade so it feels premium without "line" */
+  background: linear-gradient(to top, rgba(9,9,9,1) 0%, rgba(9,9,9,0.92) 55%, rgba(9,9,9,0) 100%);
+}
+
+/* Close button same as your style */
+.modal-close {
+  height: 40px;
+  width: 40px;
+
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+
+  display: grid;
+  place-items: center;
+
+  transition: all 300ms ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.10);
+  border-color: rgba(255, 255, 255, 0.20);
+  transform: rotate(90deg);
+}
+
+/* Left accent bar (top pushed below header slightly) */
+.left-accent {
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  top: 28px;
+  bottom: 28px;
+  width: 2px;
+  border-radius: 999px;
+  opacity: 0.8;
+}
+
+/* Scrollbar on body only */
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+.modal-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Mobile padding tweak */
+@media (max-width: 640px) {
+  .modal-header { padding: 1.25rem; padding-bottom: 1rem; }
+  .modal-body { padding: 0 1.25rem 1.25rem; }
+  .modal-footer { padding: 1rem 1.25rem 1.25rem; }
+}

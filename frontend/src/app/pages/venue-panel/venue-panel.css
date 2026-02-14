@@ -1,0 +1,217 @@
+/* venue-panel.css — animations & gradient-text (mirrored from reservations.css) */
+
+/* ── Keyframes ────────────────────────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Utility classes ─────────────────────────────────────────────────────── */
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease forwards;
+}
+
+.animate-fade-in-delay-1 {
+  opacity: 0;
+  animation: fadeIn 0.4s ease 0.1s forwards;
+}
+
+.animate-fade-in-delay-2 {
+  opacity: 0;
+  animation: fadeIn 0.4s ease 0.2s forwards;
+}
+
+.animate-fade-in-delay-3 {
+  opacity: 0;
+  animation: fadeIn 0.4s ease 0.3s forwards;
+}
+
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fadeInUp 0.45s ease forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.2s ease forwards;
+}
+
+/* ── Gradient text ───────────────────────────────────────────────────────── */
+
+.gradient-text {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.75));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+
+/* ============================================ */
+/* CUSTOM DATE INPUT STYLING */
+/* ============================================ */
+
+.custom-date-input-wrapper {
+  position: relative;
+}
+
+.custom-date-input {
+  color-scheme: dark;
+}
+
+/* Style the calendar icon */
+.custom-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.4);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.custom-date-input:hover::-webkit-calendar-picker-indicator {
+  opacity: 0.7;
+}
+
+.custom-date-input::-webkit-calendar-picker-indicator:hover {
+  filter: invert(1) opacity(1);
+}
+
+/* Placeholder styling for date inputs when empty */
+.custom-date-input::-webkit-datetime-edit-text,
+.custom-date-input::-webkit-datetime-edit-month-field,
+.custom-date-input::-webkit-datetime-edit-day-field,
+.custom-date-input::-webkit-datetime-edit-year-field {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.custom-date-input:focus::-webkit-datetime-edit-text,
+.custom-date-input:focus::-webkit-datetime-edit-month-field,
+.custom-date-input:focus::-webkit-datetime-edit-day-field,
+.custom-date-input:focus::-webkit-datetime-edit-year-field {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* When date is selected */
+.custom-date-input:valid::-webkit-datetime-edit-text,
+.custom-date-input:valid::-webkit-datetime-edit-month-field,
+.custom-date-input:valid::-webkit-datetime-edit-day-field,
+.custom-date-input:valid::-webkit-datetime-edit-year-field {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+
+/* ============================================ */
+/* DROPDOWN Z-INDEX FIX */
+/* ============================================ */
+
+/* Ensure cards don't interfere with dropdown z-index */
+app-venue-reservation-card {
+  position: relative;
+  z-index: 1;
+}
+
+/* Filter panel needs lower z-index than dropdown menu */
+.mt-10.animate-fade-in-delay-3,
+.mt-3.rounded-2xl {
+  position: relative;
+  z-index: 10;
+}
+
+/* Special wrapper for dropdown in filter panel */
+.dropdown-wrapper-special {
+  position: relative;
+  z-index: 50;
+}
+
+/* Ensure dropdown component itself is relatively positioned */
+.dropdown-wrapper-special app-dropdown {
+  position: relative;
+  display: block;
+  z-index: 50;
+}
+
+/* CRITICAL: Premium dropdown menu ALWAYS on top */
+app-dropdown .premium-dropdown-menu {
+  z-index: 999999 !important;
+}
+
+/* Ensure all dropdowns can escape parent containers */
+app-dropdown {
+  position: relative;
+  z-index: inherit;
+}
+
+/* The dropdown container needs to allow overflow */
+app-dropdown .premium-dropdown-container {
+  position: relative;
+  z-index: inherit;
+}
+
+
+/* ============================================ */
+/* BROWSER-SPECIFIC CALENDAR STYLING */
+/* ============================================ */
+
+/* Chrome, Safari, Edge */
+.custom-date-input::-webkit-calendar-picker-indicator {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='rgba(255,255,255,0.4)' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: none;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.custom-date-input:hover::-webkit-calendar-picker-indicator,
+.custom-date-input:focus::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+
+/* ============================================ */
+/* FOCUS RING CUSTOMIZATION */
+/* ============================================ */
+
+.custom-date-input:focus,
+.custom-select:focus {
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+
+/* ============================================ */
+/* RESPONSIVE ADJUSTMENTS */
+/* ============================================ */
+
+@media (max-width: 640px) {
+  .custom-date-input,
+  .custom-select {
+    font-size: 14px;
+  }
+}
