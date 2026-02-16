@@ -1,55 +1,43 @@
 import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { from } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { environment } from '../../../../environments/environment';
+import { inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { from, switchMap, of } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const auth = inject(AuthService);
+  const platformId = inject(PLATFORM_ID);
+  const isBrowser = isPlatformBrowser(platformId);
 
-  if (!req.url.startsWith(environment.apiUrl)) {
+  // Skip auth in SSR
+  if (!isBrowser) {
+    console.log('[AuthInterceptor] SSR - skipping auth for:', req.url);
     return next(req);
   }
 
+  const authService = inject(AuthService);
 
-  const publicPrefixes = [
-    '/venue-images',
-    '/events',
-    '/table-types',
-    '/venue/operating-hours',
-    '/venue/table-types',
-
-    
-    '/venues', 
-  ];
-
-  
-  const privateExceptions = [
-    '/venues/my-venue',
-  ];
-
-  const isPrivateException = privateExceptions.some(p =>
-    req.url.startsWith(`${environment.apiUrl}${p}`)
-  );
-
-  const isPublic = publicPrefixes.some(p =>
-    req.url.startsWith(`${environment.apiUrl}${p}`)
-  );
-
-  if (isPublic && !isPrivateException) {
+  // Check if Keycloak is initialized
+  if (!authService.getInitializationStatus()) {
+    console.warn('[AuthInterceptor] Keycloak not initialized yet for:', req.url);
     return next(req);
   }
 
-  return from(auth.getToken()).pipe(
-    switchMap((token) => {
-      if (!token) return next(req);
+  // Get token asynchronously from Keycloak
+  return from(authService.getToken()).pipe(
+    switchMap(token => {
+      // If token exists, clone request and add Authorization header
+      if (token) {
+        req = req.clone({
+          setHeaders: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        console.log('[AuthInterceptor] ✅ Added Keycloak token to:', req.url);
+      } else {
+        console.warn('[AuthInterceptor] ⚠️ No Keycloak token for:', req.url);
+      }
 
-      return next(
-        req.clone({
-          setHeaders: { Authorization: `Bearer ${token}` },
-        })
-      );
+      return next(req);
     })
   );
 };

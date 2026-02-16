@@ -20,6 +20,10 @@ public record UpdateVenueRequest(
         VenueCategory venueType,
 
         @NotBlank(message = "Phone is required")
-        String phone
+        String phone,
+
+        @NotBlank(message = "Address is required")
+        String addressName
+
 ) {
 }

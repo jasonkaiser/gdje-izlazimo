@@ -368,7 +368,8 @@
 
     <!-- Expandable Advanced Filters Panel -->
     @if (filterOpen) {
-      <div class="mt-3 rounded-2xl border border-white/10 bg-[#0A0A0A]/95 backdrop-blur-sm animate-slide-down shadow-xl">
+      <div class="mt-3 rounded-2xl border  border-white/10 
+                 bg-white/[0.03] backdrop-blur-sm animate-slide-down shadow-xl">
         <div class="p-6">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             
@@ -436,7 +437,7 @@
 
   <!-- Tab Filters -->
   @if (tabCounts$ | async; as counts) {
-    <div class="mt-8">
+    <div class="mt-3 sm:mt-6">
 
       <!-- Mobile dropdown -->
       <div class="sm:hidden mb-6">
@@ -476,18 +477,21 @@
         }
       </div>
 
-      <!-- Desktop pills -->
-      <div class="hidden sm:flex items-center gap-3 flex-wrap mb-8">
+      <!-- Desktop pills - UPDATED TO MATCH RESERVATIONS.HTML -->
+      <div class="hidden sm:flex items-center gap-3 sm:gap-4">
         @for (tab of allTabs; track tab) {
           <button
             (click)="setTab(tab)"
-            class="h-10 px-6 rounded-full font-dm text-[13px] tracking-[0.10em] uppercase transition-all duration-200 border
-                   hover:scale-105"
-            [style.background]="activeTab === tab ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.02)'"
-            [style.color]="activeTab === tab ? 'rgba(0,0,0,1)' : 'rgba(255,255,255,0.6)'"
-            [style.border-color]="activeTab === tab ? 'transparent' : 'rgba(255,255,255,0.1)'"
+            class="h-9 px-5 rounded-full font-dm text-[12px] tracking-[0.12em] uppercase border transition-all duration-200
+                   hover:border-white/20 hover:text-white/90 hover:bg-white/[0.06]"
+            [class.!bg-white/10]="activeTab === tab"
+            [class.!border-white/25]="activeTab === tab"
+            [class.!text-white]="activeTab === tab"
+            [class.bg-black/30]="activeTab !== tab"
+            [class.border-white/10]="activeTab !== tab"
+            [class.text-white/30]="activeTab !== tab"
           >
-            {{ tabLabel(tab) }} <span class="ml-1.5 opacity-70">({{ counts[tab] }})</span>
+            {{ tabLabel(tab) }} <span [class.text-white/40]="activeTab !== tab" class="opacity-70">({{ counts[tab] }})</span>
           </button>
         }
       </div>

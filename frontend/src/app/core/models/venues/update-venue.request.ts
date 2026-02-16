@@ -7,5 +7,6 @@ export interface UpdateVenueRequest{
     isActive: boolean;
     venueType: VenueCategory;
     phone: string;
+    addressName: string;
 
 }

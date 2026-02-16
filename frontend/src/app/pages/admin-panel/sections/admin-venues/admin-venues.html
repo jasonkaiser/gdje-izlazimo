@@ -1,0 +1,443 @@
+<!-- admin-venues.component.html — Premium Redesign -->
+
+<div class="space-y-5">
+
+  <!-- ═══════════════════════════════════════════
+       HEADER BAR: Search + Filters + Add Button
+  ════════════════════════════════════════════ -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
+
+    <!-- Search -->
+    <div class="relative flex-1">
+      <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+        <svg class="h-4 w-4 text-white/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+        </svg>
+      </div>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Pretraži lokale, adrese, telefone…"
+        class="h-11 w-full rounded-xl border border-white/[0.08] bg-white/[0.04] pl-11 pr-4 font-dm text-[13px] text-white/85 placeholder-white/25
+               transition duration-200
+               hover:border-white/[0.13] hover:bg-white/[0.06]
+               focus:border-violet-500/50 focus:bg-white/[0.06] focus:outline-none focus:ring-1 focus:ring-violet-500/20"
+      />
+    </div>
+
+    <!-- Status Filter -->
+    <select
+      [(ngModel)]="statusFilter"
+      (ngModelChange)="onFilterChange()"
+      class="h-11 cursor-pointer rounded-xl border border-white/[0.08] bg-white/[0.04] px-3.5 font-dm text-[13px] text-white/75
+             transition duration-200 hover:border-white/[0.13] focus:border-violet-500/50 focus:outline-none focus:ring-1 focus:ring-violet-500/20"
+    >
+      <option value="ALL"      class="bg-[#111114]">Svi statusi</option>
+      <option value="ACTIVE"   class="bg-[#111114]">Aktivni</option>
+      <option value="INACTIVE" class="bg-[#111114]">Neaktivni</option>
+    </select>
+
+    <!-- Category Filter -->
+    <select
+      [(ngModel)]="categoryFilter"
+      (ngModelChange)="onFilterChange()"
+      class="h-11 cursor-pointer rounded-xl border border-white/[0.08] bg-white/[0.04] px-3.5 font-dm text-[13px] text-white/75
+             transition duration-200 hover:border-white/[0.13] focus:border-violet-500/50 focus:outline-none focus:ring-1 focus:ring-violet-500/20"
+    >
+      <option value="ALL"        class="bg-[#111114]">Sve kategorije</option>
+      <option value="CLUB"       class="bg-[#111114]">Klubovi</option>
+      <option value="PUB"        class="bg-[#111114]">Pubovi</option>
+      <option value="LOUNGE"     class="bg-[#111114]">Lounge</option>
+      <option value="RESTAURANT" class="bg-[#111114]">Restorani</option>
+    </select>
+
+    <!-- Add Button -->
+    <button
+      (click)="openCreateVenueModal()"
+      class="flex h-11 items-center gap-2 whitespace-nowrap rounded-xl
+             border border-violet-500/40 bg-violet-500/[0.12] px-5
+             font-dm text-[12px] tracking-[0.07em] uppercase text-violet-300
+             transition duration-200 hover:border-violet-400/60 hover:bg-violet-500/[0.2] hover:text-violet-200
+             active:scale-[0.97]"
+    >
+      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      Dodaj lokal
+    </button>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       STAT CARDS
+  ════════════════════════════════════════════ -->
+  <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+
+    <!-- Total -->
+    <div class="group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.03] px-5 py-4
+                transition duration-300 hover:border-white/[0.12] hover:bg-white/[0.05]">
+      <div class="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent"></div>
+      <p class="mb-2 font-dm text-[10px] tracking-[0.14em] uppercase text-white/40">Ukupno</p>
+      <p class="font-sora text-[28px] font-semibold leading-none text-white/90">
+        {{ (stats$ | async)?.total ?? 0 }}
+      </p>
+      <div class="mt-3 h-px w-full bg-gradient-to-r from-white/10 to-transparent"></div>
+    </div>
+
+    <!-- Active -->
+    <div class="group relative overflow-hidden rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.05] px-5 py-4
+                transition duration-300 hover:border-emerald-500/30 hover:bg-emerald-500/[0.08]">
+      <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/[0.06] to-transparent"></div>
+      <p class="mb-2 font-dm text-[10px] tracking-[0.14em] uppercase text-emerald-400/60">Aktivni</p>
+      <p class="font-sora text-[28px] font-semibold leading-none text-emerald-400">
+        {{ (stats$ | async)?.active ?? 0 }}
+      </p>
+      <div class="mt-3 h-px w-full bg-gradient-to-r from-emerald-500/20 to-transparent"></div>
+    </div>
+
+    <!-- Inactive -->
+    <div class="group relative overflow-hidden rounded-2xl border border-rose-500/20 bg-rose-500/[0.05] px-5 py-4
+                transition duration-300 hover:border-rose-500/30 hover:bg-rose-500/[0.08]">
+      <div class="absolute inset-0 bg-gradient-to-br from-rose-500/[0.06] to-transparent"></div>
+      <p class="mb-2 font-dm text-[10px] tracking-[0.14em] uppercase text-rose-400/60">Neaktivni</p>
+      <p class="font-sora text-[28px] font-semibold leading-none text-rose-400">
+        {{ (stats$ | async)?.inactive ?? 0 }}
+      </p>
+      <div class="mt-3 h-px w-full bg-gradient-to-r from-rose-500/20 to-transparent"></div>
+    </div>
+
+    <!-- Categories -->
+    <div class="group relative overflow-hidden rounded-2xl border border-violet-500/20 bg-violet-500/[0.05] px-5 py-4
+                transition duration-300 hover:border-violet-500/30 hover:bg-violet-500/[0.08]">
+      <div class="absolute inset-0 bg-gradient-to-br from-violet-500/[0.06] to-transparent"></div>
+      <p class="mb-2 font-dm text-[10px] tracking-[0.14em] uppercase text-violet-400/60">Kategorije</p>
+      <p class="font-sora text-[28px] font-semibold leading-none text-violet-400">4</p>
+      <div class="mt-3 h-px w-full bg-gradient-to-r from-violet-500/20 to-transparent"></div>
+    </div>
+
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       CONTENT AREA
+  ════════════════════════════════════════════ -->
+  @if (vm$ | async; as vm) {
+
+    <!-- Loading skeleton -->
+    @if (vm.loading) {
+      <div class="overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02]">
+        <div class="space-y-px p-4">
+          @for (i of [1,2,3,4,5]; track i) {
+            <div class="h-16 animate-pulse rounded-xl bg-white/[0.04]"></div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Error state -->
+    @else if (vm.errorMsg) {
+      <div class="flex flex-col items-center gap-3 rounded-2xl border border-rose-500/20 bg-rose-500/[0.04] py-14 text-center">
+        <div class="flex h-12 w-12 items-center justify-center rounded-full border border-rose-500/20 bg-rose-500/10">
+          <svg class="h-6 w-6 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
+          </svg>
+        </div>
+        <p class="font-dm text-[14px] text-rose-400/90">{{ vm.errorMsg }}</p>
+      </div>
+    }
+
+    <!-- Empty state -->
+    @else if (vm.items.length === 0) {
+      <div class="flex flex-col items-center gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] py-20 text-center">
+        <div class="flex h-14 w-14 items-center justify-center rounded-full border border-white/[0.09] bg-white/[0.04]">
+          <svg class="h-7 w-7 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+        </div>
+        <p class="font-sora text-[17px] font-medium text-white/40">Nema lokala</p>
+        <p class="font-dm text-[13px] text-white/25">Pokušajte promijeniti filter ili dodajte novi lokal.</p>
+      </div>
+    }
+
+    @else {
+
+      <!-- ─── MOBILE CARDS (< lg) ─── -->
+      <div class="flex flex-col gap-2.5 lg:hidden">
+        @for (venue of vm.items; track venue.id) {
+          <div class="group rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4
+                      transition duration-200 hover:border-white/[0.13] hover:bg-white/[0.05]">
+
+            <div class="flex items-start gap-3.5">
+              <!-- Avatar -->
+              <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl
+                          border border-violet-500/25 bg-violet-500/[0.1]">
+                <svg class="h-5 w-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+              </div>
+
+              <!-- Info -->
+              <div class="min-w-0 flex-1">
+                <div class="mb-1.5 flex items-center gap-2">
+                  <h3 class="truncate font-dm text-[14px] font-semibold text-white/90">{{ venue.name }}</h3>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <!-- Category pill -->
+                  <span class="inline-flex items-center rounded-md border border-violet-500/25 bg-violet-500/[0.1] px-2 py-0.5 font-dm text-[10px] tracking-wide text-violet-300">
+                    {{ getCategoryLabel(venue.venueType) }}
+                  </span>
+                  <!-- Status pill -->
+                  <span class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-dm text-[10px] tracking-wide"
+                    [class.border]="true"
+                    [class.border-emerald-500\/25]="venue.isActive"
+                    [class.bg-emerald-500\/\[0\.08\]]="venue.isActive"
+                    [class.text-emerald-400]="venue.isActive"
+                    [class.border-rose-500\/25]="!venue.isActive"
+                    [class.bg-rose-500\/\[0\.08\]]="!venue.isActive"
+                    [class.text-rose-400]="!venue.isActive"
+                  >
+                    <span class="h-1.5 w-1.5 rounded-full"
+                      [class.bg-emerald-500]="venue.isActive"
+                      [class.bg-rose-500]="!venue.isActive"
+                    ></span>
+                    {{ venue.isActive ? 'Aktivan' : 'Neaktivan' }}
+                  </span>
+                </div>
+
+                <!-- Meta row -->
+                <div class="mt-2.5 flex flex-wrap gap-x-3 gap-y-1">
+                  <span class="flex items-center gap-1 font-dm text-[11px] text-white/45">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    {{ venue.addressName }}
+                  </span>
+                  <span class="flex items-center gap-1 font-dm text-[11px] text-white/45">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                    {{ venue.phone }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action row -->
+            <div class="mt-4 flex items-center gap-2 border-t border-white/[0.06] pt-3.5">
+              <button (click)="toggleVenueStatus(venue)"
+                class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04]
+                       px-3 py-2 font-dm text-[11px] tracking-[0.07em] uppercase transition duration-150 hover:bg-white/[0.08]"
+                [class.text-emerald-400]="venue.isActive"
+                [class.text-white\/50]="!venue.isActive"
+              >
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                {{ venue.isActive ? 'Deaktiviraj' : 'Aktiviraj' }}
+              </button>
+
+              <button (click)="editVenue(venue)"
+                class="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.04]
+                       text-white/50 transition duration-150 hover:border-white/[0.14] hover:bg-white/[0.09] hover:text-white/80">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+              </button>
+
+              <button (click)="deleteVenue(venue)"
+                class="flex h-9 w-9 items-center justify-center rounded-lg border border-rose-500/20 bg-rose-500/[0.06]
+                       text-rose-400/70 transition duration-150 hover:border-rose-500/35 hover:bg-rose-500/[0.12] hover:text-rose-400">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+
+      <!-- ─── DESKTOP TABLE (>= lg) ─── -->
+      <div class="hidden overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] lg:block">
+
+        <!-- Table header -->
+        <div class="border-b border-white/[0.07] bg-white/[0.02]">
+          <div class="grid grid-cols-[2fr_1fr_2fr_1.2fr_1fr_1fr_auto] items-center gap-4 px-5 py-3">
+            <span class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/35">Lokal</span>
+            <span class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/35">Kategorija</span>
+            <span class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/35">Lokacija</span>
+            <span class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/35">Telefon</span>
+            <span class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/35">Status</span>
+            <span class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/35">Kreiran</span>
+            <span class="w-[116px] font-dm text-[10px] tracking-[0.14em] uppercase text-white/35 text-right">Akcije</span>
+          </div>
+        </div>
+
+        <!-- Table rows -->
+        <div class="divide-y divide-white/[0.05]">
+          @for (venue of vm.items; track venue.id) {
+            <div class="group grid grid-cols-[2fr_1fr_2fr_1.2fr_1fr_1fr_auto] items-center gap-4 px-5 py-3.5
+                        transition duration-150 hover:bg-white/[0.035]">
+
+              <!-- Venue name + ID -->
+              <div class="flex items-center gap-3.5 min-w-0">
+                <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl
+                            border border-violet-500/25 bg-violet-500/[0.1]
+                            transition duration-200 group-hover:border-violet-500/40 group-hover:bg-violet-500/[0.15]">
+                  <svg class="h-5 w-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <p class="truncate font-dm text-[13.5px] font-semibold text-white/88 group-hover:text-white/95 transition-colors">{{ venue.name }}</p>
+                  <p class="font-dm text-[11px] text-white/30">{{ venue.id.substring(0, 8) }}…</p>
+                </div>
+              </div>
+
+              <!-- Category -->
+              <div>
+                <span class="inline-flex items-center rounded-lg border border-violet-500/25 bg-violet-500/[0.1]
+                             px-2.5 py-1 font-dm text-[11px] text-violet-300">
+                  {{ getCategoryLabel(venue.venueType) }}
+                </span>
+              </div>
+
+              <!-- Location -->
+              <div class="flex items-center gap-1.5 min-w-0">
+                <svg class="h-3.5 w-3.5 flex-shrink-0 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span class="truncate font-dm text-[13px] text-white/60">{{ venue.addressName }}</span>
+              </div>
+
+              <!-- Phone -->
+              <div>
+                <span class="font-dm text-[13px] tabular-nums text-white/60">{{ venue.phone }}</span>
+              </div>
+
+              <!-- Status -->
+              <div>
+                <span class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-dm text-[11px]"
+                  [class.border]="true"
+                  [class.border-emerald-500\/25]="venue.isActive"
+                  [class.bg-emerald-500\/\[0\.08\]]="venue.isActive"
+                  [class.text-emerald-400]="venue.isActive"
+                  [class.border-rose-500\/25]="!venue.isActive"
+                  [class.bg-rose-500\/\[0\.08\]]="!venue.isActive"
+                  [class.text-rose-400]="!venue.isActive"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full"
+                    [class.bg-emerald-500]="venue.isActive"
+                    [class.bg-rose-500]="!venue.isActive"
+                  ></span>
+                  {{ venue.isActive ? 'Aktivan' : 'Neaktivan' }}
+                </span>
+              </div>
+
+              <!-- Created date -->
+              <div>
+                <span class="font-dm text-[12px] tabular-nums text-white/40">{{ formatDate(venue.created_at) }}</span>
+              </div>
+
+              <!-- Actions -->
+              <div class="flex w-[116px] items-center justify-end gap-1.5">
+
+                <!-- Toggle status -->
+                <button (click)="toggleVenueStatus(venue)"
+                  [title]="venue.isActive ? 'Deaktiviraj' : 'Aktiviraj'"
+                  class="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-transparent
+                         transition duration-150 hover:border-white/[0.15] hover:bg-white/[0.07]">
+                  <svg class="h-4 w-4 transition-colors"
+                    [class.text-emerald-400]="venue.isActive"
+                    [class.text-white\/35]="!venue.isActive"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </button>
+
+                <!-- View -->
+                <button (click)="viewVenue(venue)"
+                  title="Detalji"
+                  class="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-transparent
+                         text-white/35 transition duration-150 hover:border-white/[0.15] hover:bg-white/[0.07] hover:text-white/70">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                </button>
+
+                <!-- Edit -->
+                <button (click)="editVenue(venue)"
+                  title="Uredi"
+                  class="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-transparent
+                         text-white/35 transition duration-150 hover:border-white/[0.15] hover:bg-white/[0.07] hover:text-white/70">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                </button>
+
+                <!-- Delete -->
+                <button (click)="deleteVenue(venue)"
+                  title="Obriši"
+                  class="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-500/20 bg-rose-500/[0.05]
+                         text-rose-400/60 transition duration-150 hover:border-rose-500/40 hover:bg-rose-500/[0.12] hover:text-rose-400">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+
+            </div>
+          }
+        </div>
+
+        <!-- Table footer / row count -->
+        <div class="border-t border-white/[0.06] bg-white/[0.01] px-5 py-2.5">
+          <p class="font-dm text-[11px] text-white/25">
+            Prikazano {{ vm.items.length }} lokala — stranica {{ vm.pageNo }}
+          </p>
+        </div>
+      </div>
+
+
+      <!-- ─── PAGINATION ─── -->
+      @if (vm.pageNo > 1 || vm.hasMore) {
+        <div class="flex items-center justify-center gap-3">
+          <button (click)="prevPage()" [disabled]="vm.pageNo <= 1"
+            class="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-5 py-2.5
+                   font-dm text-[11px] tracking-[0.1em] uppercase text-white/50
+                   transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.07] hover:text-white/80
+                   disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white/[0.03] disabled:hover:text-white/50">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Prethodna
+          </button>
+
+          <div class="flex h-9 min-w-[36px] items-center justify-center rounded-xl
+                      border border-violet-500/30 bg-violet-500/[0.1] px-3
+                      font-dm text-[12px] font-semibold text-violet-300">
+            {{ vm.pageNo }}
+          </div>
+
+          <button (click)="nextPage()" [disabled]="!vm.hasMore"
+            class="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-5 py-2.5
+                   font-dm text-[11px] tracking-[0.1em] uppercase text-white/50
+                   transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.07] hover:text-white/80
+                   disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white/[0.03] disabled:hover:text-white/50">
+            Sljedeća
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      }
+
+    }
+
+  }
+
+</div>

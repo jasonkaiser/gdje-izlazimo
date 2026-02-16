@@ -1,16 +1,21 @@
 <app-loading-bar></app-loading-bar>
 
 <div class="relative z-10">
-  @if (authService.authenticated()) {
-    <app-auth-navbar></app-auth-navbar>
-  } @else {
-    <app-public-navbar></app-public-navbar>
+  @if (!isAdminRoute()) {
+    @if (authService.authenticated()) {
+      <app-auth-navbar></app-auth-navbar>
+    } @else {
+      <app-public-navbar></app-public-navbar>
+    }
   }
 
   <app-toast-host></app-toast-host>
 
-<main class="mx-auto max-w-8xl">
-  <router-outlet></router-outlet>
-</main>
-<app-footer></app-footer>
+  <main class="mx-auto max-w-8xl">
+    <router-outlet></router-outlet>
+  </main>
+
+  @if (!isAdminRoute()) {
+    <app-footer></app-footer>
+  }
 </div>

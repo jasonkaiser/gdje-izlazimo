@@ -1,0 +1,441 @@
+<!-- admin-dashboard.html — FULL -->
+
+<div class="space-y-6">
+
+  @if (stats$ | async; as stats) {
+
+    <!-- ═══════════════════════════════════════
+         STAT CARDS ROW
+    ════════════════════════════════════════ -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+      <!-- Total Users -->
+      <button
+        (click)="navigateTo('users')"
+        class="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] px-5 py-5 text-left
+               transition duration-200 hover:border-blue-500/30 hover:bg-blue-500/[0.05] active:scale-[0.98]"
+      >
+        <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-blue-500/10 blur-2xl translate-x-4 -translate-y-4 group-hover:bg-blue-500/20 transition-colors"></div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-blue-500/25 bg-blue-500/10">
+            <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+          </div>
+          <svg class="h-3.5 w-3.5 text-white/20 group-hover:text-blue-400/50 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+        <p class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/40 mb-1">Korisnici</p>
+        <p class="font-sora text-[32px] font-semibold leading-none text-white/95">{{ stats.totalUsers }}</p>
+      </button>
+
+      <!-- Active Venues -->
+      <button
+        (click)="navigateTo('venues')"
+        class="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] px-5 py-5 text-left
+               transition duration-200 hover:border-violet-500/30 hover:bg-violet-500/[0.05] active:scale-[0.98]"
+      >
+        <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-violet-500/10 blur-2xl translate-x-4 -translate-y-4 group-hover:bg-violet-500/20 transition-colors"></div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-500/25 bg-violet-500/10">
+            <svg class="h-5 w-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
+          <div class="flex items-center gap-1">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+            <span class="font-dm text-[10px] text-emerald-400">{{ stats.activeVenues }} aktivnih</span>
+          </div>
+        </div>
+        <p class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/40 mb-1">Lokali</p>
+        <p class="font-sora text-[32px] font-semibold leading-none text-white/95">{{ stats.activeVenues + stats.inactiveVenues }}</p>
+      </button>
+
+      <!-- Total Reservations -->
+      <button
+        (click)="navigateTo('reservations')"
+        class="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] px-5 py-5 text-left
+               transition duration-200 hover:border-amber-500/30 hover:bg-amber-500/[0.05] active:scale-[0.98]"
+      >
+        <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-amber-500/10 blur-2xl translate-x-4 -translate-y-4 group-hover:bg-amber-500/20 transition-colors"></div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-500/25 bg-amber-500/10">
+            <svg class="h-5 w-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+          </div>
+          @if (stats.pendingReservations > 0) {
+            <span class="flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-dm text-[10px] text-amber-400">
+              {{ stats.pendingReservations }} pending
+            </span>
+          }
+        </div>
+        <p class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/40 mb-1">Rezervacije</p>
+        <p class="font-sora text-[32px] font-semibold leading-none text-white/95">{{ stats.totalReservations }}</p>
+      </button>
+
+      <!-- Table Types -->
+      <button
+        (click)="navigateTo('table-types')"
+        class="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] px-5 py-5 text-left
+               transition duration-200 hover:border-teal-500/30 hover:bg-teal-500/[0.05] active:scale-[0.98]"
+      >
+        <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-teal-500/10 blur-2xl translate-x-4 -translate-y-4 group-hover:bg-teal-500/20 transition-colors"></div>
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-teal-500/25 bg-teal-500/10">
+            <svg class="h-5 w-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <svg class="h-3.5 w-3.5 text-white/20 group-hover:text-teal-400/50 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+        <p class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/40 mb-1">Tipovi Stolova</p>
+        <p class="font-sora text-[32px] font-semibold leading-none text-white/95">{{ stats.totalTableTypes }}</p>
+      </button>
+
+    </div>
+
+
+    <!-- ═══════════════════════════════════════
+         MIDDLE ROW: Reservation Breakdown + Venue Types
+    ════════════════════════════════════════ -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <!-- Reservation Status Breakdown -->
+      <div class="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="font-sora text-[15px] font-semibold text-white/90">Status Rezervacija</h2>
+          <button (click)="navigateTo('reservations')"
+            class="font-dm text-[11px] tracking-[0.08em] uppercase text-violet-400 hover:text-violet-300 transition-colors">
+            Prikaži sve →
+          </button>
+        </div>
+
+        @if (reservationBreakdown$ | async; as breakdown) {
+          <div class="space-y-3.5">
+            @for (item of breakdown; track item.status) {
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="font-dm text-[12px]" [class]="item.color">{{ item.label }}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="font-sora text-[13px] font-semibold text-white/80">{{ item.count }}</span>
+                    <span class="font-dm text-[11px] text-white/30">{{ item.percentage }}%</span>
+                  </div>
+                </div>
+                <div class="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all duration-700"
+                    [class]="item.bgColor"
+                    [style.width]="getBarWidth(item.percentage)"
+                  ></div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="mt-5 grid grid-cols-2 gap-2">
+            <div class="rounded-xl border border-emerald-500/15 bg-emerald-500/[0.06] px-3 py-2.5 text-center">
+              <p class="font-sora text-[20px] font-semibold text-emerald-400">{{ stats.acceptedReservations }}</p>
+              <p class="font-dm text-[10px] tracking-[0.1em] uppercase text-emerald-400/60">Prihvaćene</p>
+            </div>
+            <div class="rounded-xl border border-amber-500/15 bg-amber-500/[0.06] px-3 py-2.5 text-center">
+              <p class="font-sora text-[20px] font-semibold text-amber-400">{{ stats.pendingReservations }}</p>
+              <p class="font-dm text-[10px] tracking-[0.1em] uppercase text-amber-400/60">Na čekanju</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Venue Type Breakdown -->
+      <div class="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="font-sora text-[15px] font-semibold text-white/90">Tipovi Lokala</h2>
+          <button (click)="navigateTo('venues')"
+            class="font-dm text-[11px] tracking-[0.08em] uppercase text-violet-400 hover:text-violet-300 transition-colors">
+            Prikaži sve →
+          </button>
+        </div>
+
+        @if (venueBreakdown$ | async; as breakdown) {
+          <div class="space-y-3.5">
+            @for (item of breakdown; track item.type) {
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <div class="flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full" [style.background]="item.color"></span>
+                    <span class="font-dm text-[12px] text-white/70">{{ item.label }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="font-sora text-[13px] font-semibold text-white/80">{{ item.count }}</span>
+                    <span class="font-dm text-[11px] text-white/30">{{ item.percentage }}%</span>
+                  </div>
+                </div>
+                <div class="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all duration-700"
+                    [style.width]="getBarWidth(item.percentage)"
+                    [style.background]="item.color"
+                  ></div>
+                </div>
+              </div>
+            }
+          </div>
+
+          <div class="mt-5 h-px w-full bg-white/[0.06]"></div>
+          <div class="mt-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+              <span class="font-dm text-[12px] text-white/50">Aktivni</span>
+              <span class="font-sora text-[13px] font-semibold text-white/80">{{ stats.activeVenues }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-rose-500"></span>
+              <span class="font-dm text-[12px] text-white/50">Neaktivni</span>
+              <span class="font-sora text-[13px] font-semibold text-white/80">{{ stats.inactiveVenues }}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-dm text-[12px] text-white/50">Ukupno</span>
+              <span class="font-sora text-[13px] font-semibold text-white/80">{{ stats.activeVenues + stats.inactiveVenues }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+    </div>
+
+
+    <!-- ═══════════════════════════════════════
+         BOTTOM ROW: Top Venues + Activity Feed + Quick Actions
+    ════════════════════════════════════════ -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+      <!-- Top Venues by Reservations -->
+      <div class="lg:col-span-1 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="font-sora text-[15px] font-semibold text-white/90">Top Lokali</h2>
+          <span class="font-dm text-[10px] tracking-[0.08em] uppercase text-white/30">Po rezervacijama</span>
+        </div>
+
+        @if (topVenues$ | async; as venues) {
+          <div class="space-y-3">
+            @for (venue of venues; track venue.venueId; let i = $index) {
+              <div class="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5
+                          hover:border-white/[0.1] hover:bg-white/[0.04] transition duration-150">
+                <div class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg
+                            border border-violet-500/20 bg-violet-500/[0.08]">
+                  <span class="font-sora text-[11px] font-semibold text-violet-400">{{ i + 1 }}</span>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <p class="truncate font-dm text-[12px] font-semibold text-white/85">
+                    {{ getTopVenueName(venue) }}
+                  </p>
+                  <p class="font-dm text-[10px] text-white/35">{{ getCategoryLabel(venue.venueType) }}</p>
+                </div>
+
+                <div class="flex-shrink-0 text-right">
+                  <p class="font-sora text-[14px] font-semibold text-white/70">{{ venue.reservationCount }}</p>
+                  <p class="font-dm text-[9px] tracking-wider uppercase text-white/25">rez.</p>
+                </div>
+              </div>
+            }
+
+            @if (venues.length === 0) {
+              <p class="text-center font-dm text-[12px] text-white/30 py-6">Nema podataka</p>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Activity Feed -->
+      <div class="lg:col-span-1 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="font-sora text-[15px] font-semibold text-white/90">Aktivnosti</h2>
+          <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        </div>
+
+        @if (activities$ | async; as activities) {
+          <div class="space-y-2.5">
+            @for (activity of activities; track activity.id) {
+              <div class="flex items-start gap-3 rounded-xl px-3 py-2.5 hover:bg-white/[0.03] transition duration-150">
+
+                <!-- ✅ FIX: ngClass + boje po entityType -->
+                <div
+                  class="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border"
+                  [ngClass]="getActivityBadgeClass(activity.entityType)"
+                >
+                  <svg
+                    class="h-3.5 w-3.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    [ngClass]="getActivityIconClass(activity.entityType)"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="getActivityIcon(activity.entityType)"></path>
+                  </svg>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <p class="font-dm text-[12px] text-white/75 leading-snug">{{ activity.message }}</p>
+                  <p class="mt-0.5 font-dm text-[10px] text-white/30">
+                    {{ formatRelativeTime(getActivityTime(activity)) }} · {{ activity.performedBy }}
+                  </p>
+                </div>
+              </div>
+            }
+
+            @if (activities.length === 0) {
+              <p class="text-center font-dm text-[12px] text-white/30 py-6">Nema aktivnosti</p>
+            }
+
+            @if (activities.length >= 10) {
+              <button
+                (click)="toggleActivityLimit()"
+                class="w-full mt-1 flex items-center justify-center gap-1.5 rounded-xl border border-white/[0.07] bg-transparent
+                      px-3 py-2 font-dm text-[11px] tracking-[0.06em] uppercase text-white/35
+                      transition duration-150 hover:border-white/[0.12] hover:bg-white/[0.03] hover:text-white/60"
+              >
+                @if (activityLimit() === 10) {
+                  Prikaži više
+                  <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                } @else {
+                  Prikaži manje
+                  <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+                  </svg>
+                }
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Quick Actions + System Status -->
+      <div class="lg:col-span-1 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6">
+        <h2 class="font-sora text-[15px] font-semibold text-white/90 mb-5">Brze Akcije</h2>
+
+        <div class="grid grid-cols-2 gap-2.5">
+
+          <!-- Venues -->
+          <button (click)="navigateTo('venues')"
+            class="group flex flex-col items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02]
+                   px-3 py-4 transition duration-200 hover:border-violet-500/30 hover:bg-violet-500/[0.06] active:scale-[0.97]">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-500/20 bg-violet-500/10
+                        group-hover:border-violet-500/35 group-hover:bg-violet-500/15 transition-colors">
+              <svg class="h-5 w-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+              </svg>
+            </div>
+            <span class="font-dm text-[10px] tracking-[0.08em] uppercase text-white/60 group-hover:text-white/90 transition-colors text-center">Novi Lokal</span>
+          </button>
+
+          <!-- Table Types -->
+          <button (click)="navigateTo('table-types')"
+            class="group flex flex-col items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02]
+                   px-3 py-4 transition duration-200 hover:border-teal-500/30 hover:bg-teal-500/[0.06] active:scale-[0.97]">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-teal-500/20 bg-teal-500/10
+                        group-hover:border-teal-500/35 group-hover:bg-teal-500/15 transition-colors">
+              <svg class="h-5 w-5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <span class="font-dm text-[10px] tracking-[0.08em] uppercase text-white/60 group-hover:text-white/90 transition-colors text-center">Tip Stola</span>
+          </button>
+
+          <!-- Users -->
+          <button (click)="navigateTo('users')"
+            class="group flex flex-col items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02]
+                   px-3 py-4 transition duration-200 hover:border-blue-500/30 hover:bg-blue-500/[0.06] active:scale-[0.97]">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-blue-500/20 bg-blue-500/10
+                        group-hover:border-blue-500/35 group-hover:bg-blue-500/15 transition-colors">
+              <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+              </svg>
+            </div>
+            <span class="font-dm text-[10px] tracking-[0.08em] uppercase text-white/60 group-hover:text-white/90 transition-colors text-center">Korisnici</span>
+          </button>
+
+          <!-- Reservations -->
+          <button (click)="navigateTo('reservations')"
+            class="group flex flex-col items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.02]
+                   px-3 py-4 transition duration-200 hover:border-amber-500/30 hover:bg-amber-500/[0.06] active:scale-[0.97]">
+            <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-500/20 bg-amber-500/10
+                        group-hover:border-amber-500/35 group-hover:bg-amber-500/15 transition-colors">
+              <svg class="h-5 w-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+            </div>
+            <span class="font-dm text-[10px] tracking-[0.08em] uppercase text-white/60 group-hover:text-white/90 transition-colors text-center">Rezervacije</span>
+          </button>
+
+        </div>
+
+        <div class="mt-4 h-px w-full bg-white/[0.06]"></div>
+        <div class="mt-4 space-y-2.5">
+          <p class="font-dm text-[10px] tracking-[0.12em] uppercase text-white/30">Sistem Status</p>
+
+          <div class="flex items-center justify-between">
+            <span class="font-dm text-[12px] text-white/50">API</span>
+            <div class="flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="font-dm text-[11px] text-emerald-400">Aktivan</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="font-dm text-[12px] text-white/50">Baza Podataka</span>
+            <div class="flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span class="font-dm text-[11px] text-emerald-400">Zdrava</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="font-dm text-[12px] text-white/50">Neaktivni lokali</span>
+            <span class="font-dm text-[11px]"
+              [class.text-rose-400]="stats.inactiveVenues > 0"
+              [class.text-white/40]="stats.inactiveVenues === 0"
+            >{{ stats.inactiveVenues }}</span>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <span class="font-dm text-[12px] text-white/50">Pendinge rezervacije</span>
+            <span class="font-dm text-[11px]"
+              [class.text-amber-400]="stats.pendingReservations > 0"
+              [class.text-white/40]="stats.pendingReservations === 0"
+            >{{ stats.pendingReservations }}</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  } @else {
+
+    <!-- Loading state -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      @for (i of [1,2,3,4]; track i) {
+        <div class="h-32 animate-pulse rounded-2xl bg-white/[0.04]"></div>
+      }
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      @for (i of [1,2]; track i) {
+        <div class="h-56 animate-pulse rounded-2xl bg-white/[0.04]"></div>
+      }
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      @for (i of [1,2,3]; track i) {
+        <div class="h-64 animate-pulse rounded-2xl bg-white/[0.04]"></div>
+      }
+    </div>
+
+  }
+
+</div>

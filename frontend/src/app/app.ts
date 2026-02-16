@@ -1,32 +1,38 @@
-import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit, inject, computed } from '@angular/core';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map, startWith } from 'rxjs/operators';
 import { AuthService } from './core/auth/auth.service';
 import { AuthNavbar } from './core/layout/auth-navbar/auth-navbar';
 import { PublicNavbar } from './core/layout/public-navbar/public-navbar';
-import { VenueCard } from "./components/cards/venue-card/venue-card";
-import { ButtonComponent } from './components/buttons/button-component/button-component';
-import { Toast } from './components/other/toast/toast';
-import { ReservationCard } from './components/cards/reservation-card/reservation-card';
-import { ReservationModal } from './components/modals/reservation-modal/reservation-modal';
-import { VenueService } from './core/api/venue-service';
 import { ToastHost } from './core/ui/toast-host/toast-host';
-import { VenueResponseDto } from './core/models/venues/venue-response.dto';
 import { LoadingBar } from './components/other/loading-bar/loading-bar';
-import { AppFooterComponent } from "./core/layout/footer/footer";
+import { AppFooterComponent } from './core/layout/footer/footer';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AuthNavbar, PublicNavbar, ToastHost, LoadingBar, AppFooterComponent, AppFooterComponent],
+  imports: [RouterOutlet, AuthNavbar, PublicNavbar, ToastHost, LoadingBar, AppFooterComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App implements OnInit {
   loading = false;
-  venues: VenueResponseDto[] = [];
 
-  constructor(public authService: AuthService) {}
+  readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
-  ngOnInit() {
-  }
+  readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+      map(e => (e as NavigationEnd).urlAfterRedirects),
+      startWith(this.router.url)
+    )
+  );
+
+  readonly isAdminRoute = computed(() =>
+    (this.currentUrl() ?? '').includes('/admin')
+  );
+
+  ngOnInit() {}
 }

@@ -23,6 +23,22 @@ spring:
           issuer-uri: http://localhost:8080/realms/gdje-izlazimo
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
+  # SMTP configuration (MailHog for local dev)
+  mail:
+    host: localhost
+    port: 1025
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+
+# Application-level email settings
+app:
+  mail:
+    from: noreply@gdje-izlazimo.local
+
 server:
   port: 8081
 

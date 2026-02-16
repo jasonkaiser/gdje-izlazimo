@@ -96,4 +96,13 @@ public class VenueService {
         }
         venueRepository.deleteById(id);
     }
+
+    public VenueResponse getVenueByOwnerId(UUID ownerId) {
+        Venue venue = venueRepository.findByVenueOwner_Id(ownerId)
+                .orElseThrow(() -> new VenueNotFoundException(
+                        "Venue not found for owner: " + ownerId
+                ));
+
+        return venueMapper.toResponse(venue);
+    }
 }

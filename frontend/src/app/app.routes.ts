@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { VenueDetails } from './pages/venue-details/venue-details';
 import { Reservations } from './pages/reservations/reservations';
-import { AdminPanel } from './pages/admin-panel/admin-panel';
+import { AdminPanelComponent } from './pages/admin-panel/admin-panel';
 import { NotFound } from './pages/not-found/not-found';
 import { authGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
@@ -38,7 +38,7 @@ export const routes: Routes = [
         },
         {
             path: 'admin-panel',
-            component: AdminPanel,
+            component: AdminPanelComponent,
             canActivate: [authGuard, roleGuard(['admin'])]
 
         },

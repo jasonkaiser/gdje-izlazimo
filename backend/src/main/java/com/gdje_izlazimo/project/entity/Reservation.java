@@ -40,6 +40,7 @@ public class Reservation {
     @Column(name = "phone", nullable = false, updatable = false)
     private String phone;
 
+
     @Column(name = "reservation_date", nullable = false, updatable = false)
     private LocalDate reservationDate;
 
@@ -59,6 +60,9 @@ public class Reservation {
 
     @Column(name = "special_requests")
     private String specialRequests;
+
+    @Column(name = "reject_reason")
+    private String rejectReason;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

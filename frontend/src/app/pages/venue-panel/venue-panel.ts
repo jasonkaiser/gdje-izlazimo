@@ -38,7 +38,6 @@ type VenueTabCounts = {
 type ViewModel = {
   items: ReservationResponseDto[];
   loading: boolean;
-  loadingMore: boolean;
   hasMore: boolean;
   errorMsg: string;
   pageNo: number;
@@ -95,9 +94,6 @@ export class VenuePanelComponent implements OnInit {
   private readonly dateRange$ = new BehaviorSubject<{ from: string; to: string }>({ from: '', to: '' });
   private readonly sort$ = new BehaviorSubject<SortOption>('date-desc');
 
-  private readonly pageCache    = new Map<string, ReservationResponseDto[]>();
-  private readonly hasMoreCache = new Map<string, boolean>();
-
   reservations$!: Observable<ReservationResponseDto[]>;
   tabCounts$!:    Observable<VenueTabCounts>;
   venue$!:        Observable<VenueResponseDto>;
@@ -114,77 +110,77 @@ export class VenuePanelComponent implements OnInit {
 
   private initializeStreams(): void {
 
-  this.venue$ = this.venueService.getMyVenue().pipe(
-    tap(venue => { this.venueId = venue.id; }),
-    catchError(err => {
-      console.error('[VenuePanelComponent] Failed to load venue:', err);
-      return EMPTY;
-    }),
-    shareReplay({ bufferSize: 1, refCount: true }),
-    takeUntilDestroyed(this.destroyRef)
-  );
+    this.venue$ = this.venueService.getMyVenue().pipe(
+      tap(venue => { this.venueId = venue.id; }),
+      catchError(err => {
+        console.error('[VenuePanelComponent] Failed to load venue:', err);
+        return EMPTY;
+      }),
+      shareReplay({ bufferSize: 1, refCount: true }),
+      takeUntilDestroyed(this.destroyRef)
+    );
 
-  this.reservations$ = this.venue$.pipe(
-    take(1),
-    switchMap(venue =>
-      this.refresh$.pipe(
-        switchMap(() =>
-          this.reservationService.getReservationsByVenue(venue.id, {
-            pageSize: 1000,
-            sortBy: 'reservationDate',
-            sortDir: 'DESC',
-          }).pipe(
-            catchError(err => {
-              console.error('[VenuePanelComponent] Failed to load reservations:', err);
-              return of([] as ReservationResponseDto[]);
-            })
+    this.reservations$ = this.venue$.pipe(
+      take(1),
+      switchMap(venue =>
+        this.refresh$.pipe(
+          switchMap(() =>
+            this.reservationService.getReservationsByVenue(venue.id, {
+              pageSize: 1000,
+              sortBy: 'reservationDate',
+              sortDir: 'DESC',
+            }).pipe(
+              catchError(err => {
+                console.error('[VenuePanelComponent] Failed to load reservations:', err);
+                return of([] as ReservationResponseDto[]);
+              })
+            )
           )
         )
-      )
-    ),
-    shareReplay({ bufferSize: 1, refCount: true }),
-    takeUntilDestroyed(this.destroyRef)
-  );
+      ),
+      shareReplay({ bufferSize: 1, refCount: true }),
+      takeUntilDestroyed(this.destroyRef)
+    );
 
-  this.tabCounts$ = this.reservations$.pipe(
-    map(list => this.countTabs(list)),
-    takeUntilDestroyed(this.destroyRef)
-  );
+    this.tabCounts$ = this.reservations$.pipe(
+      map(list => this.countTabs(list)),
+      takeUntilDestroyed(this.destroyRef)
+    );
 
-  this.todayReservations$ = this.reservations$.pipe(
-    map(list => {
-      const today = new Date().toISOString().slice(0, 10);
-      return list
-        .filter(r => r.reservationDate?.startsWith(today))
-        .sort((a, b) => {
-          const timeA = a.reservationTime ?? '00:00';
-          const timeB = b.reservationTime ?? '00:00';
-          return timeA.localeCompare(timeB);
-        });
-    }),
-    takeUntilDestroyed(this.destroyRef)
-  );
+    this.todayReservations$ = this.reservations$.pipe(
+      map(list => {
+        const today = new Date().toISOString().slice(0, 10);
+        return list
+          .filter(r => r.reservationDate?.startsWith(today))
+          .sort((a, b) => {
+            const timeA = a.reservationTime ?? '00:00';
+            const timeB = b.reservationTime ?? '00:00';
+            return timeA.localeCompare(timeB);
+          });
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    );
 
-  this.todayCount$ = this.todayReservations$.pipe(
-    map(list => list.length),
-    takeUntilDestroyed(this.destroyRef)
-  );
+    this.todayCount$ = this.todayReservations$.pipe(
+      map(list => list.length),
+      takeUntilDestroyed(this.destroyRef)
+    );
 
-  this.vm$ = combineLatest([
-    this.tab$,
-    this.pageNo$,
-    this.reservations$,
-    this.search$.pipe(debounceTime(300)),
-    this.dateRange$,
-    this.sort$
-  ]).pipe(
-    switchMap(([tab, pageNo, allReservations, search, dateRange, sort]) =>
-      this.getVmForParams(tab, pageNo, allReservations, search, dateRange, sort)
-    ),
-    shareReplay({ bufferSize: 1, refCount: true }),
-    takeUntilDestroyed(this.destroyRef)
-  );
-}
+    this.vm$ = combineLatest([
+      this.tab$,
+      this.pageNo$,
+      this.reservations$,
+      this.search$.pipe(debounceTime(300)),
+      this.dateRange$,
+      this.sort$
+    ]).pipe(
+      switchMap(([tab, pageNo, allReservations, search, dateRange, sort]) =>
+        this.getVmForParams(tab, pageNo, allReservations, search, dateRange, sort)
+      ),
+      shareReplay({ bufferSize: 1, refCount: true }),
+      takeUntilDestroyed(this.destroyRef)
+    );
+  }
 
 
   private getVmForParams(
@@ -209,7 +205,6 @@ export class VenuePanelComponent implements OnInit {
     return of({
       items:       slice,
       loading:     false,
-      loadingMore: false,
       hasMore,
       errorMsg:    '',
       pageNo,
@@ -301,19 +296,16 @@ export class VenuePanelComponent implements OnInit {
   onSearchChange(): void {
     this.search$.next(this.searchQuery);
     this.pageNo$.next(1);
-    this.clearCache();
   }
 
   onDateFilterChange(): void {
     this.dateRange$.next({ from: this.dateFrom, to: this.dateTo });
     this.pageNo$.next(1);
-    this.clearCache();
   }
 
   onSortChange(): void {
     this.sort$.next(this.sortBy);
     this.pageNo$.next(1);
-    this.clearCache();
   }
 
   clearSearch(): void {
@@ -330,7 +322,6 @@ export class VenuePanelComponent implements OnInit {
     this.dateRange$.next({ from: '', to: '' });
     this.sort$.next('date-desc');
     this.pageNo$.next(1);
-    this.clearCache();
   }
 
   viewTodayReservations(): void {
@@ -347,7 +338,6 @@ export class VenuePanelComponent implements OnInit {
     this.mobileTabOpen = false;  
     this.tab$.next(tab);
     this.pageNo$.next(1);
-    this.clearCache();
   }
 
   toggleFilter(): void {
@@ -384,7 +374,8 @@ export class VenuePanelComponent implements OnInit {
       .pipe(take(1))
       .subscribe({
         next: () => {
-          this.clearCacheAndReset();
+          this.pageNo$.next(1);
+          this.refresh$.next();
         },
         error: err => {
           console.error('[VenuePanelComponent] Accept failed:', err);
@@ -404,7 +395,8 @@ export class VenuePanelComponent implements OnInit {
       ref.instance.confirmed
         .pipe(take(1))
         .subscribe(() => {
-          this.clearCacheAndReset();
+          this.pageNo$.next(1);
+          this.refresh$.next();
         });
     });
   }
@@ -426,50 +418,35 @@ export class VenuePanelComponent implements OnInit {
 
 
   toggleVenueActive(venue: VenueResponseDto): void {
-  if (this.isTogglingActive) return;
-  this.isTogglingActive = true;
-  this.toggleSuccessMsg = '';
-  this.toggleErrorMsg   = '';
+    if (this.isTogglingActive) return;
+    this.isTogglingActive = true;
+    this.toggleSuccessMsg = '';
+    this.toggleErrorMsg   = '';
 
-  const updateRequest: UpdateVenueRequest = {
-    name:        venue.name,
-    venueType:   venue.venueType,
-    phone:       venue.phone,
-    description: venue.description,
-    isActive:    !venue.isActive,
-  };
+    const updateRequest: UpdateVenueRequest = {
+      name:        venue.name,
+      venueType:   venue.venueType,
+      phone:       venue.phone,
+      description: venue.description,
+      isActive:    !venue.isActive,
+      addressName: venue.addressName
+    };
 
-  this.venueService.updateVenue(updateRequest, venue.id)
-    .pipe(take(1))
-    .subscribe({
-      next: () => {
-        this.isTogglingActive = false;
-        this.toggleSuccessMsg = 'Status ažuriran';
-        // Refresh venue stream
-        this.venue$ = this.venueService.getMyVenue().pipe(
-          tap(v => { this.venueId = v.id; }),
-          shareReplay({ bufferSize: 1, refCount: true })
-        );
-        setTimeout(() => { this.toggleSuccessMsg = ''; }, 3000);
-      },
-      error: err => {
-        this.isTogglingActive = false;
-        this.toggleErrorMsg   = 'Greška pri ažuriranju';
-        console.error('[VenuePanelComponent] Toggle active failed:', err);
-        setTimeout(() => { this.toggleErrorMsg = ''; }, 3000);
-      },
-    });
-}
-
-
-  private clearCache(): void {
-    this.pageCache.clear();
-    this.hasMoreCache.clear();
-  }
-
-  private clearCacheAndReset(): void {
-    this.clearCache();
-    this.pageNo$.next(1);
-    this.refresh$.next();
+    this.venueService.updateVenue(updateRequest, venue.id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.isTogglingActive = false;
+          this.toggleSuccessMsg = 'Status ažuriran';
+          this.refresh$.next();
+          setTimeout(() => { this.toggleSuccessMsg = ''; }, 3000);
+        },
+        error: err => {
+          this.isTogglingActive = false;
+          this.toggleErrorMsg   = 'Greška pri ažuriranju';
+          console.error('[VenuePanelComponent] Toggle active failed:', err);
+          setTimeout(() => { this.toggleErrorMsg = ''; }, 3000);
+        },
+      });
   }
 }

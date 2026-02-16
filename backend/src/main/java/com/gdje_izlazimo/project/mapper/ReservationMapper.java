@@ -23,46 +23,45 @@ public class ReservationMapper  {
     }
 
     public Reservation toEntity(CreateReservationRequest dto){
-            Reservation createdEntity = new Reservation();
-            createdEntity.setPhone(dto.phone());
-            createdEntity.setReservationDate(dto.reservationDate());
-            createdEntity.setReservationTime(dto.reservationTime());
-            createdEntity.setSpecialRequests(dto.specialRequests());
+        Reservation createdEntity = new Reservation();
+        createdEntity.setPhone(dto.phone());
+        createdEntity.setReservationDate(dto.reservationDate());
+        createdEntity.setReservationTime(dto.reservationTime());
+        createdEntity.setSpecialRequests(dto.specialRequests());
+        createdEntity.setNumberOfPeople(dto.numberOfPeople());
 
-            Venue venue_id = venueRepository.findById(dto.venueId()).orElseThrow(
-                    () -> new RuntimeException("Venue not found"));
-            createdEntity.setVenueId(venue_id);
+        Venue venue_id = venueRepository.findById(dto.venueId()).orElseThrow(
+                () -> new RuntimeException("Venue not found"));
+        createdEntity.setVenueId(venue_id);
 
-            return createdEntity;
+        return createdEntity;
     }
 
     public void updateEntity(UpdateReservationRequest dto, Reservation entity){
         entity.setStatus(dto.status());
-
-
     }
 
     public ReservationResponse toResponse(Reservation entity){
 
         var venue = entity.getVenueId();
+        var tableType = entity.getTableType();
 
         return new ReservationResponse(
                 entity.getId(),
                 entity.getUserId().getId(),
-                entity.getVenueId().getId(),
+                venue.getId(),
                 entity.getPhone(),
                 venue.getName(),
                 venue.getAddressName(),
                 entity.getReservationDate(),
                 entity.getReservationTime(),
                 entity.getNumberOfPeople(),
-                entity.getTableType(),
+                tableType != null ? tableType.getId() : null,
                 entity.getStatus(),
                 entity.getSpecialRequests(),
+                entity.getRejectReason(),
                 entity.getCreated_at(),
                 entity.getUpdated_at()
         );
-
     }
-
 }

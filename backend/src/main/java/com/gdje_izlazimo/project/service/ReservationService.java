@@ -12,19 +12,19 @@ import com.gdje_izlazimo.project.exception.custom.*;
 import com.gdje_izlazimo.project.mapper.ReservationMapper;
 import com.gdje_izlazimo.project.repository.ReservationRepository;
 import com.gdje_izlazimo.project.repository.TableTypeRepository;
-import org.springframework.cglib.core.Local;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional(readOnly = true)
 public class ReservationService {
 
     private final ReservationRepository reservationRepository;
@@ -32,55 +32,54 @@ public class ReservationService {
     private final UserService userService;
     private final TableTypeService tableTypeService;
     private final TableTypeRepository tableTypeRepository;
+    private final EmailService emailService;
     private final VenueService venueService;
 
-    public ReservationService(ReservationRepository reservationRepository, ReservationMapper reservationMapper, UserService userService, TableTypeService tableTypeService, TableTypeRepository tableTypeRepository, VenueService venueService) {
+    private static final Logger log = LoggerFactory.getLogger(ReservationService.class);
+
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            ReservationMapper reservationMapper,
+            UserService userService,
+            TableTypeService tableTypeService,
+            TableTypeRepository tableTypeRepository,
+            VenueService venueService,
+            EmailService emailService
+    ) {
         this.reservationRepository = reservationRepository;
         this.reservationMapper = reservationMapper;
         this.userService = userService;
         this.tableTypeService = tableTypeService;
         this.tableTypeRepository = tableTypeRepository;
         this.venueService = venueService;
+        this.emailService = emailService;
     }
 
-    public List<ReservationResponse> findAllReservations(Pageable pageable){
-
+    public List<ReservationResponse> findAllReservations(Pageable pageable) {
         List<Reservation> responses = reservationRepository.findAll(pageable).getContent();
-
-        return responses.stream()
-                .map(reservationMapper::toResponse)
-                .toList();
-
+        return responses.stream().map(reservationMapper::toResponse).toList();
     }
 
-    public ReservationResponse findReservationById(UUID id){
-
-        Reservation response = reservationRepository.findById(id).orElseThrow(
-                () -> new ReservationNotFoundException("Reservation does not exist"));
-
+    public ReservationResponse findReservationById(UUID id) {
+        Reservation response = reservationRepository.findByIdWithDetails(id).orElseThrow(
+                () -> new ReservationNotFoundException("Reservation does not exist")
+        );
         return reservationMapper.toResponse(response);
-
     }
 
     public List<ReservationResponse> findReservationsByVenueId(UUID venueId, Pageable pageable) {
-        List<Reservation> reservations = reservationRepository.findByVenueId_Id(venueId, pageable).getContent();
-
-        return reservations.stream()
-                .map(reservationMapper::toResponse)
-                .toList();
+        List<Reservation> reservations = reservationRepository.findByVenueIdWithDetails(venueId, pageable).getContent();
+        return reservations.stream().map(reservationMapper::toResponse).toList();
     }
 
     public List<ReservationResponse> findReservationsByUserId(UUID userId, Pageable pageable) {
         return reservationRepository.findResponsesByUserId(userId, pageable).getContent();
     }
 
-
-
-
-    public ReservationResponse createReservation(CreateReservationRequest dto, String keycloakSub) {
-
+    @Transactional
+    public ReservationResponse createReservation(CreateReservationRequest dto, String keycloakSub, String requesterEmail) {
         LocalDateTime requested = LocalDateTime.of(dto.reservationDate(), dto.reservationTime());
-        LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Sarajevo")); // ili tvoja zona
+        LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Sarajevo"));
 
         if (requested.isBefore(now)) {
             throw new InvalidReservationDateException("Reservation date/time cannot be in the past");
@@ -88,13 +87,15 @@ public class ReservationService {
 
         UUID userId = UUID.fromString(keycloakSub);
         TableType table = tableTypeService.findEntityById(dto.tableTypeId());
-        User user = userService.getOrCreate(userId);
+
+        User user = userService.getOrCreate(userId, requesterEmail);
 
         if (reservationRepository.existsByUserId_IdAndVenueId_IdAndReservationDateAndReservationTime(
                 user.getId(),
                 dto.venueId(),
                 dto.reservationDate(),
-                dto.reservationTime())) {
+                dto.reservationTime()
+        )) {
             throw new ReservationAlreadyExistsException("You already have a reservation at this venue for this date/time");
         }
 
@@ -104,26 +105,39 @@ public class ReservationService {
         createdReservation.setStatus(Status.PENDING);
 
         Reservation savedReservation = reservationRepository.save(createdReservation);
+
+        try {
+            String to = requesterEmail;
+            if (to != null && !to.isBlank()) {
+                emailService.sendPlainText(
+                        to,
+                        "GDJE IZLAZIMO | Rezervacija zaprimljena (PENDING)",
+                        "Primili smo tvoju rezervaciju za " + savedReservation.getReservationDate()
+                                + " u " + savedReservation.getReservationTime() + ". Status: PENDING."
+                );
+            } else {
+                log.warn("Skipping CREATED email: requesterEmail is null/blank. reservationId={}", savedReservation.getId());
+            }
+        } catch (Exception e) {
+            log.warn("Failed to send reservation CREATED email for reservation {}", savedReservation.getId(), e);
+        }
+
         return reservationMapper.toResponse(savedReservation);
     }
 
-
-
-    public ReservationResponse updateReservation(UpdateReservationRequest dto, UUID id){
-
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(
-                () -> new ReservationNotFoundException("Reservation does not exist"));
-
+    @Transactional
+    public ReservationResponse updateReservation(UpdateReservationRequest dto, UUID id) {
+        Reservation reservation = reservationRepository.findByIdWithDetails(id).orElseThrow(
+                () -> new ReservationNotFoundException("Reservation does not exist")
+        );
         reservationMapper.updateEntity(dto, reservation);
         Reservation updatedReservation = reservationRepository.save(reservation);
-
         return reservationMapper.toResponse(updatedReservation);
-
     }
 
+    @Transactional
     public void acceptReservation(UUID id, String keycloakSub) {
-
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(
+        Reservation reservation = reservationRepository.findByIdWithDetails(id).orElseThrow(
                 () -> new ReservationNotFoundException("Reservation does not exist")
         );
 
@@ -138,7 +152,6 @@ public class ReservationService {
             if (actor.getRole() != Role.VENUE_OWNER) {
                 throw new InvalidRoleException("You are not allowed to accept reservations");
             }
-
             UUID ownerId = reservation.getVenueId().getVenueOwner().getId();
             if (!ownerId.equals(actor.getId())) {
                 throw new ReservationAccessDeniedException("This reservation is not for your venue");
@@ -146,14 +159,29 @@ public class ReservationService {
         }
 
         reservation.setStatus(Status.ACCEPTED);
-
+        reservation.setRejectReason(null);
         reservationRepository.save(reservation);
+
+        try {
+            String to = reservation.getUserId() != null ? reservation.getUserId().getEmail() : null;
+            if (to != null && !to.isBlank()) {
+                emailService.sendPlainText(
+                        to,
+                        "GDJE IZLAZIMO | Rezervacija prihvacena (ACCEPTED)",
+                        "Prihvatili smo tvoju rezervaciju za " + reservation.getReservationDate()
+                                + " u " + reservation.getReservationTime() + ". Status: ACCEPTED."
+                );
+            } else {
+                log.warn("Skipping ACCEPTED email: reservation user email is null/blank. reservationId={}", reservation.getId());
+            }
+        } catch (Exception e) {
+            log.warn("Failed to send reservation ACCEPTED email for reservation {}", reservation.getId(), e);
+        }
     }
 
-
-    public void rejectReservation(UUID id, String keycloakSub) {
-
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(
+    @Transactional
+    public void rejectReservation(UUID id, String keycloakSub, String reason) {
+        Reservation reservation = reservationRepository.findByIdWithDetails(id).orElseThrow(
                 () -> new ReservationNotFoundException("Reservation does not exist")
         );
 
@@ -168,7 +196,6 @@ public class ReservationService {
             if (actor.getRole() != Role.VENUE_OWNER) {
                 throw new InvalidRoleException("You are not allowed to reject reservations");
             }
-
             UUID ownerId = reservation.getVenueId().getVenueOwner().getId();
             if (!ownerId.equals(actor.getId())) {
                 throw new ReservationAccessDeniedException("This reservation is not for your venue");
@@ -176,13 +203,35 @@ public class ReservationService {
         }
 
         reservation.setStatus(Status.REJECTED);
+        reservation.setRejectReason(reason != null ? reason.trim() : null);
         reservationRepository.save(reservation);
 
+        try {
+            String to = reservation.getUserId() != null ? reservation.getUserId().getEmail() : null;
+            if (to != null && !to.isBlank()) {
+                String msg = "Odbili smo tvoju rezervaciju za " + reservation.getReservationDate()
+                        + " u " + reservation.getReservationTime() + ". Status: REJECTED."
+                        + (reservation.getRejectReason() != null && !reservation.getRejectReason().isBlank()
+                        ? "\nRazlog: " + reservation.getRejectReason()
+                        : "");
+
+                emailService.sendPlainText(
+                        to,
+                        "GDJE IZLAZIMO | Rezervacija odbijena (REJECTED)",
+                        msg
+                );
+            } else {
+                log.warn("Skipping REJECTED email: reservation user email is null/blank. reservationId={}", reservation.getId());
+            }
+        } catch (Exception e) {
+            log.warn("Failed to send reservation REJECTED email for reservation {}", reservation.getId(), e);
+        }
     }
 
-    public void cancelReservation(UUID id, String keycloakSub) {
 
-        Reservation reservation = reservationRepository.findById(id).orElseThrow(
+    @Transactional
+    public void cancelReservation(UUID id, String keycloakSub, String requesterEmail) {
+        Reservation reservation = reservationRepository.findByIdWithDetails(id).orElseThrow(
                 () -> new ReservationNotFoundException("Reservation does not exist")
         );
 
@@ -190,41 +239,59 @@ public class ReservationService {
             throw new InvalidReservationStatusException("Only PENDING / ACCEPTED reservations can be cancelled");
         }
 
-        if(reservation.getStatus() == Status.ACCEPTED){
-            LocalTime reservationTime = reservation.getReservationTime();
-            LocalTime cancelDeadline = reservationTime.minusHours(2);
+        if (reservation.getStatus() == Status.ACCEPTED) {
+            LocalDateTime reservationStart = LocalDateTime.of(reservation.getReservationDate(), reservation.getReservationTime());
+            LocalDateTime cancelDeadline = reservationStart.minusHours(2);
+            LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Sarajevo"));
 
-            if(LocalTime.now().isAfter(cancelDeadline)){
-
-                throw new InvalidReservationDateException("Reservation can be cancelled up to 2 Hours before the start time");
-
-
+            if (now.isAfter(cancelDeadline)) {
+                throw new InvalidReservationDateException("Reservation can be cancelled up to 2 hours before the start time");
             }
-
         }
 
         UUID actorId = UUID.fromString(keycloakSub);
-        User actor = userService.getOrCreate(actorId);
 
-        if (actor.getRole() != Role.ADMIN) {
-            UUID reservationUserId = reservation.getUserId().getId();
-            if (!reservationUserId.equals(actor.getId())) {
-                throw new ReservationAccessDeniedException("You can only cancel your own reservation");
-            }
+        User actor = userService.getOrCreate(actorId, requesterEmail);
+
+        boolean actorIsReservationOwner =
+                reservation.getUserId() != null && reservation.getUserId().getId().equals(actor.getId());
+
+        if (actor.getRole() != Role.ADMIN && !actorIsReservationOwner) {
+            throw new ReservationAccessDeniedException("You can only cancel your own reservation");
         }
 
         reservation.setStatus(Status.CANCELLED);
         reservationRepository.save(reservation);
+
+        try {
+            String to;
+
+            if (actorIsReservationOwner) {
+                to = requesterEmail;
+            } else {
+                to = reservation.getUserId() != null ? reservation.getUserId().getEmail() : null; // cached earlier
+            }
+
+            if (to != null && !to.isBlank()) {
+                emailService.sendPlainText(
+                        to,
+                        "GDJE IZLAZIMO | Rezervacija otkazana (CANCELLED)",
+                        "Otkazana je tvoja rezervacija za " + reservation.getReservationDate()
+                                + " u " + reservation.getReservationTime() + ". Status: CANCELLED."
+                );
+            } else {
+                log.warn("Skipping CANCELLED email: recipient is null/blank. reservationId={}", reservation.getId());
+            }
+        } catch (Exception e) {
+            log.warn("Failed to send reservation CANCELLED email for reservation {}", reservation.getId(), e);
+        }
     }
 
-
-    public void deleteReservation(UUID id){
-
-        if(!reservationRepository.existsById(id)){
+    @Transactional
+    public void deleteReservation(UUID id) {
+        if (!reservationRepository.existsById(id)) {
             throw new ReservationNotFoundException("Reservation does not exist");
         }
         reservationRepository.deleteById(id);
-
     }
-
 }

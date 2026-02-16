@@ -1,0 +1,233 @@
+<!-- admin-settings.component.html -->
+
+<div class="space-y-8">
+
+  <!-- Page Header -->
+  <div class="animate-fade-in">
+    <h2 class="font-sora text-[22px] font-semibold text-white/95">Postavke Sistema</h2>
+    <p class="font-dm text-[13px] text-white/50 mt-1">Konfigurišite parametre platforme</p>
+  </div>
+
+  <!-- Settings Categories -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    
+    <!-- Platform Settings -->
+    <div class="rounded-2xl bg-white/[0.03] border border-white/10 p-6 animate-fade-in-delay-1">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
+          <svg class="h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </div>
+        <h3 class="font-sora text-[18px] font-semibold text-white/95">Opšte Postavke</h3>
+      </div>
+
+      <div class="space-y-5">
+        
+        <!-- Platform Name -->
+        <div>
+          <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+            Naziv Platforme
+          </label>
+          <input
+            type="text"
+            [value]="settings().platformName"
+            disabled
+            class="w-full h-11 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white/50 cursor-not-allowed"
+          />
+        </div>
+
+        <!-- Maintenance Mode -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-xl bg-white/[0.02] border border-white/10">
+          <div>
+            <p class="font-dm text-[13px] text-white/90">Mod Održavanja</p>
+            <p class="font-dm text-[11px] text-white/50 mt-0.5">Onemogući pristup korisnicima</p>
+          </div>
+          <button
+            type="button"
+            (click)="toggleMaintenanceMode()"
+            class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out focus:outline-none hover:scale-105"
+            [class.bg-red-500/90]="settings().maintenanceMode"
+            [class.bg-white/15]="!settings().maintenanceMode"
+            role="switch"
+          >
+            <span 
+              class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
+              [class.translate-x-5]="settings().maintenanceMode"
+              [class.translate-x-0]="!settings().maintenanceMode"
+            ></span>
+          </button>
+        </div>
+
+        <!-- New User Registrations -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-xl bg-white/[0.02] border border-white/10">
+          <div>
+            <p class="font-dm text-[13px] text-white/90">Nove Registracije</p>
+            <p class="font-dm text-[11px] text-white/50 mt-0.5">Dozvoli registraciju novih korisnika</p>
+          </div>
+          <button
+            type="button"
+            (click)="toggleNewRegistrations()"
+            class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out focus:outline-none hover:scale-105"
+            [class.bg-green-500/90]="settings().allowNewRegistrations"
+            [class.bg-white/15]="!settings().allowNewRegistrations"
+            role="switch"
+          >
+            <span 
+              class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
+              [class.translate-x-5]="settings().allowNewRegistrations"
+              [class.translate-x-0]="!settings().allowNewRegistrations"
+            ></span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Notification Settings -->
+    <div class="rounded-2xl bg-white/[0.03] border border-white/10 p-6 animate-fade-in-delay-2">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+          <svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+          </svg>
+        </div>
+        <h3 class="font-sora text-[18px] font-semibold text-white/95">Obavještenja</h3>
+      </div>
+
+      <div class="space-y-5">
+        
+        <!-- Email Notifications -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-xl bg-white/[0.02] border border-white/10">
+          <div>
+            <p class="font-dm text-[13px] text-white/90">Email Obavještenja</p>
+            <p class="font-dm text-[11px] text-white/50 mt-0.5">Slanje emailova za nove rezervacije</p>
+          </div>
+          <button
+            type="button"
+            (click)="toggleEmailNotifications()"
+            class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out focus:outline-none hover:scale-105"
+            [class.bg-green-500/90]="settings().emailNotifications"
+            [class.bg-white/15]="!settings().emailNotifications"
+            role="switch"
+          >
+            <span 
+              class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
+              [class.translate-x-5]="settings().emailNotifications"
+              [class.translate-x-0]="!settings().emailNotifications"
+            ></span>
+          </button>
+        </div>
+
+        <!-- SMS Notifications -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-xl bg-white/[0.02] border border-white/10">
+          <div>
+            <p class="font-dm text-[13px] text-white/90">SMS Obavještenja</p>
+            <p class="font-dm text-[11px] text-white/50 mt-0.5">Slanje SMS poruka za podsjetnik</p>
+          </div>
+          <button
+            type="button"
+            (click)="toggleSmsNotifications()"
+            class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out focus:outline-none hover:scale-105"
+            [class.bg-green-500/90]="settings().smsNotifications"
+            [class.bg-white/15]="!settings().smsNotifications"
+            role="switch"
+          >
+            <span 
+              class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
+              [class.translate-x-5]="settings().smsNotifications"
+              [class.translate-x-0]="!settings().smsNotifications"
+            ></span>
+          </button>
+        </div>
+
+        <!-- Push Notifications -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-xl bg-white/[0.02] border border-white/10">
+          <div>
+            <p class="font-dm text-[13px] text-white/90">Push Notifikacije</p>
+            <p class="font-dm text-[11px] text-white/50 mt-0.5">Obavještenja u aplikaciji</p>
+          </div>
+          <button
+            type="button"
+            (click)="togglePushNotifications()"
+            class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out focus:outline-none hover:scale-105"
+            [class.bg-green-500/90]="settings().pushNotifications"
+            [class.bg-white/15]="!settings().pushNotifications"
+            role="switch"
+          >
+            <span 
+              class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
+              [class.translate-x-5]="settings().pushNotifications"
+              [class.translate-x-0]="!settings().pushNotifications"
+            ></span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  
+  <!-- System Info -->
+  <div class="rounded-2xl bg-white/[0.03] border border-white/10 p-6 animate-fade-in-delay-4">
+    <div class="flex items-center gap-3 mb-6">
+      <div class="h-10 w-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+        <svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <h3 class="font-sora text-[18px] font-semibold text-white/95">Informacije o Sistemu</h3>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+      
+      <div class="py-4 px-5 rounded-xl bg-white/[0.02] border border-white/10">
+        <p class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 mb-2">Verzija</p>
+        <p class="font-sora text-[18px] font-semibold text-white/95">{{ settings().version }}</p>
+      </div>
+
+      <div class="py-4 px-5 rounded-xl bg-white/[0.02] border border-white/10">
+        <p class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 mb-2">Status API</p>
+        <p class="font-dm text-[14px] font-medium text-green-400 flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full bg-green-400 animate-pulse"></span>
+          Aktivan
+        </p>
+      </div>
+
+      <div class="py-4 px-5 rounded-xl bg-white/[0.02] border border-white/10">
+        <p class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 mb-2">Database</p>
+        <p class="font-dm text-[14px] font-medium text-green-400 flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full bg-green-400"></span>
+          Povezana
+        </p>
+      </div>
+
+      <div class="py-4 px-5 rounded-xl bg-white/[0.02] border border-white/10">
+        <p class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 mb-2">Uptime</p>
+        <p class="font-sora text-[18px] font-semibold text-white/95">{{ settings().uptime }}</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex items-center justify-end gap-3 pt-4 animate-fade-in-delay-4">
+    <button
+      type="button"
+      (click)="resetSettings()"
+      class="h-12 px-6 rounded-2xl border border-white/10 bg-white/[0.03] font-dm text-[13px] tracking-[0.08em] uppercase text-white/70 transition-all duration-200 hover:bg-white/[0.08] hover:text-white"
+    >
+      Resetuj
+    </button>
+    <button
+      type="button"
+      (click)="saveSettings()"
+      class="h-12 px-6 rounded-2xl border border-purple-500/30 bg-purple-500/10 font-dm text-[13px] tracking-[0.08em] uppercase text-purple-300 transition-all duration-200 hover:bg-purple-500/15 hover:border-purple-500/40"
+    >
+      Sačuvaj Promjene
+    </button>
+  </div>
+
+</div>

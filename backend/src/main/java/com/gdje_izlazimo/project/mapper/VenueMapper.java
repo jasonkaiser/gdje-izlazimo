@@ -43,6 +43,7 @@ public class VenueMapper {
         venue.setActive(dto.isActive());
         venue.setVenueType(dto.venueType());
         venue.setPhone(dto.phone());
+        venue.setAddressName(dto.addressName());
     }
 
     public VenueResponse toResponse(Venue venue){

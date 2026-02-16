@@ -1,0 +1,114 @@
+<div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" (click)="onClose()">
+  <div class="relative w-full max-w-lg rounded-2xl bg-[#0A0A0A] border border-white/10 shadow-2xl animate-slide-down" (click)="$event.stopPropagation()">
+    
+    <!-- Header -->
+    <div class="flex items-center justify-between px-6 py-5 border-b border-white/10">
+      <h3 class="font-sora text-[20px] font-semibold text-white/95">
+        {{ mode === 'create' ? 'Novi Korisnik' : 'Uredi Korisnika' }}
+      </h3>
+      <button
+        (click)="onClose()"
+        class="h-8 w-8 rounded-lg hover:bg-white/5 flex items-center justify-center transition-colors"
+      >
+        <svg class="h-5 w-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="p-6 space-y-5">
+      
+      <!-- Name -->
+      <div>
+        <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+          Ime i Prezime *
+        </label>
+        <input
+          type="text"
+          [(ngModel)]="formData.name"
+          name="name"
+          required
+          placeholder="npr. Amar Kovačević"
+          class="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white placeholder-white/30 transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"
+        />
+      </div>
+
+      <!-- Phone -->
+      <div>
+        <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+          Telefon *
+        </label>
+        <input
+          type="tel"
+          [(ngModel)]="formData.phone"
+          name="phone"
+          required
+          placeholder="npr. +387 61 123 456"
+          class="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white placeholder-white/30 transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"
+        />
+      </div>
+
+      <!-- Role -->
+      <div>
+        <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+          Uloga *
+        </label>
+        <select
+          [(ngModel)]="formData.role"
+          name="role"
+          required
+          class="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15 cursor-pointer"
+        >
+          <option [value]="Role.USER" class="bg-[#0A0A0A]">{{ getRoleLabel(Role.USER) }}</option>
+          <option [value]="Role.VENUE_OWNER" class="bg-[#0A0A0A]">{{ getRoleLabel(Role.VENUE_OWNER) }}</option>
+          <option [value]="Role.ADMIN" class="bg-[#0A0A0A]">{{ getRoleLabel(Role.ADMIN) }}</option>
+        </select>
+      </div>
+
+      <!-- Note for create mode -->
+      @if (mode === 'create') {
+        <div class="rounded-xl bg-yellow-500/5 border border-yellow-500/20 px-4 py-3">
+          <div class="flex gap-3">
+            <svg class="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <div>
+              <p class="font-dm text-[13px] text-yellow-400/90 mb-1">Napomena</p>
+              <p class="font-dm text-[12px] text-yellow-400/70 leading-relaxed">
+                Novi korisnici se kreiraju putem registracije. Ovdje možete samo ažurirati postojeće korisnike.
+              </p>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Actions -->
+      <div class="flex items-center justify-end gap-3 pt-4">
+        <button
+          type="button"
+          (click)="onClose()"
+          [disabled]="isSubmitting"
+          class="h-11 px-6 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[13px] tracking-[0.08em] uppercase text-white/70 transition-all duration-200 hover:bg-white/[0.08] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Otkaži
+        </button>
+        <button
+          type="submit"
+          [disabled]="isSubmitting || !formData.name.trim() || !formData.phone.trim()"
+          class="h-11 px-6 rounded-xl border border-purple-500/30 bg-purple-500/10 font-dm text-[13px] tracking-[0.08em] uppercase text-purple-300 transition-all duration-200 hover:bg-purple-500/15 hover:border-purple-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        >
+          @if (isSubmitting) {
+            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          }
+          {{ mode === 'create' ? 'Kreiraj' : 'Sačuvaj' }}
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

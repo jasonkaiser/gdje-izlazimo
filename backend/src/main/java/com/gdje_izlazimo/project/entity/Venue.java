@@ -39,13 +39,13 @@ public class Venue {
     @JoinColumn(name = "venue_owner_id", nullable = false, updatable = false)
     private User venueOwner;
 
-    @Column(name = "address_name", nullable = false, updatable = false)
+    @Column(name = "address_name", nullable = false)
     private String addressName;
 
-    @Column(name = "is_active", nullable = false, updatable = false)
+    @Column(name = "is_active", nullable = false)
     private boolean isActive;
 
-    @Column(name = "venue_type", nullable = false, updatable = false)
+    @Column(name = "venue_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private VenueCategory venueType;
 

@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -55,6 +57,14 @@ public class VenueController {
     @GetMapping("/{id}")
     public ResponseEntity<VenueResponse> findVenueById(@PathVariable UUID id) {
         return ResponseEntity.ok(venueService.findVenueById(id));
+    }
+
+    @GetMapping("/my-venue")
+    public ResponseEntity<VenueResponse> getMyVenue(@AuthenticationPrincipal Jwt jwt) {
+        UUID ownerId = UUID.fromString(jwt.getSubject());
+
+        VenueResponse venue = venueService.getVenueByOwnerId(ownerId);
+        return ResponseEntity.ok(venue);
     }
 
     @PermitAll
