@@ -26,31 +26,25 @@
       />
     </div>
 
-    <!-- Status Filter -->
-    <select
-      [(ngModel)]="statusFilter"
-      (ngModelChange)="onFilterChange()"
-      class="h-11 cursor-pointer rounded-xl border border-white/[0.08] bg-white/[0.04] px-3.5 font-dm text-[13px] text-white/75
-             transition duration-200 hover:border-white/[0.13] focus:border-violet-500/50 focus:outline-none focus:ring-1 focus:ring-violet-500/20"
-    >
-      <option value="ALL"      class="bg-[#111114]">Svi statusi</option>
-      <option value="ACTIVE"   class="bg-[#111114]">Aktivni</option>
-      <option value="INACTIVE" class="bg-[#111114]">Neaktivni</option>
-    </select>
+    <!-- Status Filter - Premium Dropdown -->
+    <div class="w-full sm:w-auto sm:min-w-[160px]">
+      <app-dropdown
+        placeholder="Svi statusi"
+        [options]="statusFilterOptions"
+        [(ngModel)]="statusFilter"
+        (ngModelChange)="onFilterChange()"
+      />
+    </div>
 
-    <!-- Category Filter -->
-    <select
-      [(ngModel)]="categoryFilter"
-      (ngModelChange)="onFilterChange()"
-      class="h-11 cursor-pointer rounded-xl border border-white/[0.08] bg-white/[0.04] px-3.5 font-dm text-[13px] text-white/75
-             transition duration-200 hover:border-white/[0.13] focus:border-violet-500/50 focus:outline-none focus:ring-1 focus:ring-violet-500/20"
-    >
-      <option value="ALL"        class="bg-[#111114]">Sve kategorije</option>
-      <option value="CLUB"       class="bg-[#111114]">Klubovi</option>
-      <option value="PUB"        class="bg-[#111114]">Pubovi</option>
-      <option value="LOUNGE"     class="bg-[#111114]">Lounge</option>
-      <option value="RESTAURANT" class="bg-[#111114]">Restorani</option>
-    </select>
+    <!-- Category Filter - Premium Dropdown -->
+    <div class="w-full sm:w-auto sm:min-w-[180px]">
+      <app-dropdown
+        placeholder="Sve kategorije"
+        [options]="categoryFilterOptions"
+        [(ngModel)]="categoryFilter"
+        (ngModelChange)="onFilterChange()"
+      />
+    </div>
 
     <!-- Add Button -->
     <button

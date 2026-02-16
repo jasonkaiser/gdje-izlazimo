@@ -6,7 +6,6 @@ import {
   DestroyRef,
   Output,
   EventEmitter,
-  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, map } from 'rxjs';
@@ -22,6 +21,8 @@ import {
   TopVenue,
 } from '../../../../core/api/dashboard-service';
 import { AdminView } from '../../admin-panel';
+import { ModalService } from '../../../../core/services/modal';
+import { ActivityLogsModalComponent } from '../../../../components/modals/activity-logs-modal/activity-logs-modal';
 
 interface VenueTypeBreakdownUI {
   type: string;
@@ -56,13 +57,13 @@ type ActivityTheme = {
 export class AdminDashboardComponent implements OnInit {
   @Output() navigate = new EventEmitter<AdminView>();
 
-  activityLimit = signal<number>(10);
-
   private readonly dashboardApi = inject(DashboardApiService);
+  private readonly modalService = inject(ModalService);
   private readonly destroyRef = inject(DestroyRef);
 
-  stats$!: Observable<DashboardStats>;
+  stats$!: Observable<DashboardStats>; 
   activities$!: Observable<ActivityLog[]>;
+  allActivities$!: Observable<ActivityLog[]>; // Store all activities for modal
   venueBreakdown$!: Observable<VenueTypeBreakdownUI[]>;
   reservationBreakdown$!: Observable<ReservationStatusBreakdownUI[]>;
   topVenues$!: Observable<TopVenue[]>;
@@ -71,14 +72,13 @@ export class AdminDashboardComponent implements OnInit {
     this.initializeStreams();
   }
 
-  toggleActivityLimit(): void {
-    const newLimit = this.activityLimit() === 10 ? 50 : 10;
-    this.activityLimit.set(newLimit);
-
-    this.activities$ = this.dashboardApi.getTopRecentActivities(newLimit).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+  openActivityLogsModal(): void {
+    // Get all activities (up to 100) for the modal
+    this.allActivities$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(activities => {
+      this.modalService.open(ActivityLogsModalComponent, {
+        data: { activities }
+      });
+    });
   }
 
   navigateTo(view: AdminView): void {
@@ -91,7 +91,15 @@ export class AdminDashboardComponent implements OnInit {
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
-    this.activities$ = this.dashboardApi.getTopRecentActivities(this.activityLimit()).pipe(
+    // Load all activities (for modal)
+    this.allActivities$ = this.dashboardApi.getTopRecentActivities(100).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    // Show only first 5 activities in dashboard
+    this.activities$ = this.allActivities$.pipe(
+      map(activities => activities.slice(0, 5)),
       takeUntilDestroyed(this.destroyRef),
       shareReplay({ bufferSize: 1, refCount: true })
     );

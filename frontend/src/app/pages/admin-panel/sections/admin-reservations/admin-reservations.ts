@@ -25,6 +25,7 @@ import { ModalService } from '../../../../core/services/modal';
 import { ReservationDetailsModalComponent } from '../../../../components/modals/reservation-details-modal/reservation-details-modal';
 import { ToastService } from '../../../../core/ui/toast';
 import { ConfirmModalComponent } from '../../../../components/modals/confirm-modal/confirm-modal';
+import { AppDropdown } from '../../../../components/other/dropdown/dropdown';
 
 type StatusFilter = 'ALL' | ReservationStatus;
 
@@ -48,7 +49,7 @@ interface ViewModel {
   selector: 'app-admin-reservations',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AppDropdown],
   templateUrl: './admin-reservations.html',
   styleUrl: './admin-reservations.css'
 })
@@ -64,6 +65,15 @@ export class AdminReservationsComponent implements OnInit {
   dateFrom = '';
   dateTo = '';
   readonly pageSize = 10;
+
+  // Premium dropdown options for status filter
+  readonly statusFilterOptions = [
+    { value: 'ALL' as const, label: 'Svi statusi' },
+    { value: ReservationStatus.PENDING, label: 'Na čekanju' },
+    { value: ReservationStatus.ACCEPTED, label: 'Prihvaćene' },
+    { value: ReservationStatus.REJECTED, label: 'Odbijene' },
+    { value: ReservationStatus.CANCELLED, label: 'Otkazane' }
+  ];
 
   private readonly search$ = new BehaviorSubject<string>('');
   private readonly statusFilter$ = new BehaviorSubject<StatusFilter>('ALL');

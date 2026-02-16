@@ -26,18 +26,15 @@
       />
     </div>
 
-    <!-- Role Filter -->
-    <select
-      [(ngModel)]="roleFilter"
-      (ngModelChange)="onFilterChange()"
-      class="h-11 cursor-pointer rounded-xl border border-white/[0.08] bg-white/[0.04] px-3.5 font-dm text-[13px] text-white/75
-             transition duration-200 hover:border-white/[0.13] focus:border-violet-500/50 focus:outline-none focus:ring-1 focus:ring-violet-500/20"
-    >
-      <option value="ALL"         class="bg-[#111114]">Sve uloge</option>
-      <option value="USER"        class="bg-[#111114]">Korisnici</option>
-      <option value="VENUE_OWNER" class="bg-[#111114]">Vlasnici lokala</option>
-      <option value="ADMIN"       class="bg-[#111114]">Administratori</option>
-    </select>
+    <!-- Role Filter - Premium Dropdown -->
+    <div class="w-full sm:w-auto sm:min-w-[200px]">
+      <app-dropdown
+        placeholder="Sve uloge"
+        [options]="roleFilterOptions"
+        [(ngModel)]="roleFilter"
+        (ngModelChange)="onFilterChange()"
+      />
+    </div>
 
   </div>
 

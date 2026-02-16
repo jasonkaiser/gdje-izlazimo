@@ -26,6 +26,7 @@ import { ModalService } from '../../../../core/services/modal';
 import { UserModalComponent } from '../../../../components/modals/user-modal/user-modal';
 import { ToastService } from '../../../../core/ui/toast';
 import { ConfirmModalComponent } from '../../../../components/modals/confirm-modal/confirm-modal';
+import { AppDropdown } from '../../../../components/other/dropdown/dropdown';
 
 type RoleFilter = 'ALL' | Role;
 
@@ -48,7 +49,7 @@ interface ViewModel {
   selector: 'app-admin-users',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AppDropdown],
   templateUrl: './admin-users.html',
   styleUrl: './admin-users.css'
 })
@@ -63,6 +64,14 @@ export class AdminUsersComponent implements OnInit {
   searchQuery = '';
   roleFilter: RoleFilter = 'ALL';
   readonly pageSize = 10;
+
+  // Premium dropdown options for role filter
+  readonly roleFilterOptions = [
+    { value: 'ALL' as const, label: 'Sve uloge' },
+    { value: Role.USER, label: 'Korisnici' },
+    { value: Role.VENUE_OWNER, label: 'Vlasnici lokala' },
+    { value: Role.ADMIN, label: 'Administratori' }
+  ];
 
   private readonly search$ = new BehaviorSubject<string>('');
   private readonly roleFilter$ = new BehaviorSubject<RoleFilter>('ALL');

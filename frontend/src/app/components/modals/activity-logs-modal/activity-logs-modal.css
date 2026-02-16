@@ -1,4 +1,4 @@
-/* confirm-modal.css */
+/* activity-logs-modal.css */
 
 /* Slide-up animation for modal on mobile */
 @keyframes slide-up {
@@ -34,21 +34,29 @@
 @media (max-width: 640px) {
   .modal-shell {
     max-height: 90vh;
-    overflow-y: auto;
-  }
-  
-  /* Ensure buttons stack nicely on mobile */
-  .modal-shell button {
-    width: 100%;
   }
 }
 
-/* Optional: Smooth scrolling for modal content on mobile */
+/* Smooth scrolling for activity list */
 .modal-shell {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Prevent body scroll when modal is open */
-body.modal-open {
-  overflow: hidden;
+/* Custom scrollbar for activity list */
+.modal-shell ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-shell ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 3px;
+}
+
+.modal-shell ::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+
+.modal-shell ::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
 }

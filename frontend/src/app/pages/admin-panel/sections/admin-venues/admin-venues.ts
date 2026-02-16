@@ -28,6 +28,7 @@ import { ModalService } from '../../../../core/services/modal';
 import { ToastService } from '../../../../core/ui/toast'; 
 import { ConfirmModalComponent } from '../../../../components/modals/confirm-modal/confirm-modal';
 import { VenueModalComponent } from '../../../../components/modals/venue-modal/venue-modal';
+import { AppDropdown } from '../../../../components/other/dropdown/dropdown';
 
 type StatusFilter = 'ALL' | 'ACTIVE' | 'INACTIVE';
 type CategoryFilter = 'ALL' | VenueCategory;
@@ -50,7 +51,7 @@ interface ViewModel {
   selector: 'app-admin-venues',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AppDropdown],
   templateUrl: './admin-venues.html',
   styleUrl: './admin-venues.css'
 })
@@ -66,6 +67,21 @@ export class AdminVenuesComponent implements OnInit {
   statusFilter: StatusFilter = 'ALL';
   categoryFilter: CategoryFilter = 'ALL';
   readonly pageSize = 10;
+
+  // Premium dropdown options
+  readonly statusFilterOptions = [
+    { value: 'ALL' as const, label: 'Svi statusi' },
+    { value: 'ACTIVE' as const, label: 'Aktivni' },
+    { value: 'INACTIVE' as const, label: 'Neaktivni' }
+  ];
+
+  readonly categoryFilterOptions = [
+    { value: 'ALL' as const, label: 'Sve kategorije' },
+    { value: VenueCategory.CLUB, label: 'Klubovi' },
+    { value: VenueCategory.PUB, label: 'Pubovi' },
+    { value: VenueCategory.LOUNGE, label: 'Lounge' },
+    { value: VenueCategory.RESTAURANT, label: 'Restorani' }
+  ];
 
   // Subjects
   private readonly search$ = new BehaviorSubject<string>('');
@@ -103,10 +119,9 @@ export class AdminVenuesComponent implements OnInit {
     this.venues$ = this.refresh$.pipe(
         tap(() => console.log('[AdminVenues] Refresh triggered')),
         switchMap(() =>
-          // CHANGE THIS LINE:
           this.venueService.getVenues({ 
             pageSize: 1000, 
-            sortBy: 'id',  // ← Changed from 'created_at' to 'id'
+            sortBy: 'id',
             sortDir: 'DESC' 
           }).pipe(
             tap(venues => console.log('[AdminVenues] Loaded venues:', venues.length)),
