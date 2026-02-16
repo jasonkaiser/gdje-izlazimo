@@ -36,11 +36,6 @@
     max-height: 90vh;
     overflow-y: auto;
   }
-  
-  /* Ensure buttons stack nicely on mobile */
-  .modal-shell button {
-    width: 100%;
-  }
 }
 
 /* Optional: Smooth scrolling for modal content on mobile */
