@@ -1,0 +1,229 @@
+/* ══════════════════════════════════════════════
+   MODAL TABS
+══════════════════════════════════════════════ */
+
+.modal-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.40);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.modal-tab:hover:not(.modal-tab--active) {
+  color: rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.modal-tab--active {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.25);
+  color: rgba(167, 139, 250, 1);
+}
+
+.modal-tab__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(139, 92, 246, 0.20);
+  color: rgba(167, 139, 250, 0.9);
+  line-height: 1;
+}
+
+/* ══════════════════════════════════════════════
+   MODAL INPUTS
+══════════════════════════════════════════════ */
+
+.modal-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.90);
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.modal-input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
+.modal-input:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.modal-input:focus {
+  border-color: rgba(139, 92, 246, 0.40);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Textarea specific */
+textarea.modal-input {
+  height: auto;
+  padding: 12px 16px;
+}
+
+/* Small variant */
+.modal-input--sm {
+  height: 40px;
+  font-size: 13px;
+  padding: 0 12px;
+  border-radius: 10px;
+}
+
+/* Time input */
+.modal-input--time {
+  color-scheme: dark;
+}
+
+.modal-input--time::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.15s ease;
+}
+
+.modal-input--time:hover::-webkit-calendar-picker-indicator,
+.modal-input--time:focus::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+/* ══════════════════════════════════════════════
+   MODAL BUTTONS
+══════════════════════════════════════════════ */
+
+.modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 44px;
+  padding: 0 24px;
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.modal-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.modal-btn--ghost {
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.60);
+}
+
+.modal-btn--ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.90);
+}
+
+.modal-btn--primary {
+  border: 1px solid rgba(139, 92, 246, 0.30);
+  background: rgba(139, 92, 246, 0.10);
+  color: rgba(196, 181, 253, 1);
+}
+
+.modal-btn--primary:hover:not(:disabled) {
+  background: rgba(139, 92, 246, 0.18);
+  border-color: rgba(139, 92, 246, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.18);
+}
+
+/* Small button variant */
+.modal-btn--sm {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 11px;
+  border-radius: 9px;
+  gap: 5px;
+}
+
+/* ══════════════════════════════════════════════
+   HOURS SLOT CARD
+══════════════════════════════════════════════ */
+
+.hours-slot-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: border-color 0.15s ease;
+}
+
+.hours-slot-card:hover {
+  border-color: rgba(255, 255, 255, 0.10);
+}
+
+/* ══════════════════════════════════════════════
+   ADD SLOT BUTTON
+══════════════════════════════════════════════ */
+
+.add-slot-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-top: 4px;
+}
+
+.add-slot-btn:hover {
+  border-color: rgba(139, 92, 246, 0.30);
+  background: rgba(139, 92, 246, 0.05);
+  color: rgba(167, 139, 250, 0.80);
+}
+
+/* ══════════════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════════════ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px) scale(0.99); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-fade-in  { animation: fadeIn 0.2s ease forwards; }
+.animate-slide-down { animation: slideDown 0.25s ease forwards; }

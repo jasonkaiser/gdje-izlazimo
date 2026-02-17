@@ -1,11 +1,16 @@
 <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" (click)="onClose()">
   <div class="relative w-full max-w-2xl rounded-2xl bg-[#0A0A0A] border border-white/10 shadow-2xl animate-slide-down max-h-[90vh] flex flex-col" (click)="$event.stopPropagation()">
-    
-    <!-- Header -->
+
+    <!-- ── HEADER ──────────────────────────────────────────────────────── -->
     <div class="flex items-center justify-between px-6 py-5 border-b border-white/10 flex-shrink-0">
-      <h3 class="font-sora text-[20px] font-semibold text-white/95">
-        {{ mode === 'create' ? 'Novi Lokal' : 'Uredi Lokal' }}
-      </h3>
+      <div class="flex flex-col gap-0.5">
+        <h3 class="font-sora text-[20px] font-semibold text-white/95">
+          {{ mode === 'create' ? 'Novi Lokal' : 'Uredi Lokal' }}
+        </h3>
+        @if (mode === 'edit') {
+          <p class="font-dm text-[12px] text-white/35">{{ formData.name }}</p>
+        }
+      </div>
       <button
         (click)="onClose()"
         class="h-8 w-8 rounded-lg hover:bg-white/5 flex items-center justify-center transition-colors"
@@ -16,230 +21,470 @@
       </button>
     </div>
 
-    <!-- Form (Scrollable) -->
-    <form (ngSubmit)="onSubmit()" class="flex-1 overflow-y-auto">
-      <div class="p-6 space-y-5">
-        
-        <!-- Name -->
-        <div>
-          <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
-            Naziv Lokala *
-          </label>
-          <input
-            type="text"
-            [(ngModel)]="formData.name"
-            name="name"
-            required
-            placeholder="npr. Caffe Bar Central"
-            class="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white placeholder-white/30 transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"
-          />
-        </div>
+    <!-- ── TABS (edit mode only) ───────────────────────────────────────── -->
+    @if (mode === 'edit') {
+      <div class="flex items-center gap-1 px-6 pt-4 flex-shrink-0">
+        <button
+          (click)="setTab('details')"
+          class="modal-tab"
+          [class.modal-tab--active]="activeTab === 'details'"
+        >
+          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21"/>
+          </svg>
+          Detalji
+        </button>
+        <button
+          (click)="setTab('hours')"
+          class="modal-tab"
+          [class.modal-tab--active]="activeTab === 'hours'"
+        >
+          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+          </svg>
+          Radno vrijeme
+          @if (hoursSlot?.id) {
+            <span class="modal-tab__badge">1</span>
+          }
+        </button>
+      </div>
+    }
 
-        <!-- Description -->
-        <div>
-          <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
-            Opis
-          </label>
-          <textarea
-            [(ngModel)]="formData.description"
-            name="description"
-            rows="3"
-            placeholder="Kratak opis lokala..."
-            class="w-full px-4 py-3 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white placeholder-white/30 transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15 resize-none"
-          ></textarea>
-        </div>
+    <!-- ════════════════════════════════════════════════════════════════════
+         TAB: DETAILS  (+ optional inline hours section in create mode)
+    ════════════════════════════════════════════════════════════════════ -->
+    @if (activeTab === 'details') {
+      <form (ngSubmit)="onSubmit()" class="flex-1 overflow-y-auto flex flex-col">
+        <div class="p-6 space-y-5 flex-1">
 
-        <!-- Address & Phone Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Address -->
+          <!-- Name -->
           <div>
             <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
-              Adresa *
+              Naziv Lokala *
             </label>
             <input
               type="text"
-              [(ngModel)]="formData.addressName"
-              name="addressName"
+              [(ngModel)]="formData.name"
+              name="name"
               required
-              placeholder="npr. Ferhadija 25, Sarajevo"
-              class="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white placeholder-white/30 transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"
+              placeholder="npr. Caffe Bar Central"
+              class="modal-input"
             />
           </div>
 
-          <!-- Phone -->
+          <!-- Description -->
           <div>
             <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
-              Telefon *
+              Opis
             </label>
-            <input
-              type="tel"
-              [(ngModel)]="formData.phone"
-              name="phone"
-              required
-              placeholder="npr. +387 33 123 456"
-              class="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white placeholder-white/30 transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"
-            />
-          </div>
-        </div>
-
-        <!-- Venue Type & Status Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Venue Type -->
-          <div>
-            <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
-              Tip Lokala *
-            </label>
-            <select
-              [(ngModel)]="formData.venueType"
-              name="venueType"
-              required
-              class="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15 cursor-pointer"
-            >
-              <option [value]="VenueCategory.CLUB" class="bg-[#0A0A0A]">{{ getCategoryLabel(VenueCategory.CLUB) }}</option>
-              <option [value]="VenueCategory.PUB" class="bg-[#0A0A0A]">{{ getCategoryLabel(VenueCategory.PUB) }}</option>
-              <option [value]="VenueCategory.LOUNGE" class="bg-[#0A0A0A]">{{ getCategoryLabel(VenueCategory.LOUNGE) }}</option>
-              <option [value]="VenueCategory.RESTAURANT" class="bg-[#0A0A0A]">{{ getCategoryLabel(VenueCategory.RESTAURANT) }}</option>
-            </select>
+            <textarea
+              [(ngModel)]="formData.description"
+              name="description"
+              rows="3"
+              placeholder="Kratak opis lokala..."
+              class="modal-input resize-none"
+            ></textarea>
           </div>
 
-          <!-- Active Status -->
-          <div>
-            <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
-              Status
-            </label>
-            <div class="flex items-center h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03]">
-              <label class="flex items-center justify-between w-full cursor-pointer">
-                <span class="font-dm text-[14px] text-white/80">Aktivan</span>
-                <button
-                  type="button"
-                  (click)="formData.isActive = !formData.isActive"
-                  class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out focus:outline-none hover:scale-105"
-                  [class.bg-green-500/90]="formData.isActive"
-                  [class.bg-white/15]="!formData.isActive"
-                  role="switch"
-                >
-                  <span 
-                    class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
-                    [class.translate-x-5]="formData.isActive"
-                    [class.translate-x-0]="!formData.isActive"
-                  ></span>
-                </button>
+          <!-- Address & Phone -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+                Adresa *
               </label>
-            </div>
-          </div>
-        </div>
-
-        <!-- Coordinates Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <!-- Latitude -->
-          <div>
-            <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
-              Latitude *
-            </label>
-            <input
-              type="number"
-              [(ngModel)]="formData.latitude"
-              name="latitude"
-              required
-              step="0.0001"
-              placeholder="43.8563"
-              [disabled]="mode === 'edit'"
-              class="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white placeholder-white/30 transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15 disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-          </div>
-
-          <!-- Longitude -->
-          <div>
-            <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
-              Longitude *
-            </label>
-            <input
-              type="number"
-              [(ngModel)]="formData.longitude"
-              name="longitude"
-              required
-              step="0.0001"
-              placeholder="18.4131"
-              [disabled]="mode === 'edit'"
-              class="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white placeholder-white/30 transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15 disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-          </div>
-        </div>
-
-        <!-- Venue Owner (Create mode only) -->
-        @if (mode === 'create') {
-          <div>
-            <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
-              Vlasnik Lokala *
-            </label>
-            @if (isLoadingOwners) {
-              <div class="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03] flex items-center">
-                <svg class="animate-spin h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <span class="ml-3 font-dm text-[13px] text-white/50">Učitavanje vlasnika...</span>
-              </div>
-            } @else {
-              <select
-                [(ngModel)]="formData.venueOwnerId"
-                name="venueOwnerId"
+              <input
+                type="text"
+                [(ngModel)]="formData.addressName"
+                name="addressName"
                 required
-                class="w-full h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[14px] text-white transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15 cursor-pointer"
-              >
-                <option value="" class="bg-[#0A0A0A]">Izaberi vlasnika...</option>
-                @for (owner of venueOwners; track owner.id) {
-                  <option [value]="owner.id" class="bg-[#0A0A0A]">{{ owner.name }} ({{ owner.email }})</option>
-                }
-              </select>
-            }
+                placeholder="npr. Ferhadija 25, Sarajevo"
+                class="modal-input"
+              />
+            </div>
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+                Telefon *
+              </label>
+              <input
+                type="tel"
+                [(ngModel)]="formData.phone"
+                name="phone"
+                required
+                placeholder="npr. +387 33 123 456"
+                class="modal-input"
+              />
+            </div>
           </div>
-        }
 
-        <!-- Note about coordinates in edit mode -->
-        @if (mode === 'edit') {
-          <div class="rounded-xl bg-blue-500/5 border border-blue-500/20 px-4 py-3">
-            <div class="flex gap-3">
-              <svg class="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-              </svg>
-              <div>
-                <p class="font-dm text-[13px] text-blue-400/90 mb-1">Napomena</p>
-                <p class="font-dm text-[12px] text-blue-400/70 leading-relaxed">
-                  Koordinate (latitude/longitude) se ne mogu mijenjati nakon kreiranja lokala.
-                </p>
+          <!-- Venue Type & Status -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+                Tip Lokala *
+              </label>
+              <app-dropdown
+                [options]="venueTypeOptions"
+                placeholder="Izaberi tip..."
+                [(ngModel)]="formData.venueType"
+                name="venueType"
+              />
+            </div>
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+                Status
+              </label>
+              <div class="flex items-center h-12 px-4 rounded-xl border border-white/10 bg-white/[0.03]">
+                <label class="flex items-center justify-between w-full cursor-pointer">
+                  <span class="font-dm text-[14px] text-white/80">Aktivan</span>
+                  <button
+                    type="button"
+                    (click)="formData.isActive = !formData.isActive"
+                    class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out focus:outline-none hover:scale-105"
+                    [class.bg-green-500\/90]="formData.isActive"
+                    [class.bg-white\/15]="!formData.isActive"
+                    role="switch"
+                  >
+                    <span
+                      class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
+                      [class.translate-x-5]="formData.isActive"
+                      [class.translate-x-0]="!formData.isActive"
+                    ></span>
+                  </button>
+                </label>
               </div>
             </div>
           </div>
-        }
 
-      </div>
+          <!-- Coordinates -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+                Latitude *
+              </label>
+              <input
+                type="number"
+                [(ngModel)]="formData.latitude"
+                name="latitude"
+                required
+                step="0.0001"
+                placeholder="43.8563"
+                [disabled]="mode === 'edit'"
+                class="modal-input disabled:opacity-40 disabled:cursor-not-allowed"
+              />
+            </div>
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+                Longitude *
+              </label>
+              <input
+                type="number"
+                [(ngModel)]="formData.longitude"
+                name="longitude"
+                required
+                step="0.0001"
+                placeholder="18.4131"
+                [disabled]="mode === 'edit'"
+                class="modal-input disabled:opacity-40 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
 
-      <!-- Actions -->
-      <div class="flex items-center justify-end gap-3 px-6 py-5 border-t border-white/10 flex-shrink-0">
-        <button
-          type="button"
-          (click)="onClose()"
-          [disabled]="isSubmitting"
-          class="h-11 px-6 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[13px] tracking-[0.08em] uppercase text-white/70 transition-all duration-200 hover:bg-white/[0.08] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Otkaži
-        </button>
-        <button
-          type="submit"
-          [disabled]="isSubmitting || !formData.name.trim() || !formData.addressName.trim() || !formData.phone.trim() || (mode === 'create' && !formData.venueOwnerId)"
-          class="h-11 px-6 rounded-xl border border-purple-500/30 bg-purple-500/10 font-dm text-[13px] tracking-[0.08em] uppercase text-purple-300 transition-all duration-200 hover:bg-purple-500/15 hover:border-purple-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-        >
-          @if (isSubmitting) {
-            <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
+          <!-- Venue owner (create only) -->
+          @if (mode === 'create') {
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+                Vlasnik Lokala *
+              </label>
+              @if (isLoadingOwners) {
+                <div class="modal-input flex items-center gap-3">
+                  <svg class="animate-spin h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                  <span class="font-dm text-[13px] text-white/50">Učitavanje vlasnika...</span>
+                </div>
+              } @else {
+                <app-dropdown
+                  [options]="venueOwnerOptions"
+                  placeholder="Izaberi vlasnika..."
+                  [(ngModel)]="formData.venueOwnerId"
+                  name="venueOwnerId"
+                />
+              }
+            </div>
           }
-          {{ mode === 'create' ? 'Kreiraj' : 'Sačuvaj' }}
-        </button>
+
+          <!-- Coordinates note (edit only) -->
+          @if (mode === 'edit') {
+            <div class="rounded-xl bg-blue-500/5 border border-blue-500/20 px-4 py-3">
+              <div class="flex gap-3">
+                <svg class="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div>
+                  <p class="font-dm text-[13px] text-blue-400/90 mb-1">Napomena</p>
+                  <p class="font-dm text-[12px] text-blue-400/70 leading-relaxed">
+                    Koordinate se ne mogu mijenjati nakon kreiranja lokala.
+                    Za radno vrijeme koristite tab <strong class="text-blue-400/90">Radno vrijeme</strong>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- ── INLINE OPERATING HOURS (admin create mode only) ────────── -->
+          @if (showInlineHours && hoursSlot) {
+            <div class="pt-1">
+
+              <!-- Divider with label -->
+              <div class="flex items-center gap-3 mb-5">
+                <div class="h-px flex-1 bg-white/[0.08]"></div>
+                <div class="flex items-center gap-2 px-3 py-1 rounded-full border border-purple-500/25 bg-purple-500/[0.07]">
+                  <svg class="h-3.5 w-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+                  </svg>
+                  <span class="font-dm text-[11px] tracking-[0.10em] uppercase text-purple-400/80">Radno Vrijeme</span>
+                </div>
+                <div class="h-px flex-1 bg-white/[0.08]"></div>
+              </div>
+
+              <!-- Day range row -->
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+                    Od dana
+                  </label>
+                  <app-dropdown
+                    [options]="dayOptions"
+                    placeholder="Izaberi dan..."
+                    [(ngModel)]="hoursSlot.startDay"
+                    name="startDay"
+                  />
+                </div>
+                <div>
+                  <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+                    Do dana
+                  </label>
+                  <app-dropdown
+                    [options]="dayOptions"
+                    placeholder="Izaberi dan..."
+                    [(ngModel)]="hoursSlot.endDay"
+                    name="endDay"
+                  />
+                </div>
+              </div>
+
+              <!-- Time row -->
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+                    Otvara se
+                  </label>
+                  <input
+                    type="time"
+                    [(ngModel)]="hoursSlot.openTime"
+                    name="openTime"
+                    class="modal-input modal-input--time"
+                  />
+                </div>
+                <div>
+                  <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+                    Zatvara se
+                  </label>
+                  <input
+                    type="time"
+                    [(ngModel)]="hoursSlot.closedTime"
+                    name="closedTime"
+                    class="modal-input modal-input--time"
+                  />
+                </div>
+              </div>
+
+              <!-- Preview pill -->
+              <span class="inline-flex items-center gap-2 rounded-full px-3 py-1.5"
+                    style="background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.18);">
+                <svg class="h-3 w-3 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+                </svg>
+                <span class="font-dm text-[11px] text-purple-300/80">
+                  {{ formatDayRange(hoursSlot) }}
+                  &nbsp;·&nbsp;
+                  {{ hoursSlot.openTime || '–' }} – {{ hoursSlot.closedTime || '–' }}
+                </span>
+              </span>
+
+              <!-- Optional note -->
+              <p class="mt-3 font-dm text-[11px] text-white/30 leading-relaxed">
+                Radno vrijeme će biti sačuvano zajedno sa lokalem. Možete ga promijeniti
+                naknadno u postavkama lokala.
+              </p>
+            </div>
+          }
+
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center justify-end gap-3 px-6 py-5 border-t border-white/10 flex-shrink-0">
+          <button
+            type="button"
+            (click)="onClose()"
+            [disabled]="isSubmitting"
+            class="modal-btn modal-btn--ghost"
+          >
+            Otkaži
+          </button>
+          <button
+            type="submit"
+            [disabled]="isSubmitting || !canSaveDetails"
+            class="modal-btn modal-btn--primary"
+          >
+            @if (isSubmitting) {
+              <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+            }
+            {{ mode === 'create' ? 'Kreiraj' : 'Sačuvaj' }}
+          </button>
+        </div>
+      </form>
+    }
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         TAB: OPERATING HOURS  (edit mode only — single slot)
+    ════════════════════════════════════════════════════════════════════ -->
+    @if (activeTab === 'hours') {
+      <div class="flex-1 overflow-y-auto flex flex-col">
+        <div class="p-6 flex-1 flex flex-col gap-4">
+
+          <!-- Loading -->
+          @if (isLoadingHours) {
+            <div class="flex items-center justify-center py-12">
+              <svg class="animate-spin h-6 w-6 text-white/30" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+            </div>
+          }
+
+          <!-- Single slot card -->
+          @if (!isLoadingHours && hoursSlot) {
+            <div class="hours-slot-card">
+
+              <!-- Card header -->
+              <div class="flex items-center gap-2 mb-4">
+                <div class="h-6 w-6 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                  <svg class="h-3.5 w-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+                  </svg>
+                </div>
+                <span class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/50">
+                  {{ hoursSlot.id ? 'Radno Vrijeme' : 'Postavi Radno Vrijeme' }}
+                </span>
+              </div>
+
+              <!-- Day range row -->
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label class="font-dm text-[11px] tracking-[0.10em] uppercase text-white/40 mb-1.5 block">
+                    Od dana
+                  </label>
+                  <app-dropdown
+                    [options]="dayOptions"
+                    placeholder="Izaberi dan..."
+                    [(ngModel)]="hoursSlot.startDay"
+                    name="startDay_edit"
+                  />
+                </div>
+                <div>
+                  <label class="font-dm text-[11px] tracking-[0.10em] uppercase text-white/40 mb-1.5 block">
+                    Do dana
+                  </label>
+                  <app-dropdown
+                    [options]="dayOptions"
+                    placeholder="Izaberi dan..."
+                    [(ngModel)]="hoursSlot.endDay"
+                    name="endDay_edit"
+                  />
+                </div>
+              </div>
+
+              <!-- Time row -->
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                  <label class="font-dm text-[11px] tracking-[0.10em] uppercase text-white/40 mb-1.5 block">
+                    Otvara se
+                  </label>
+                  <input
+                    type="time"
+                    [(ngModel)]="hoursSlot.openTime"
+                    name="openTime_edit"
+                    class="modal-input modal-input--sm modal-input--time"
+                  />
+                </div>
+                <div>
+                  <label class="font-dm text-[11px] tracking-[0.10em] uppercase text-white/40 mb-1.5 block">
+                    Zatvara se
+                  </label>
+                  <input
+                    type="time"
+                    [(ngModel)]="hoursSlot.closedTime"
+                    name="closedTime_edit"
+                    class="modal-input modal-input--sm modal-input--time"
+                  />
+                </div>
+              </div>
+
+              <!-- Preview pill + save button -->
+              <div class="flex items-center justify-between">
+                <span class="inline-flex items-center gap-2 rounded-full px-3 py-1.5"
+                      style="background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.18);">
+                  <svg class="h-3 w-3 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+                  </svg>
+                  <span class="font-dm text-[11px] text-purple-300/80">
+                    {{ formatDayRange(hoursSlot) }}
+                    &nbsp;·&nbsp;
+                    {{ hoursSlot.openTime || '–' }} – {{ hoursSlot.closedTime || '–' }}
+                  </span>
+                </span>
+
+                <button
+                  (click)="saveHoursSlot()"
+                  [disabled]="hoursSlot.isSaving"
+                  class="modal-btn modal-btn--primary modal-btn--sm"
+                >
+                  @if (hoursSlot.isSaving) {
+                    <svg class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                  } @else {
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
+                    </svg>
+                  }
+                  {{ hoursSlot.id ? 'Ažuriraj' : 'Sačuvaj' }}
+                </button>
+              </div>
+
+            </div>
+          }
+
+        </div>
+
+        <!-- Footer -->
+        <div class="flex items-center justify-end px-6 py-5 border-t border-white/10 flex-shrink-0">
+          <button
+            type="button"
+            (click)="onClose()"
+            class="modal-btn modal-btn--ghost"
+          >
+            Zatvori
+          </button>
+        </div>
       </div>
-    </form>
+    }
 
   </div>
 </div>

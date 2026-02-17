@@ -22,7 +22,7 @@ import { ReservationService } from '../../core/api/reservation-service';
 import { RejectReasonModalComponent } from '../../components/modals/reject-reason-modal/reject-reason-modal';
 import { UpdateVenueRequest } from '../../core/models/venues/update-venue.request';
 import { AppDropdown } from '../../components/other/dropdown/dropdown';
-
+import { VenueModalComponent } from '../../components/modals/venue-modal/venue-modal';
 
 
 type VenueTab = 'ALL' | 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED';
@@ -448,5 +448,17 @@ export class VenuePanelComponent implements OnInit {
           setTimeout(() => { this.toggleErrorMsg = ''; }, 3000);
         },
       });
+  }
+
+  editVenue(venue: VenueResponseDto): void {
+    const ref = this.modalService.open(VenueModalComponent, {
+      data: { mode: 'edit', venue }
+    });
+
+    const handler = () => {
+      this.refresh$.next();
+      window.removeEventListener('venue-updated', handler);
+    };
+    window.addEventListener('venue-updated', handler);
   }
 }

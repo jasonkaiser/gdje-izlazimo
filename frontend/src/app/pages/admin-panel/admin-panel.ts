@@ -30,6 +30,7 @@ import { AdminVenuesComponent } from './sections/admin-venues/admin-venues';
 import { AdminReservationsComponent } from './sections/admin-reservations/admin-reservations';
 import { AdminTableTypesComponent } from './sections/admin-table-types/admin-table-types';
 import { AdminSettingsComponent } from './sections/admin-settings/admin-settings';
+import { AuthService } from '../../core/auth/auth.service';
 
 export type AdminView = 'dashboard' | 'users' | 'venues' | 'reservations' | 'table-types' | 'settings';
 
@@ -52,19 +53,22 @@ export type AdminView = 'dashboard' | 'users' | 'venues' | 'reservations' | 'tab
 export class AdminPanelComponent implements OnInit {
   
   private readonly authService = inject(AuthApiService);
+  private readonly keycloakAuthService = inject(AuthService);
   private readonly userService = inject(UserService);
   private readonly venueService = inject(VenueService);
   private readonly reservationService = inject(ReservationService);
-  private readonly router = inject(Router);
+  public readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   activeView = signal<AdminView>('dashboard');
   sidebarOpen = false; 
-
+  
   currentUser$!: Observable<UserResponseDto>;
   userCount$!: Observable<number>;
   venueCount$!: Observable<number>;
   reservationCount$!: Observable<number>;
+
+  
 
   ngOnInit(): void {
     this.initializeStreams();
@@ -77,7 +81,7 @@ export class AdminPanelComponent implements OnInit {
   }
 
   private initializeStreams(): void {
-    
+  
     this.currentUser$ = this.authService.me().pipe(
       catchError(err => {
         console.error('[AdminPanel] Failed to load current user:', err);
@@ -145,13 +149,7 @@ export class AdminPanelComponent implements OnInit {
   }
 
   logout(): void {
-
-
-    if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('refreshToken');
-    }
-    
-    this.router.navigate(['/login']);
+    this.keycloakAuthService.logout();
+  
   }
 }

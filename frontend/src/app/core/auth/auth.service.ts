@@ -104,4 +104,18 @@ export class AuthService {
   getInitializationStatus(): boolean {
     return this.initialized;
   }
+
+
+  hasRole(role: string): boolean {
+    const roles: string[] =
+      (this.keycloak.tokenParsed as any)?.realm_access?.roles ?? [];
+
+    const needle = role.toLowerCase();
+    return roles.some(r => r.toLowerCase() === needle);
+  }
+
+
+  getRoles(): string[] {
+    return (this.keycloak.tokenParsed as any)?.realm_access?.roles ?? [];
+  }
 }
