@@ -1,13 +1,11 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, forkJoin, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { Badge } from '../../components/other/badge/badge';
 import { InViewDirective } from '../../core/animations/in-view.directive';
-
 import { VenueService } from '../../core/api/venue-service';
 import { VenueTableTypeService } from '../../core/api/venue-table-type-service';
 import { TableTypeService } from '../../core/api/table-type-service';
@@ -21,6 +19,8 @@ import { ReservationModal } from '../../components/modals/reservation-modal/rese
 import { AuthService } from '../../core/auth/auth.service';
 import { CreateReservationRequest } from '../../core/models/reservations/create-reservation.request';
 import { ReservationService } from '../../core/api/reservation-service';
+
+
 
 type TableTypeVm = {
   id: string;
@@ -48,7 +48,7 @@ type Vm = {
 @Component({
   selector: 'app-venue-details',
   standalone: true,
-  imports: [InViewDirective, Badge, AsyncPipe, ReservationModal],
+  imports: [InViewDirective, AsyncPipe, ReservationModal],
   templateUrl: './venue-details.html',
   styleUrls: ['./venue-details.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -56,7 +56,6 @@ type Vm = {
 export class VenueDetails {
 
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly venueService = inject(VenueService);
   private readonly venueTableTypeService = inject(VenueTableTypeService);
   private readonly tableTypeService = inject(TableTypeService);
@@ -67,17 +66,18 @@ export class VenueDetails {
 
   sliderIndex = 0;
   openId: string | null = null;
-  
+
   titleShown = false;
   sliderShown = false;
   reserveShown = false;
   tablesShown = false;
   whyUsShown = false;
   aboutShown = false;
-  
-  reservationModulShown = false;
-  reservationErrorMsg = '';
 
+  reservationModalShown = false;
+  reservationErrorMsg = '';
+  descriptionModalShown = false;
+  descriptionText = '';
 
   private readonly retry$ = new BehaviorSubject<void>(undefined);
 
@@ -100,7 +100,7 @@ export class VenueDetails {
     switchMap(() => this.venueId$),
     switchMap((venueId) => {
       if (!venueId) {
-        const vm: Vm = {
+        return of<Vm>({
           venueId: '',
           venueName: '',
           category: '',
@@ -113,8 +113,7 @@ export class VenueDetails {
           tableTypesLoading: false,
           loading: false,
           errorMsg: 'Neispravan link (nedostaje ID lokala).',
-        };
-        return of(vm);
+        });
       }
 
       const loadingVm: Vm = {
@@ -145,7 +144,11 @@ export class VenueDetails {
             ),
           }).pipe(
             map(({ operatingHours, tableTypes }) => {
-              const vm: Vm = {
+              if (!this.openId && tableTypes.length > 0) {
+                this.openId = tableTypes[0].id;
+              }
+
+              return {
                 venueId,
                 venueName: venue.name ?? '',
                 category: venue.venueType ?? '',
@@ -160,17 +163,13 @@ export class VenueDetails {
                 tableTypesLoading: false,
                 loading: false,
                 errorMsg: '',
-              };
-
-              if (!this.openId && tableTypes.length > 0) this.openId = tableTypes[0].id;
-
-              return vm;
+              } satisfies Vm;
             })
           );
         }),
         catchError((err) => {
           console.error(err);
-          const vm: Vm = {
+          return of<Vm>({
             venueId,
             venueName: '',
             category: '',
@@ -183,8 +182,7 @@ export class VenueDetails {
             tableTypesLoading: false,
             loading: false,
             errorMsg: 'Lokal nije pronađen ili je došlo do greške.',
-          };
-          return of(vm);
+          });
         }),
         switchMap((finalVm) => of(loadingVm, finalVm))
       );
@@ -222,9 +220,47 @@ export class VenueDetails {
   onWhyUsInView(v: boolean): void { if (v) this.whyUsShown = true; }
   onAboutInView(v: boolean): void { if (v) this.aboutShown = true; }
 
-  onReserve(venueId: string): void {
-    if (!venueId) return;
-    this.router.navigate(['/reservations', 'create'], { queryParams: { venueId } });
+  shortText(text: string, maxChars = 180): string {
+    const t = (text ?? '').trim().replace(/\s+/g, ' ');
+    if (!t) return '';
+    if (t.length <= maxChars) return t;
+    const cut = t.slice(0, maxChars);
+    const lastSpace = cut.lastIndexOf(' ');
+    const safe = lastSpace > 80 ? cut.slice(0, lastSpace) : cut;
+    return `${safe} ...`;
+  }
+
+  openDescriptionModal(text: string): void {
+    this.descriptionText = text;
+    this.descriptionModalShown = true;
+  }
+
+  toggleReservation(): void {
+    if (!this.authService.authenticated()) {
+      this.authService.login();
+    } else {
+      this.reservationModalShown = !this.reservationModalShown;
+    }
+  }
+
+  createReservation(payload: CreateReservationRequest): void {
+    this.reservationErrorMsg = '';
+
+    this.reservationService.createReservation(payload).subscribe({
+      next: () => {
+        this.reservationModalShown = false;
+      },
+      error: (err) => {
+        console.error(err);
+        if (err.status === 409) {
+          this.reservationErrorMsg = 'Već imaš rezervaciju za ovaj lokal danas.';
+        } else if (err.status === 400) {
+          this.reservationErrorMsg = err.error?.message ?? 'Neispravan zahtjev.';
+        } else {
+          this.reservationErrorMsg = 'Došlo je do greške. Pokušaj ponovo.';
+        }
+      },
+    });
   }
 
   private fetchOperatingHours(venueId: string) {
@@ -265,7 +301,7 @@ export class VenueDetails {
               title,
               description: tt.description ?? 'Detalji će biti dostupni uskoro.',
               capacityLabel: this.formatCapacityLabel(title),
-            } as TableTypeVm;
+            } satisfies TableTypeVm;
           })
           .filter((x): x is TableTypeVm => x !== null);
       })
@@ -323,45 +359,4 @@ export class VenueDetails {
     };
     return map[type] ?? ['https://images.unsplash.com/photo-1514933651103-005eec06c04b'];
   }
-
-  toggleReservation() {
-
-    if(!this.authService.authenticated()){
-        this.authService.login();
-
-    } else {
-      
-      this.reservationModulShown = !this.reservationModulShown;
-
-    }
-  }
-
-  createReservation(payload: CreateReservationRequest) {
-    this.reservationErrorMsg = '';
-
-    this.reservationService.createReservation(payload).subscribe({
-      next: () => {
-        this.reservationModulShown = false;
-        console.log('Rezervacija uspješna!');
-      },
-      error: (err) => {
-        console.error(err);
-
-        if (err.status === 409) {
-          this.reservationErrorMsg = 'Već imaš rezervaciju za ovaj lokal danas.';
-          return;
-        }
-
-        if (err.status === 400) {
-          this.reservationErrorMsg = err.error?.message ?? 'Neispravan zahtjev.';
-          return;
-        }
-
-        this.reservationErrorMsg = 'Došlo je do greške. Pokušaj ponovo.';
-      },
-    });
-  }
-
-
-
 }

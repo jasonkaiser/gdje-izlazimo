@@ -1,29 +1,93 @@
-.gi-iconbox {
-  width: 46px;
-  height: 46px;
-  border-radius: 10px;
-  border: 1px solid #7c3aed;
-  background: rgba(124, 58, 237, 0.12);
-  display: grid;
-  place-items: center;
+/* ─── Smooth accordion open/close ───────────────── */
+.accordion-body {
+  overflow: hidden;
+  transition: max-height 0.42s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.32s ease;
 }
 
-.gi-accordion--closed {
-  background: rgba(7, 7, 7, 0.29);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: none;
+.accordion-body > div {
+  transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.32s ease;
 }
 
-.gi-accordion--open {
-  background: radial-gradient(170.65% 170.65% at 76.45% -35.16%, rgba(124, 58, 237, 0.2) 0%, rgba(0, 0, 0, 0) 100%);
-  border-color: #7c3aed;
-  box-shadow: inset 0px 0px 20px 5px rgba(124, 58, 237, 0.19);
+/* When closed: slide content up slightly */
+.accordion-body[style*="max-height: 0"] > div {
+  transform: translateY(-6px);
+  opacity: 0;
 }
 
-.gi-hover-glow {
-  background: radial-gradient(170.65% 170.65% at 76.45% -35.16%, rgba(124, 58, 237, 0.22) 0%, rgba(0, 0, 0, 0) 60%);
+/* When open: restore position */
+.accordion-body[style*="300px"] > div {
+  transform: translateY(0);
+  opacity: 1;
 }
 
-.gi-chevron--open {
-  transform: rotate(90deg);
+/* ─── Glow pulse on open status dot ─────────────── */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(52,211,153,0.5); }
+  50%       { box-shadow: 0 0 14px rgba(52,211,153,0.85); }
+}
+
+.status-dot-open {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* ─── Colored badge pills ────────────────────────── */
+.badge-pill {
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.55);
+  transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.badge-pill[data-color="violet"] { border-color:rgba(139,92,246,.35); background:rgba(139,92,246,.10); color:rgba(196,181,253,.9); }
+.badge-pill[data-color="violet"]:hover { background:rgba(139,92,246,.18); color:rgba(221,214,254,1); }
+.badge-pill[data-color="pink"]   { border-color:rgba(236,72,153,.35);  background:rgba(236,72,153,.10);  color:rgba(249,168,212,.9); }
+.badge-pill[data-color="pink"]:hover   { background:rgba(236,72,153,.18);  color:rgba(251,207,232,1); }
+.badge-pill[data-color="amber"]  { border-color:rgba(245,158,11,.35);  background:rgba(245,158,11,.10);  color:rgba(252,211,77,.9); }
+.badge-pill[data-color="amber"]:hover  { background:rgba(245,158,11,.18);  color:rgba(253,230,138,1); }
+.badge-pill[data-color="emerald"]{ border-color:rgba(16,185,129,.35);  background:rgba(16,185,129,.10);  color:rgba(110,231,183,.9); }
+.badge-pill[data-color="emerald"]:hover{ background:rgba(16,185,129,.18);  color:rgba(167,243,208,1); }
+.badge-pill[data-color="sky"]    { border-color:rgba(14,165,233,.35);  background:rgba(14,165,233,.10);  color:rgba(125,211,252,.9); }
+.badge-pill[data-color="sky"]:hover    { background:rgba(14,165,233,.18);  color:rgba(186,230,253,1); }
+.badge-pill[data-color="cyan"]   { border-color:rgba(6,182,212,.35);   background:rgba(6,182,212,.10);   color:rgba(103,232,249,.9); }
+.badge-pill[data-color="cyan"]:hover   { background:rgba(6,182,212,.18);   color:rgba(165,243,252,1); }
+.badge-pill[data-color="blue"]   { border-color:rgba(59,130,246,.35);  background:rgba(59,130,246,.10);  color:rgba(147,197,253,.9); }
+.badge-pill[data-color="blue"]:hover   { background:rgba(59,130,246,.18);  color:rgba(191,219,254,1); }
+.badge-pill[data-color="purple"] { border-color:rgba(168,85,247,.35);  background:rgba(168,85,247,.10);  color:rgba(216,180,254,.9); }
+.badge-pill[data-color="purple"]:hover { background:rgba(168,85,247,.18);  color:rgba(233,213,255,1); }
+.badge-pill[data-color="teal"]   { border-color:rgba(20,184,166,.35);  background:rgba(20,184,166,.10);  color:rgba(94,234,212,.9); }
+.badge-pill[data-color="teal"]:hover   { background:rgba(20,184,166,.18);  color:rgba(153,246,228,1); }
+.badge-pill[data-color="rose"]   { border-color:rgba(244,63,94,.35);   background:rgba(244,63,94,.10);   color:rgba(253,164,175,.9); }
+.badge-pill[data-color="rose"]:hover   { background:rgba(244,63,94,.18);   color:rgba(254,205,211,1); }
+
+/* ─── "Prikaži više" modal: smooth open (mobile-friendly) ───────────── */
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes modal-pop-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-backdrop {
+  animation: modal-fade-in 180ms ease-out both;
+}
+
+.modal-panel {
+  animation: modal-pop-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  will-change: transform, opacity;
+}
+
+/* Reduce motion support */
+@media (prefers-reduced-motion: reduce) {
+  .accordion-body,
+  .accordion-body > div,
+  .modal-backdrop,
+  .modal-panel {
+    transition: none !important;
+    animation: none !important;
+  }
 }

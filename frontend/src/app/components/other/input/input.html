@@ -52,7 +52,13 @@
       >{{ value ?? '' }}</textarea>
     }
 
-    <div class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/50">
+
+    <div
+      class="absolute right-3 text-white/50 flex items-center"
+      [class.top-1/2]="kind !== 'textarea'"
+      [class.-translate-y-1/2]="kind !== 'textarea'"
+      [class.top-3]="kind === 'textarea'"
+    >
       <ng-content select="[rightIcon]"></ng-content>
     </div>
   </div>

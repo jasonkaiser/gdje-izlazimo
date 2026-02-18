@@ -23,10 +23,8 @@ export class AppInput implements ControlValueAccessor {
   @Input() error = '';
   @Input() kind: Kind = 'input';
 
-  // input only
   @Input() type: string = 'text';
 
-  // select only
   @Input() options: Array<{ value: string | number; label: string }> = [];
   @Input() selectPlaceholder = 'Select...';
 
@@ -55,7 +53,6 @@ export class AppInput implements ControlValueAccessor {
   }
 
   handleSelect(v: string) {
-    // keep string by default; parent can convert if needed
     this.value = v;
     this.onChange(v);
   }
@@ -67,7 +64,7 @@ export class AppInput implements ControlValueAccessor {
   get shellClasses(): string {
     const base =
       'relative w-full rounded-xl px-4 py-3 ' +
-      'bg-white/5 border backdrop-blur-md transition ' +
+      'bg-white/5 border transition ' +
       'focus-within:border-[#7C3AED]/55 ' +
       'focus-within:shadow-[0_0_0_1px_rgba(124,58,237,0.25)]';
 
