@@ -35,7 +35,7 @@ public class SecurityConfig {
         converter.setJwtGrantedAuthoritiesConverter(jwtAuthConverter);
 
         http
-                .cors(cors -> {})
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/venues/my-venue").authenticated()

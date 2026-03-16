@@ -1,0 +1,49 @@
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in         { animation: fadeIn 0.6s ease-out; }
+.animate-fade-in-delay-1 { animation: fadeIn 0.6s ease-out 0.1s both; }
+.animate-fade-in-up      { animation: fadeInUp 0.5s ease-out both; }
+
+/* Matches gradient-text from reservations.css and venue-details.css */
+.gradient-text {
+  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.75) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Matches venue-details.css status dot */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(52,211,153,0.5); }
+  50%       { box-shadow: 0 0 14px rgba(52,211,153,0.85); }
+}
+
+.status-dot-open {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+/* Input caret + focus ring */
+.profile-input {
+  caret-color: rgba(139,92,246,0.8);
+}
+
+.profile-input:focus {
+  box-shadow: 0 0 0 1px rgba(124,58,237,0.25), 0 4px 16px rgba(124,58,237,0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .status-dot-open {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -56,8 +56,29 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse getOrCreateResponse(UUID id) {
-        User user = getOrCreate(id);
+    public User getOrCreate(UUID id, String email, String username) {
+        User user = userRepository.findById(id)
+                .orElseGet(() -> {
+                    User u = new User();
+                    u.setId(id);
+                    u.setRole(Role.USER);
+                    return u;
+                });
+
+        if (email != null && !email.isBlank() && (user.getEmail() == null || user.getEmail().isBlank())) {
+            user.setEmail(email.trim());
+        }
+
+        if (username != null && !username.isBlank() && (user.getName() == null || user.getName().isBlank())) {
+            user.setName(username.trim());
+        }
+
+        return userRepository.save(user);
+    }
+
+    @Transactional
+    public UserResponse getOrCreateResponse(UUID id, String email, String username) {
+        User user = getOrCreate(id, email, username);
         return UserMapper.toResponse(user);
     }
 

@@ -8,6 +8,7 @@ import { authGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
 import { VenuesComponent } from './pages/venues/venues';
 import { VenuePanelComponent } from './pages/venue-panel/venue-panel';
+import { Profile } from './pages/profile/profile';
 
 export const routes: Routes = [
 
@@ -40,6 +41,12 @@ export const routes: Routes = [
             path: 'admin-panel',
             component: AdminPanelComponent,
             canActivate: [authGuard, roleGuard(['admin'])]
+
+        },
+        {
+            path: 'profile',
+            component: Profile,
+            canActivate: [authGuard, roleGuard(['user', 'venue_owner', 'admin'])]
 
         },
         {

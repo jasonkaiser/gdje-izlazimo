@@ -28,10 +28,11 @@ public class AuthController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
-
         UUID userId = UUID.fromString(jwt.getSubject());
+        String email = jwt.getClaimAsString("email");
+        String username = jwt.getClaimAsString("preferred_username");
 
-        UserResponse userResponse = userService.getOrCreateResponse(userId);
+        UserResponse userResponse = userService.getOrCreateResponse(userId, email, username);
 
         return ResponseEntity.ok(userResponse);
     }
