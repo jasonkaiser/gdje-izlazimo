@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, of } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -9,6 +9,7 @@ import { SearchBarComponent } from '../../components/other/search-bar/search-bar
 import { VenueCard } from '../../components/cards/venue-card/venue-card';
 
 import { VenueService } from '../../core/api/venue-service';
+import { VenueImageService } from '../../core/api/venue-image-service';
 import { VenueCategory } from '../../core/models/venues/venue-category.enum';
 import { VenueResponseDto } from '../../core/models/venues/venue-response.dto';
 
@@ -50,6 +51,7 @@ export class VenuesComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly venueService = inject(VenueService);
+  private readonly venueImageService = inject(VenueImageService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly skeleton = Array.from({ length: 8 }, (_, i) => i);
@@ -62,16 +64,13 @@ export class VenuesComponent {
       const query = (p.get('query') ?? '').trim();
       const venueType = (p.get('venueType') as VenueCategory) ?? null;
       const sort = (p.get('sort') as SortValue) ?? 'name_asc';
-
       const pageNo = Number(p.get('pageNo') ?? '1') || 1;
       const pageSize = Number(p.get('pageSize') ?? '6') || 6;
-
       const sortDir: 'ASC' | 'DESC' = sort === 'name_desc' ? 'DESC' : 'ASC';
 
       return { query, venueType, sortDir, pageNo, pageSize };
     }),
     tap((p) => {
-      // reset cache on new search/filter (your onSearch sets pageNo=1)
       if (p.pageNo === 1) {
         this.pageCache.clear();
         this.hasMoreCache.clear();
@@ -95,7 +94,7 @@ export class VenuesComponent {
     }
 
     const initialVm: ViewModel = {
-      items: [], // for pagination we don’t show previous page cards
+      items: [],
       loading: pageNo === 1,
       loadingMore: pageNo > 1,
       hasMore: this.hasMoreCache.get(pageNo - 1) ?? true,
@@ -103,40 +102,61 @@ export class VenuesComponent {
       pageNo,
     };
 
-    return this.venueService
-      .searchVenues({
-        query: params.query ? params.query : undefined,
-        venueType: params.venueType ?? undefined,
-        sortBy: 'name',
-        sortDir: params.sortDir,
-        pageNo,
-        pageSize,
-      })
-      .pipe(
-        map((res: VenueResponseDto[]) => {
-          const mapped = res.map((v) => this.toCardVm(v));
-          const hasMore = res.length === pageSize;
+    return this.venueService.searchVenues({
+      query: params.query ? params.query : undefined,
+      venueType: params.venueType ?? undefined,
+      sortBy: 'name',
+      sortDir: params.sortDir,
+      pageNo,
+      pageSize,
+    }).pipe(
+      switchMap((venues: VenueResponseDto[]) => {
+        if (venues.length === 0) return of({ venues, imageMap: new Map<string, string>() });
 
-          this.pageCache.set(pageNo, mapped);
-          this.hasMoreCache.set(pageNo, hasMore);
+        // Fetch primary image for each venue in parallel
+        return forkJoin(
+          venues.map(v =>
+            this.venueImageService.getByVenueId(v.id).pipe(
+              map(images => {
+                const sorted = [...images].sort((a, b) =>
+                  a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1
+                );
+                return { venueId: v.id, imageUrl: sorted[0]?.imageUrl ?? null };
+              }),
+              catchError(() => of({ venueId: v.id, imageUrl: null as string | null }))
+            )
+          )
+        ).pipe(
+          map(results => {
+            const imageMap = new Map<string, string>(
+              results.map(r => [r.venueId, r.imageUrl ?? ''])
+            );
+            return { venues, imageMap };
+          })
+        );
+      }),
+      map(({ venues, imageMap }) => {
+        const hasMore = venues.length === pageSize;
 
-          return this.buildVm(pageNo);
-        }),
-        catchError((err) => {
-          console.error('Error loading venues:', err);
-          const vm: ViewModel = {
-            items: [],
-            loading: false,
-            loadingMore: false,
-            hasMore: false,
-            errorMsg: 'Greška pri učitavanju lokala.',
-            pageNo,
-          };
-          return of(vm);
-        }),
-        // emit loading state first, then final VM
-        switchMap((finalVm) => of(initialVm, finalVm))
-      );
+        const mapped = venues.map(v => this.toCardVm(v, imageMap.get(v.id)));
+        this.pageCache.set(pageNo, mapped);
+        this.hasMoreCache.set(pageNo, hasMore);
+
+        return this.buildVm(pageNo);
+      }),
+      catchError((err) => {
+        console.error('Error loading venues:', err);
+        return of<ViewModel>({
+          items: [],
+          loading: false,
+          loadingMore: false,
+          hasMore: false,
+          errorMsg: 'Greška pri učitavanju lokala.',
+          pageNo,
+        });
+      }),
+      switchMap((finalVm) => of(initialVm, finalVm))
+    );
   }
 
   private buildVm(pageNo: number): ViewModel {
@@ -167,7 +187,6 @@ export class VenuesComponent {
   nextPage(): void {
     const snapshot = this.route.snapshot.queryParamMap;
     const pageNo = Number(snapshot.get('pageNo') ?? '1') || 1;
-
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { pageNo: pageNo + 1 },
@@ -179,27 +198,25 @@ export class VenuesComponent {
   prevPage(): void {
     const snapshot = this.route.snapshot.queryParamMap;
     const pageNo = Number(snapshot.get('pageNo') ?? '1') || 1;
-    const next = Math.max(1, pageNo - 1);
-
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { pageNo: next },
+      queryParams: { pageNo: Math.max(1, pageNo - 1) },
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
   }
 
-  private toCardVm(v: VenueResponseDto): VenueCardVm {
+  private toCardVm(v: VenueResponseDto, imageUrl?: string): VenueCardVm {
     return {
       id: v.id,
       title: v.name ?? '',
       category: v.venueType ?? '',
       location: v.addressName ?? '',
-      imageUrl: this.mapVenueImage(v.venueType),
+      imageUrl: imageUrl || this.getFallbackImage(v.venueType),
     };
   }
 
-  private mapVenueImage(type: string): string {
+  private getFallbackImage(type: string): string {
     const imageMap: Record<string, string> = {
       CLUB: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7',
       PUB: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1',

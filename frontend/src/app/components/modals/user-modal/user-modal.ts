@@ -1,14 +1,15 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { switchMap, take } from 'rxjs/operators';
+import { of } from 'rxjs';
+
 import { ModalService } from '../../../core/services/modal';
 import { UserService } from '../../../core/api/user-service';
-
+import { ToastService } from '../../../core/ui/toast';
 import { Role } from '../../../core/models/users/user-role.enum';
 import { UserResponseDto } from '../../../core/models/users/user-response.dto';
 import { UpdateUserRequest } from '../../../core/models/users/update-user.request';
-import { take } from 'rxjs/operators';
-import { ToastService } from '../../../core/ui/toast';
 
 interface UserModalData {
   mode: 'create' | 'edit';
@@ -33,14 +34,12 @@ export class UserModalComponent implements OnInit {
   userId: string | null = null;
   isSubmitting = false;
 
-  // Form data
   formData = {
     name: '',
     phone: '',
     role: Role.USER
   };
 
-  // Expose Role enum to template
   readonly Role = Role;
 
   ngOnInit(): void {
@@ -61,7 +60,6 @@ export class UserModalComponent implements OnInit {
   }
 
   onSubmit(): void {
-    // Validation
     if (!this.formData.name.trim()) {
       this.toastService.show('Ime je obavezno', 'error');
       return;
@@ -72,7 +70,6 @@ export class UserModalComponent implements OnInit {
       return;
     }
 
-    // Phone validation (basic)
     const phoneRegex = /^[\d\s\+\-\(\)]+$/;
     if (!phoneRegex.test(this.formData.phone)) {
       this.toastService.show('Neispravan format telefona', 'error');
@@ -84,7 +81,10 @@ export class UserModalComponent implements OnInit {
     if (this.mode === 'edit' && this.userId) {
       this.updateUser();
     } else {
-      this.toastService.show('Kreiranje korisnika nije podržano direktno. Korisnici se registruju putem signup API-ja.', 'warning');
+      this.toastService.show(
+        'Kreiranje korisnika nije podržano direktno. Korisnici se registruju putem signup API-ja.',
+        'warning'
+      );
       this.isSubmitting = false;
     }
   }
@@ -92,19 +92,30 @@ export class UserModalComponent implements OnInit {
   private updateUser(): void {
     if (!this.userId) return;
 
+    const originalRole = this.data.user?.role;
+    const newRole = this.formData.role;
+    const roleChanged = originalRole !== newRole;
+
     const request: UpdateUserRequest = {
       name: this.formData.name.trim(),
       phone: this.formData.phone.trim(),
-      role: this.formData.role
+      role: newRole
     };
 
     this.userService.updateUser(request, this.userId)
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        switchMap(() => {
+          if (roleChanged) {
+            return this.userService.updateUserRole(this.userId!, newRole);
+          }
+          return of(null);
+        })
+      )
       .subscribe({
         next: () => {
           this.toastService.show('Korisnik uspješno ažuriran', 'success');
           this.modalService.close();
-          // Emit event or use a shared service to refresh parent component
           window.dispatchEvent(new CustomEvent('user-updated'));
         },
         error: (err) => {

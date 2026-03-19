@@ -54,18 +54,16 @@ interface ViewModel {
   styleUrl: './admin-users.css'
 })
 export class AdminUsersComponent implements OnInit {
-  
+
   private readonly userService = inject(UserService);
   private readonly modalService = inject(ModalService);
   private readonly toastService = inject(ToastService);
   private readonly destroyRef = inject(DestroyRef);
 
-  
   searchQuery = '';
   roleFilter: RoleFilter = 'ALL';
   readonly pageSize = 10;
 
-  // Premium dropdown options for role filter
   readonly roleFilterOptions = [
     { value: 'ALL' as const, label: 'Sve uloge' },
     { value: Role.USER, label: 'Korisnici' },
@@ -84,7 +82,6 @@ export class AdminUsersComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeStreams();
-    this.setupEventListeners();
   }
 
   @HostListener('window:user-updated')
@@ -92,14 +89,8 @@ export class AdminUsersComponent implements OnInit {
     this.refresh$.next();
   }
 
-  private setupEventListeners(): void {
-    window.addEventListener('user-updated', () => {
-      this.refresh$.next();
-    });
-  }
-
   private initializeStreams(): void {
-    
+
     this.users$ = this.refresh$.pipe(
       switchMap(() =>
         this.userService.getUsers({ pageSize: 1000, sortBy: 'id', sortDir: 'DESC' }).pipe(
@@ -126,7 +117,7 @@ export class AdminUsersComponent implements OnInit {
     );
 
     this.vm$ = this.users$.pipe(
-      switchMap(allUsers => 
+      switchMap(allUsers =>
         this.search$.pipe(
           debounceTime(300),
           switchMap(search =>
@@ -163,7 +154,6 @@ export class AdminUsersComponent implements OnInit {
 
   private applySearch(users: UserResponseDto[], search: string): UserResponseDto[] {
     if (!search.trim()) return users;
-    
     const query = search.toLowerCase();
     return users.filter(u =>
       u.name?.toLowerCase().includes(query) ||
@@ -207,20 +197,20 @@ export class AdminUsersComponent implements OnInit {
 
   formatDate(dateString: string): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString('bs-BA', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric' 
+    return date.toLocaleDateString('bs-BA', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
     });
   }
-
 
   viewUser(user: UserResponseDto): void {
     this.editUser(user);
   }
 
+
   editUser(user: UserResponseDto): void {
-    const modalRef = this.modalService.open(UserModalComponent, {
+    this.modalService.open(UserModalComponent, {
       data: { mode: 'edit', user }
     });
   }

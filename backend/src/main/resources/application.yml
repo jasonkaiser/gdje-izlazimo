@@ -53,8 +53,15 @@ logging:
       springframework:
         web: DEBUG
 
+# Auth settings
 keycloak:
   server-url: http://localhost:8080
   realm: gdje-izlazimo
   admin-client-id: spring-admin-client
   admin-client-secret: U2xtbArwz6vFU5iQnFrioEKkrnLUPgnQ
+
+# Image hosting settings
+imagekit:
+  public-key: public_pbUvUEQ3Cyz6nlsCVquSYDMCno0=
+  private-key: private_9U39BvanAJrIUj8eapmiOnAEr18=
+  url-endpoint: https://ik.imagekit.io/zsdkcn1pl/

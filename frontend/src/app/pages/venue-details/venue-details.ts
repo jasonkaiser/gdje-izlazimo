@@ -20,7 +20,8 @@ import { AuthService } from '../../core/auth/auth.service';
 import { CreateReservationRequest } from '../../core/models/reservations/create-reservation.request';
 import { ReservationService } from '../../core/api/reservation-service';
 
-
+import { VenueImageService } from '../../core/api/venue-image-service';
+import { VenueImageResponseDto } from '../../core/models/venue-images/venue-image-response';
 
 type TableTypeVm = {
   id: string;
@@ -63,6 +64,8 @@ export class VenueDetails {
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
   private readonly reservationService = inject(ReservationService);
+  private readonly venueImageService = inject(VenueImageService);
+
 
   sliderIndex = 0;
   openId: string | null = null;
@@ -142,11 +145,18 @@ export class VenueDetails {
             tableTypes: this.fetchTableTypesForVenue(venueId).pipe(
               catchError(() => of([] as TableTypeVm[]))
             ),
+            images: this.venueImageService.getByVenueId(venueId).pipe(
+              catchError(() => of([]))
+            ),
           }).pipe(
-            map(({ operatingHours, tableTypes }) => {
+            map(({ operatingHours, tableTypes, images }) => {
               if (!this.openId && tableTypes.length > 0) {
                 this.openId = tableTypes[0].id;
               }
+
+              const sortedImages = [...images].sort((a, b) =>
+                a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1
+              );
 
               return {
                 venueId,
@@ -155,7 +165,9 @@ export class VenueDetails {
                 address: venue.addressName ?? '',
                 phone: venue.phone ?? '',
                 description: venue.description ?? 'Dobrodošli u naš lokal!',
-                images: this.getDefaultVenueImages(venue.venueType),
+                images: sortedImages.length
+                  ? sortedImages.map(i => i.imageUrl)
+                  : this.getDefaultVenueImages(venue.venueType),
                 workingHours: operatingHours
                   ? this.formatWorkingHours(operatingHours)
                   : 'Kontaktirajte za radno vrijeme',

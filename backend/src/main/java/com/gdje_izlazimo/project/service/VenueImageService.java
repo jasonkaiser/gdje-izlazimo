@@ -1,77 +1,85 @@
 package com.gdje_izlazimo.project.service;
 
-import com.gdje_izlazimo.project.dto.request.create.CreateVenueImageRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateVenueImageRequest;
 import com.gdje_izlazimo.project.dto.response.VenueImageResponse;
+import com.gdje_izlazimo.project.entity.Venue;
 import com.gdje_izlazimo.project.entity.VenueImage;
 import com.gdje_izlazimo.project.exception.custom.VenueImageNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueImageMapper;
 import com.gdje_izlazimo.project.repository.VenueImageRepository;
-import org.springframework.http.HttpStatus;
+import com.gdje_izlazimo.project.repository.VenueRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class VenueImageService {
 
     private final VenueImageRepository venueImageRepository;
     private final VenueImageMapper venueImageMapper;
+    private final ImageKitService imageKitService;
+    private final VenueRepository venueRepository;
 
-    public VenueImageService(VenueImageRepository venueImageRepository, VenueImageMapper venueImageMapper) {
-        this.venueImageRepository = venueImageRepository;
-        this.venueImageMapper = venueImageMapper;
-    }
-
-    public List<VenueImageResponse> findAllVenueImages(){
-
-        List<VenueImage> responses = venueImageRepository.findAll();
-
-        return responses.stream()
+    public List<VenueImageResponse> findAllVenueImages() {
+        return venueImageRepository.findAll()
+                .stream()
                 .map(venueImageMapper::toResponse)
                 .toList();
-
     }
 
-    public VenueImageResponse findVenueImageById(UUID id){
-
-        VenueImage response = venueImageRepository.findById(id).orElseThrow(
-                () -> new VenueImageNotFoundException("Venue Image does not exist"));
-
-        return venueImageMapper.toResponse(response);
-
+    public List<VenueImageResponse> findByVenueId(UUID venueId) {
+        return venueImageRepository.findByVenueId(venueId)
+                .stream()
+                .map(venueImageMapper::toResponse)
+                .toList();
     }
 
-    public VenueImageResponse createVenueImage(CreateVenueImageRequest dto){
-
-        VenueImage createdVenueImage = venueImageMapper.toEntity(dto);
-        VenueImage savedVenueImage = venueImageRepository.save(createdVenueImage);
-
-        return venueImageMapper.toResponse(savedVenueImage);
-
+    public VenueImageResponse findVenueImageById(UUID id) {
+        VenueImage venueImage = venueImageRepository.findById(id)
+                .orElseThrow(() -> new VenueImageNotFoundException("Venue Image does not exist"));
+        return venueImageMapper.toResponse(venueImage);
     }
 
-    public VenueImageResponse updateVenueImage(UpdateVenueImageRequest dto, UUID id){
+    public VenueImageResponse uploadVenueImage(UUID venueId, MultipartFile file, boolean isPrimary) {
+        Venue venue = venueRepository.findById(venueId)
+                .orElseThrow(() -> new RuntimeException("Venue not found"));
 
-        VenueImage venueImage = venueImageRepository.findById(id).orElseThrow(
-                () -> new VenueImageNotFoundException("Venue Image does not exist"));
-
-        venueImageMapper.updateEntity(dto, venueImage);
-        VenueImage updatedVenueImage = venueImageRepository.save(venueImage);
-
-        return venueImageMapper.toResponse(updatedVenueImage);
-
-    }
-
-    public void deleteVenueImage(UUID id){
-
-        if(!venueImageRepository.existsById(id)){
-            throw new VenueImageNotFoundException("Venue Image does not exist");
+        if (isPrimary) {
+            venueImageRepository.findByVenueIdAndIsPrimaryTrue(venueId)
+                    .ifPresent(existing -> {
+                        existing.setPrimary(false);
+                        venueImageRepository.save(existing);
+                    });
         }
-        venueImageRepository.deleteById(id);
 
+        String[] uploadResult = imageKitService.uploadImage(file, "venues/" + venueId);
+        String imageUrl = uploadResult[0];
+        String fileId   = uploadResult[1];
+
+        VenueImage venueImage = new VenueImage();
+        venueImage.setVenue(venue);
+        venueImage.setImageUrl(imageUrl);
+        venueImage.setImageKitFileId(fileId);
+        venueImage.setPrimary(isPrimary);
+
+        return venueImageMapper.toResponse(venueImageRepository.save(venueImage));
     }
 
+    public VenueImageResponse updateVenueImage(UpdateVenueImageRequest dto, UUID id) {
+        VenueImage venueImage = venueImageRepository.findById(id)
+                .orElseThrow(() -> new VenueImageNotFoundException("Venue Image does not exist"));
+        venueImageMapper.updateEntity(dto, venueImage);
+        return venueImageMapper.toResponse(venueImageRepository.save(venueImage));
+    }
+
+    public void deleteVenueImage(UUID id) {
+        VenueImage venueImage = venueImageRepository.findById(id)
+                .orElseThrow(() -> new VenueImageNotFoundException("Venue Image does not exist"));
+        imageKitService.deleteImage(venueImage.getImageKitFileId());
+        venueImageRepository.deleteById(id);
+    }
 }

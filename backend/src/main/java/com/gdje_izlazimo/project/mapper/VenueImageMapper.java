@@ -26,24 +26,23 @@ public class VenueImageMapper {
         Venue venue_id = venueRepository.findById(dto.venueId()).orElseThrow(
                 () -> new RuntimeException("Venue not found"));
 
-        createdEntity.setVenueId(venue_id);
+        createdEntity.setVenue(venue_id);
 
         return createdEntity;
     }
 
     public void updateEntity(UpdateVenueImageRequest dto, VenueImage entity){
-        entity.setImageUrl(dto.imageUrl());
         entity.setPrimary(dto.isPrimary());
     }
 
     public VenueImageResponse toResponse(VenueImage entity){
         return new VenueImageResponse(
                 entity.getId(),
-                entity.getVenueId().getId(),
+                entity.getVenue().getId(),
                 entity.getImageUrl(),
                 entity.isPrimary(),
-                entity.getCreated_at(),
-                entity.getUpdated_at()
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
         );
     }
 

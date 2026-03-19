@@ -46,6 +46,14 @@ export class UserService {
       return this.http.put<UserResponseDto>(`${this.baseUrl}/${id}`, request);
     }
 
+    updateUserRole(id: string, role: Role) {
+      return this.http.patch<UserResponseDto>(
+        `${this.baseUrl}/${id}/role`,
+        null,
+        { params: new HttpParams().set('role', role) }
+      );
+    }
+
     deleteUser(id: string){
       return this.http.delete<void>(`${this.baseUrl}/${id}`);
     }

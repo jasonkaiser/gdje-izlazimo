@@ -28,7 +28,7 @@ public class VenueImage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id", nullable = false, updatable = false)
-    private Venue venueId;
+    private Venue venue;
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
@@ -36,12 +36,16 @@ public class VenueImage {
     @Column(name = "is_primary", nullable = false)
     private boolean isPrimary;
 
+    @Column(name = "imagekit_file_id", nullable = false)
+    private String imageKitFileId;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updated_at;
+    private LocalDateTime updatedAt;
+
 
 }
