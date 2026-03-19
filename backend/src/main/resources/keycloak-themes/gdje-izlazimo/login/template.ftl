@@ -43,7 +43,7 @@
     .gi-page {
       position: relative; z-index: 1;
       min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 24px 16px;
     }
 
@@ -206,8 +206,126 @@
     .gi-register-link:hover { color: rgba(196,181,253,1); text-decoration: underline; text-underline-offset: 3px; }
 
     .gi-field-error { font-size: 11px; color: rgba(252,165,165,0.85); margin-top: 3px; }
+    .gi-field-hint { font-size: 11px; color: rgba(255,255,255,0.22); margin-top: 3px; }
     .gi-input-error { border-color: rgba(239,68,68,0.45) !important; }
     .gi-input-error:focus { box-shadow: 0 0 0 3px rgba(239,68,68,0.12) !important; }
+
+    /* ── Success alert ── */
+    .gi-alert-success { border-color: rgba(34,197,94,0.25); background: rgba(34,197,94,0.07); color: rgba(134,239,172,0.9); }
+    .gi-alert-success .gi-alert-icon { color: #4ade80; }
+
+    /* ── Verify email page ── */
+    .gi-email-icon {
+      display: flex; align-items: center; justify-content: center;
+      margin: 4px 0 20px;
+    }
+    .gi-verify-text {
+      font-size: 14px; line-height: 1.65; color: rgba(255,255,255,0.55);
+      margin-bottom: 14px;
+    }
+    .gi-verify-email {
+      display: block; margin-top: 4px;
+      font-weight: 600; color: rgba(167,139,250,0.9);
+      font-style: normal; word-break: break-all;
+    }
+    .gi-verify-hint {
+      font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.28);
+      margin-bottom: 20px;
+    }
+    .gi-verify-divider {
+      height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 20px;
+    }
+
+
+    /* ── Override Keycloak native forms (reset, verify email, update password) ── */
+    #kc-reset-password-form,
+    #kc-passwd-update-form,
+    .form-horizontal {
+      display: flex; flex-direction: column; gap: 16px;
+      width: 440px; max-width: 100%;
+      background: #0A0909;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 26px;
+      padding: 44px 40px 40px;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.03) inset;
+      animation: card-in 0.55s cubic-bezier(0.22,1,0.36,1) both;
+      position: relative;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+
+    .pf-c-form__label,
+    .pf-c-form__label-text,
+    label[for="username"],
+    label[for="password"],
+    label[for="password-new"],
+    label[for="password-confirm"] {
+      font-size: 10px !important; font-weight: 500 !important;
+      letter-spacing: 0.14em !important; text-transform: uppercase !important;
+      color: rgba(255,255,255,0.40) !important; font-family: 'DM Sans', sans-serif !important;
+    }
+
+    .pf-c-form-control,
+    input[type="text"].pf-c-form-control,
+    input[type="email"].pf-c-form-control,
+    input[type="password"].pf-c-form-control {
+      width: 100% !important; height: 50px !important;
+      background: rgba(255,255,255,0.03) !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      border-radius: 13px !important;
+      padding: 0 16px !important;
+      font-family: 'DM Sans', sans-serif !important; font-size: 14px !important;
+      color: rgba(255,255,255,0.85) !important; outline: none !important;
+      transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease !important;
+      caret-color: rgba(139,92,246,0.85) !important;
+      box-shadow: none !important;
+    }
+
+    .pf-c-form-control:hover {
+      border-color: rgba(255,255,255,0.16) !important;
+      background: rgba(255,255,255,0.05) !important;
+    }
+
+    .pf-c-form-control:focus {
+      border-color: rgba(124,58,237,0.5) !important;
+      background: rgba(255,255,255,0.06) !important;
+      box-shadow: 0 0 0 3px rgba(124,58,237,0.12), 0 4px 16px rgba(124,58,237,0.08) !important;
+    }
+
+    .pf-c-button.pf-m-primary,
+    input[type="submit"].pf-c-button {
+      margin-top: 4px !important; width: 100% !important; height: 52px !important;
+      border: none !important; border-radius: 13px !important;
+      background: #ffffff !important; color: #08070F !important;
+      font-family: 'Sora', sans-serif !important; font-size: 15px !important;
+      font-weight: 600 !important; cursor: pointer !important;
+      letter-spacing: 0.01em !important;
+      box-shadow: 0 4px 24px rgba(255,255,255,0.08) !important;
+      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s ease !important;
+    }
+
+    .pf-c-button.pf-m-primary:hover,
+    input[type="submit"].pf-c-button:hover {
+      transform: translateY(-1px) scale(1.008) !important;
+      box-shadow: 0 8px 32px rgba(255,255,255,0.14) !important;
+    }
+
+    #kc-form-options a,
+    .login-pf-settings a {
+      font-size: 11px !important; color: rgba(167,139,250,0.80) !important;
+      text-decoration: none !important; font-weight: 500 !important;
+    }
+
+    #kc-form-options a:hover { color: rgba(196,181,253,1) !important; }
+
+    /* PatternFly grid overrides */
+    .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
+      width: 100% !important; padding: 0 !important; float: none !important;
+    }
+
+    .login-pf-settings {
+      display: flex !important; flex-direction: column !important; gap: 12px !important;
+    }
 
     @media (max-width: 480px) {
       .gi-card { padding: 36px 24px 32px; border-radius: 22px; }
@@ -226,6 +344,7 @@
   </div>
   <main class="gi-page">
     <#nested "form">
+    <#nested "info">
   </main>
 </body>
 </html>

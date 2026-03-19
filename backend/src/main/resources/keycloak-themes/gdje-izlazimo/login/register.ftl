@@ -90,8 +90,10 @@
             name="user.attributes.phone"
             type="tel"
             autocomplete="tel"
+            inputmode="tel"
             value="${(register.formData['user.attributes.phone']!'')}"
-            placeholder="+387 61 000 000"
+            placeholder="065052080 ili +38765052080"
+            maxlength="16"
             class="gi-input <#if messagesPerField?? && messagesPerField.existsError('user.attributes.phone')>gi-input-error</#if>"
           />
           <span class="gi-input-icon">
@@ -102,12 +104,14 @@
         </div>
         <#if messagesPerField?? && messagesPerField.existsError('user.attributes.phone')>
           <span class="gi-field-error">${messagesPerField.getFirstError('user.attributes.phone')}</span>
+        <#else>
+          <span class="gi-field-hint">Npr. 065052080 ili +38765052080</span>
         </#if>
       </div>
 
       <!-- Password -->
       <div class="gi-field">
-        <label class="gi-label" for="password">Password</label>
+        <label class="gi-label" for="password">Lozinka</label>
         <div class="gi-input-wrap">
           <input
             id="password"
@@ -169,6 +173,35 @@
   </div>
 
   <script>
+    // Phone input — allow only digits, +, spaces
+    (function() {
+      var ph = document.getElementById('user.attributes.phone');
+      if (!ph) return;
+      ph.addEventListener('input', function() {
+        // strip anything that isn't digit, +, or space
+        var pos = this.selectionStart;
+        var oldLen = this.value.length;
+        this.value = this.value.replace(/[^0-9+\s]/g, '');
+        // keep + only at position 0
+        this.value = this.value.replace(/(?!^)\+/g, '');
+        // restore cursor
+        var diff = oldLen - this.value.length;
+        this.setSelectionRange(pos - diff, pos - diff);
+      });
+      ph.addEventListener('keydown', function(e) {
+        // allow: backspace, delete, tab, escape, enter, arrows, home, end
+        var allowed = [8,9,13,27,46,37,38,39,40,35,36];
+        if (allowed.indexOf(e.keyCode) !== -1) return;
+        // allow + only as first char
+        if (e.key === '+' && this.selectionStart === 0 && this.value.indexOf('+') === -1) return;
+        // allow digits
+        if (e.key >= '0' && e.key <= '9') return;
+        // allow space
+        if (e.key === ' ') return;
+        e.preventDefault();
+      });
+    })();
+
     function togglePassword(inputId, iconId) {
       var inp = document.getElementById(inputId);
       var ico = document.getElementById(iconId);

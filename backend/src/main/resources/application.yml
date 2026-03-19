@@ -52,3 +52,9 @@ logging:
             bind: TRACE
       springframework:
         web: DEBUG
+
+keycloak:
+  server-url: http://localhost:8080
+  realm: gdje-izlazimo
+  admin-client-id: spring-admin-client
+  admin-client-secret: U2xtbArwz6vFU5iQnFrioEKkrnLUPgnQ

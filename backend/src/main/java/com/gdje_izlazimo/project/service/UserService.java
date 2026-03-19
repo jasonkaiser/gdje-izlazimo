@@ -18,9 +18,11 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final KeycloakAdminService keycloakAdminService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, KeycloakAdminService keycloakAdminService) {
         this.userRepository = userRepository;
+        this.keycloakAdminService = keycloakAdminService;
     }
 
     @Transactional
@@ -117,10 +119,41 @@ public class UserService {
                 () -> new UserNotFoundException("User not found")
         );
 
+        Role oldRole = existingUser.getRole();
+
         UserMapper.updateEntity(existingUser, request);
         User updatedUser = userRepository.save(existingUser);
 
+        if (request.role() != null && !request.role().equals(oldRole)) {
+
+            keycloakAdminService.updateUserRole(
+                    id,
+                    oldRole.name().toLowerCase(),
+                    request.role().name().toLowerCase()
+            );
+        }
+
         return UserMapper.toResponse(updatedUser);
+    }
+
+    @Transactional
+    public UserResponse updateUserRole(UUID id, Role newRole) {
+        User existingUser = userRepository.findById(id).orElseThrow(
+                () -> new UserNotFoundException("User not found")
+        );
+
+        Role oldRole = existingUser.getRole();
+
+        existingUser.setRole(newRole);
+        userRepository.save(existingUser);
+
+        keycloakAdminService.updateUserRole(
+                id,
+                oldRole.name().toLowerCase(),
+                newRole.name().toLowerCase()
+        );
+
+        return UserMapper.toResponse(existingUser);
     }
 
     @Transactional

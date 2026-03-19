@@ -21,7 +21,7 @@
           <circle cx="12" cy="12" r="9"/>
           <path d="M12 8v4m0 4h.01" stroke-linecap="round"/>
         </svg>
-        <span>${messagesPerField.getFirstError('username','password')}</span>
+        <span>Neispravna email adresa ili lozinka.</span>
       </div>
     </#if>
 
@@ -48,17 +48,12 @@
       </div>
 
       <div class="gi-field">
-        <div class="gi-field-row">
-          <label class="gi-label" for="password">Password</label>
-          <#if realm.resetPasswordAllowed>
-            <a href="${url.loginResetCredentialsUrl}" class="gi-forgot">Zaboravili ste lozinku?</a>
-          </#if>
-        </div>
+        <label class="gi-label" for="password">Lozinka</label>
         <div class="gi-input-wrap">
           <input
             id="password" name="password" type="password"
             autocomplete="current-password"
-            placeholder="Upišite vašu šifru"
+            placeholder="Upišite vašu lozinku"
             class="gi-input"
           />
           <button type="button" class="gi-input-icon gi-eye-btn"
@@ -89,7 +84,12 @@
     <#if realm.registrationAllowed?? && realm.registrationAllowed>
       <p class="gi-register">
         Ukoliko nemate nalog, kliknite na
-        <a href="${url.registrationUrl}" class="gi-register-link">Register</a>
+        <a href="${url.registrationUrl}" class="gi-register-link">Registruj se</a>
+      </p>
+    </#if>
+    <#if realm.resetPasswordAllowed>
+      <p class="gi-register" style="margin-top: 10px;">
+        <a href="${url.loginResetCredentialsUrl}" class="gi-register-link">Zaboravili ste lozinku?</a>
       </p>
     </#if>
   </div>
