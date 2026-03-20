@@ -11,9 +11,9 @@ import com.gdje_izlazimo.project.enums.Status;
 import com.gdje_izlazimo.project.exception.custom.*;
 import com.gdje_izlazimo.project.mapper.ReservationMapper;
 import com.gdje_izlazimo.project.repository.ReservationRepository;
-import com.gdje_izlazimo.project.repository.TableTypeRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,9 +31,7 @@ public class ReservationService {
     private final ReservationMapper reservationMapper;
     private final UserService userService;
     private final TableTypeService tableTypeService;
-    private final TableTypeRepository tableTypeRepository;
     private final EmailService emailService;
-    private final VenueService venueService;
 
     private static final Logger log = LoggerFactory.getLogger(ReservationService.class);
 
@@ -42,16 +40,12 @@ public class ReservationService {
             ReservationMapper reservationMapper,
             UserService userService,
             TableTypeService tableTypeService,
-            TableTypeRepository tableTypeRepository,
-            VenueService venueService,
             EmailService emailService
     ) {
         this.reservationRepository = reservationRepository;
         this.reservationMapper = reservationMapper;
         this.userService = userService;
         this.tableTypeService = tableTypeService;
-        this.tableTypeRepository = tableTypeRepository;
-        this.venueService = venueService;
         this.emailService = emailService;
     }
 
@@ -77,7 +71,8 @@ public class ReservationService {
     }
 
     @Transactional
-    public ReservationResponse createReservation(CreateReservationRequest dto, String keycloakSub, String requesterEmail) {
+    @CacheEvict(value = {"dashboardStats", "reservationStatusBreakdown", "topVenues"}, allEntries = true)
+    public ReservationResponse createReservation(CreateReservationRequest dto, String keycloakSub, String requesterEmail, String username) {
         LocalDateTime requested = LocalDateTime.of(dto.reservationDate(), dto.reservationTime());
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Sarajevo"));
 
@@ -88,7 +83,7 @@ public class ReservationService {
         UUID userId = UUID.fromString(keycloakSub);
         TableType table = tableTypeService.findEntityById(dto.tableTypeId());
 
-        User user = userService.getOrCreate(userId, requesterEmail);
+        User user = userService.getOrCreate(userId, requesterEmail, username);
 
         if (reservationRepository.existsByUserId_IdAndVenueId_IdAndReservationDateAndReservationTime(
                 user.getId(),
@@ -103,29 +98,21 @@ public class ReservationService {
         createdReservation.setUserId(user);
         createdReservation.setTableType(table);
         createdReservation.setStatus(Status.PENDING);
-
         Reservation savedReservation = reservationRepository.save(createdReservation);
 
-        try {
-            String to = requesterEmail;
-            if (to != null && !to.isBlank()) {
-                emailService.sendPlainText(
-                        to,
-                        "GDJE IZLAZIMO | Rezervacija zaprimljena (PENDING)",
-                        "Primili smo tvoju rezervaciju za " + savedReservation.getReservationDate()
-                                + " u " + savedReservation.getReservationTime() + ". Status: PENDING."
-                );
-            } else {
-                log.warn("Skipping CREATED email: requesterEmail is null/blank. reservationId={}", savedReservation.getId());
-            }
-        } catch (Exception e) {
-            log.warn("Failed to send reservation CREATED email for reservation {}", savedReservation.getId(), e);
-        }
+        sendReservationEmail(
+                requesterEmail,
+                "GDJE IZLAZIMO | Rezervacija primljena (NA CEKANJU)",
+                "Primili smo vasu rezervaciju za " + savedReservation.getReservationDate()
+                        + " u " + savedReservation.getReservationTime() + ". Status: NA CEKANJU.",
+                savedReservation.getId()
+        );
 
         return reservationMapper.toResponse(savedReservation);
     }
 
     @Transactional
+    @CacheEvict(value = {"dashboardStats", "reservationStatusBreakdown", "topVenues"}, allEntries = true)
     public ReservationResponse updateReservation(UpdateReservationRequest dto, UUID id) {
         Reservation reservation = reservationRepository.findByIdWithDetails(id).orElseThrow(
                 () -> new ReservationNotFoundException("Reservation does not exist")
@@ -136,6 +123,7 @@ public class ReservationService {
     }
 
     @Transactional
+    @CacheEvict(value = {"dashboardStats", "reservationStatusBreakdown", "topVenues"}, allEntries = true)
     public void acceptReservation(UUID id, String keycloakSub) {
         Reservation reservation = reservationRepository.findByIdWithDetails(id).orElseThrow(
                 () -> new ReservationNotFoundException("Reservation does not exist")
@@ -146,7 +134,7 @@ public class ReservationService {
         }
 
         UUID actorId = UUID.fromString(keycloakSub);
-        User actor = userService.getOrCreate(actorId);
+        User actor = userService.getOrCreate(actorId, null, null);
 
         if (actor.getRole() != Role.ADMIN) {
             if (actor.getRole() != Role.VENUE_OWNER) {
@@ -160,26 +148,20 @@ public class ReservationService {
 
         reservation.setStatus(Status.ACCEPTED);
         reservation.setRejectReason(null);
-        reservationRepository.save(reservation);
+        String requesterEmail = reservation.getUserId().getEmail();
+        Reservation savedReservation = reservationRepository.save(reservation);
 
-        try {
-            String to = reservation.getUserId() != null ? reservation.getUserId().getEmail() : null;
-            if (to != null && !to.isBlank()) {
-                emailService.sendPlainText(
-                        to,
-                        "GDJE IZLAZIMO | Rezervacija prihvacena (ACCEPTED)",
-                        "Prihvatili smo tvoju rezervaciju za " + reservation.getReservationDate()
-                                + " u " + reservation.getReservationTime() + ". Status: ACCEPTED."
-                );
-            } else {
-                log.warn("Skipping ACCEPTED email: reservation user email is null/blank. reservationId={}", reservation.getId());
-            }
-        } catch (Exception e) {
-            log.warn("Failed to send reservation ACCEPTED email for reservation {}", reservation.getId(), e);
-        }
+        sendReservationEmail(
+                requesterEmail,
+                "GDJE IZLAZIMO | Rezervacija prihvacena (PRIHVACENO)",
+                "Prihvatili smo vasu rezervaciju za " + savedReservation.getReservationDate()
+                        + " u " + savedReservation.getReservationTime() + ". Status: PRIHVACENO.",
+                savedReservation.getId()
+        );
     }
 
     @Transactional
+    @CacheEvict(value = {"dashboardStats", "reservationStatusBreakdown", "topVenues"}, allEntries = true)
     public void rejectReservation(UUID id, String keycloakSub, String reason) {
         Reservation reservation = reservationRepository.findByIdWithDetails(id).orElseThrow(
                 () -> new ReservationNotFoundException("Reservation does not exist")
@@ -190,7 +172,8 @@ public class ReservationService {
         }
 
         UUID actorId = UUID.fromString(keycloakSub);
-        User actor = userService.getOrCreate(actorId);
+        User actor = userService.getOrCreate(actorId, null, null);
+
 
         if (actor.getRole() != Role.ADMIN) {
             if (actor.getRole() != Role.VENUE_OWNER) {
@@ -204,32 +187,21 @@ public class ReservationService {
 
         reservation.setStatus(Status.REJECTED);
         reservation.setRejectReason(reason != null ? reason.trim() : null);
-        reservationRepository.save(reservation);
+        String requesterEmail = reservation.getUserId().getEmail();
+        Reservation savedReservation = reservationRepository.save(reservation);
 
-        try {
-            String to = reservation.getUserId() != null ? reservation.getUserId().getEmail() : null;
-            if (to != null && !to.isBlank()) {
-                String msg = "Odbili smo tvoju rezervaciju za " + reservation.getReservationDate()
-                        + " u " + reservation.getReservationTime() + ". Status: REJECTED."
-                        + (reservation.getRejectReason() != null && !reservation.getRejectReason().isBlank()
-                        ? "\nRazlog: " + reservation.getRejectReason()
-                        : "");
-
-                emailService.sendPlainText(
-                        to,
-                        "GDJE IZLAZIMO | Rezervacija odbijena (REJECTED)",
-                        msg
-                );
-            } else {
-                log.warn("Skipping REJECTED email: reservation user email is null/blank. reservationId={}", reservation.getId());
-            }
-        } catch (Exception e) {
-            log.warn("Failed to send reservation REJECTED email for reservation {}", reservation.getId(), e);
-        }
+        sendReservationEmail(
+                requesterEmail,
+                "GDJE IZLAZIMO | Rezervacija odbijena (ODBIJENO)",
+                "Odbili smo vasu rezervaciju za " + savedReservation.getReservationDate()
+                        + " u " + savedReservation.getReservationTime() + ". Status: ODBIJENO.",
+                savedReservation.getId()
+        );
     }
 
 
     @Transactional
+    @CacheEvict(value = {"dashboardStats", "reservationStatusBreakdown", "topVenues"}, allEntries = true)
     public void cancelReservation(UUID id, String keycloakSub, String requesterEmail) {
         Reservation reservation = reservationRepository.findByIdWithDetails(id).orElseThrow(
                 () -> new ReservationNotFoundException("Reservation does not exist")
@@ -251,8 +223,7 @@ public class ReservationService {
 
         UUID actorId = UUID.fromString(keycloakSub);
 
-        User actor = userService.getOrCreate(actorId, requesterEmail);
-
+        User actor = userService.getOrCreate(actorId, requesterEmail, null);
         boolean actorIsReservationOwner =
                 reservation.getUserId() != null && reservation.getUserId().getId().equals(actor.getId());
 
@@ -261,37 +232,35 @@ public class ReservationService {
         }
 
         reservation.setStatus(Status.CANCELLED);
-        reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(reservation);
 
-        try {
-            String to;
-
-            if (actorIsReservationOwner) {
-                to = requesterEmail;
-            } else {
-                to = reservation.getUserId() != null ? reservation.getUserId().getEmail() : null; // cached earlier
-            }
-
-            if (to != null && !to.isBlank()) {
-                emailService.sendPlainText(
-                        to,
-                        "GDJE IZLAZIMO | Rezervacija otkazana (CANCELLED)",
-                        "Otkazana je tvoja rezervacija za " + reservation.getReservationDate()
-                                + " u " + reservation.getReservationTime() + ". Status: CANCELLED."
-                );
-            } else {
-                log.warn("Skipping CANCELLED email: recipient is null/blank. reservationId={}", reservation.getId());
-            }
-        } catch (Exception e) {
-            log.warn("Failed to send reservation CANCELLED email for reservation {}", reservation.getId(), e);
-        }
+        sendReservationEmail(
+                requesterEmail,
+                "GDJE IZLAZIMO | Rezervacija otkazana (OTKAZANO)",
+                "Otkazani smo vasu rezervaciju za " + savedReservation.getReservationDate()
+                        + " u " + savedReservation.getReservationTime() + ". Status: OTKAZANO.",
+                savedReservation.getId()
+        );
     }
 
     @Transactional
+    @CacheEvict(value = {"dashboardStats", "reservationStatusBreakdown", "topVenues"}, allEntries = true)
     public void deleteReservation(UUID id) {
         if (!reservationRepository.existsById(id)) {
             throw new ReservationNotFoundException("Reservation does not exist");
         }
         reservationRepository.deleteById(id);
+    }
+
+    private void sendReservationEmail(String to, String subject, String body, UUID reservationId) {
+        try {
+            if (to != null && !to.isBlank()) {
+                emailService.sendPlainText(to, subject, body);
+            } else {
+                log.warn("Skipping email: recipient is null/blank. reservationId={}", reservationId);
+            }
+        } catch (Exception e) {
+            log.warn("Failed to send email for reservation {}", reservationId, e);
+        }
     }
 }

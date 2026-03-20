@@ -96,19 +96,23 @@ public class ReservationController {
     @PreAuthorize("hasAnyRole('user','venue_owner','admin')")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ReservationResponse>> findReservationsByUser(
+            @AuthenticationPrincipal Jwt jwt,
             @PathVariable UUID userId,
             @RequestParam(defaultValue = "1") int pageNo,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "ASC") String sortDir
     ) {
-        Pageable pageable = PageRequest.of(
-                pageNo - 1,
-                pageSize,
-                Sort.Direction.fromString(sortDir),
-                sortBy
-        );
 
+        UUID requesterId = UUID.fromString(jwt.getSubject());
+        boolean isAdmin = jwt.getClaimAsStringList("roles") != null
+                && jwt.getClaimAsStringList("roles").contains("admin");
+
+        if (!isAdmin && !requesterId.equals(userId)) {
+            return ResponseEntity.status(403).build();
+        }
+
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.Direction.fromString(sortDir), sortBy);
         return ResponseEntity.ok(reservationService.findReservationsByUserId(userId, pageable));
     }
 
@@ -119,7 +123,7 @@ public class ReservationController {
             @Valid @RequestBody CreateReservationRequest entity
     ) {
         String email = jwt.getClaimAsString("email");
-        return ResponseEntity.ok(reservationService.createReservation(entity, jwt.getSubject(), email));
+        return ResponseEntity.ok(reservationService.createReservation(entity, jwt.getSubject(), email, null));
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
@@ -148,7 +152,7 @@ public class ReservationController {
             @PathVariable UUID id,
             @RequestBody(required = false) UpdateRejectReservationRequest request
             ) {
-        reservationService.rejectReservation(id, jwt.getSubject(), request.reason());
+        reservationService.rejectReservation(id, jwt.getSubject(), request != null ? request.reason() : null);
         return ResponseEntity.noContent().build();
     }
 

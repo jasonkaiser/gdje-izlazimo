@@ -13,30 +13,27 @@ import java.util.UUID;
 @Service
 public class KeycloakAdminService {
 
-    @Value("${keycloak.server-url}")
-    private String serverUrl;
+    private final String realm;
+    private final Keycloak keycloak;
 
-    @Value("${keycloak.realm}")
-    private String realm;
-
-    @Value("${keycloak.admin-client-id}")
-    private String clientId;
-
-    @Value("${keycloak.admin-client-secret}")
-    private String clientSecret;
-
-    private Keycloak buildKeycloak() {
-        return KeycloakBuilder.builder()
+    public KeycloakAdminService(
+            @Value("${keycloak.server-url}") String serverUrl,
+            @Value("${keycloak.realm}") String realm,
+            @Value("${keycloak.admin-client-id}") String clientId,
+            @Value("${keycloak.admin-client-secret}") String clientSecret
+    ){
+        this.realm = realm;
+        this.keycloak = KeycloakBuilder.builder()
                 .serverUrl(serverUrl)
                 .realm("master")
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .grantType("client_credentials")
                 .build();
+
     }
 
     public void updateUserRole(UUID keycloakUserId, String oldRole, String newRole) {
-        Keycloak keycloak = buildKeycloak();
         var realmResource = keycloak.realm(realm);
         UserResource userResource = realmResource.users().get(keycloakUserId.toString());
 

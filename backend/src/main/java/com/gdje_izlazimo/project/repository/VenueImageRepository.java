@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface VenueImageRepository extends JpaRepository<VenueImage, UUID> {
 
-    List<VenueImage> findByVenueId(UUID venueId);
+    List<VenueImage> findByVenue_Id(UUID venueId);
 
-    Optional<VenueImage> findByVenueIdAndIsPrimaryTrue(UUID venueId);
+    Optional<VenueImage> findByVenue_IdAndIsPrimaryTrue(UUID venueId);
 }

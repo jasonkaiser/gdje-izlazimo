@@ -16,22 +16,26 @@ import java.util.UUID;
 @Service
 public class ImageKitService {
 
-    @Value("${imagekit.private-key}")
-    private String privateKey;
+    private final String privateKey;
+    private final RestTemplate restTemplate;
 
     private static final String UPLOAD_URL = "https://upload.imagekit.io/api/v1/files/upload";
     private static final String DELETE_URL  = "https://api.imagekit.io/v1/files/";
 
-    private final RestTemplate restTemplate = new RestTemplate();
+
+    public ImageKitService(
+            @Value("${imagekit.private-key}") String privateKey,
+            RestTemplate restTemplate) {
+
+        this.restTemplate = restTemplate;
+        this.privateKey = privateKey;
+    }
 
     public String[] uploadImage(MultipartFile file, String folder) {
         try {
-            String auth = Base64.getEncoder()
-                    .encodeToString((privateKey + ":").getBytes());
 
-            HttpHeaders headers = new HttpHeaders();
+            HttpHeaders headers = buildAuthHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-            headers.set("Authorization", "Basic " + auth);
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             body.add("file", new org.springframework.core.io.ByteArrayResource(file.getBytes()) {
@@ -60,12 +64,7 @@ public class ImageKitService {
     }
 
     public void deleteImage(String fileId) {
-        String auth = Base64.getEncoder()
-                .encodeToString((privateKey + ":").getBytes());
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Basic " + auth);
-
+        HttpHeaders headers = buildAuthHeaders();
         HttpEntity<Void> request = new HttpEntity<>(headers);
 
         restTemplate.exchange(
@@ -74,5 +73,13 @@ public class ImageKitService {
                 request,
                 Void.class
         );
+    }
+
+    private HttpHeaders buildAuthHeaders() {
+        String auth = Base64.getEncoder()
+                .encodeToString((privateKey + ":").getBytes());
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Basic " + auth);
+        return headers;
     }
 }

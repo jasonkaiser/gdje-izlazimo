@@ -9,9 +9,11 @@ import com.gdje_izlazimo.project.exception.custom.VenueAlreadyExistsException;
 import com.gdje_izlazimo.project.exception.custom.VenueNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueMapper;
 import com.gdje_izlazimo.project.repository.VenueRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,7 +29,7 @@ public class VenueService {
         this.venueRepository = venueRepository;
         this.venueMapper = venueMapper;
     }
-
+    @Transactional(readOnly = true)
     public List<VenueResponse> findAllVenues(Pageable pageable){
         List<Venue> venueEntity = venueRepository.findAll(pageable).getContent();
         return venueEntity.stream()
@@ -35,6 +37,7 @@ public class VenueService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public VenueResponse findVenueById(UUID id){
         Venue venueEntity = venueRepository.findById(id).orElseThrow(
                 () -> new VenueNotFoundException("Venue does not exist"));
@@ -42,6 +45,7 @@ public class VenueService {
         return venueMapper.toResponse(venueEntity);
     }
 
+    @Transactional(readOnly = true)
     public List<VenueResponse> findByVenueType(Pageable pageable, VenueCategory venueType){
         List<Venue> venues = venueRepository.findByVenueType(pageable, venueType).getContent();
         return venues.stream()
@@ -49,6 +53,17 @@ public class VenueService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
+    public VenueResponse getVenueByOwnerId(UUID ownerId) {
+        Venue venue = venueRepository.findByVenueOwner_Id(ownerId)
+                .orElseThrow(() -> new VenueNotFoundException(
+                        "Venue not found for owner: " + ownerId
+                ));
+
+        return venueMapper.toResponse(venue);
+    }
+
+    @Transactional(readOnly = true)
     public List<VenueResponse> searchVenues(String query, VenueCategory category, Pageable pageable) {
 
         boolean hasQuery = query != null && !query.isBlank();
@@ -68,7 +83,8 @@ public class VenueService {
                 .toList();
     }
 
-
+    @Transactional
+    @CacheEvict(value = {"dashboardStats", "venueTypeBreakdown", "topVenues"}, allEntries = true)
     public VenueResponse createVenue(CreateVenueRequest dto){
         if(venueRepository.existsByName(dto.name())){
             throw new VenueAlreadyExistsException("Venue with this name already exists");
@@ -80,6 +96,8 @@ public class VenueService {
         return venueMapper.toResponse(savedVenue);
     }
 
+    @Transactional
+    @CacheEvict(value = {"dashboardStats", "venueTypeBreakdown", "topVenues"}, allEntries = true)
     public VenueResponse updateVenue(UpdateVenueRequest dto, UUID id){
         Venue venue = venueRepository.findById(id).orElseThrow(
                 () -> new VenueNotFoundException("Venue does not exist"));
@@ -90,6 +108,8 @@ public class VenueService {
         return venueMapper.toResponse(updatedVenue);
     }
 
+    @Transactional
+    @CacheEvict(value = {"dashboardStats", "venueTypeBreakdown", "topVenues"}, allEntries = true)
     public void deleteVenue(UUID id){
         if(!venueRepository.existsById(id)){
             throw new VenueNotFoundException("Venue does not exist");
@@ -97,12 +117,5 @@ public class VenueService {
         venueRepository.deleteById(id);
     }
 
-    public VenueResponse getVenueByOwnerId(UUID ownerId) {
-        Venue venue = venueRepository.findByVenueOwner_Id(ownerId)
-                .orElseThrow(() -> new VenueNotFoundException(
-                        "Venue not found for owner: " + ownerId
-                ));
 
-        return venueMapper.toResponse(venue);
-    }
 }

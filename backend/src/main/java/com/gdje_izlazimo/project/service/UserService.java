@@ -7,6 +7,7 @@ import com.gdje_izlazimo.project.enums.Role;
 import com.gdje_izlazimo.project.exception.custom.UserNotFoundException;
 import com.gdje_izlazimo.project.mapper.UserMapper;
 import com.gdje_izlazimo.project.repository.UserRepository;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,38 +27,7 @@ public class UserService {
     }
 
     @Transactional
-    public User getOrCreate(UUID id) {
-        return userRepository.findById(id)
-                .orElseGet(() -> {
-                    User u = new User();
-                    u.setId(id);
-                    u.setRole(Role.USER);
-                    return userRepository.save(u);
-                });
-    }
-
-
-    @Transactional
-    public User getOrCreate(UUID id, String emailFromKeycloak) {
-        User user = userRepository.findById(id)
-                .orElseGet(() -> {
-                    User u = new User();
-                    u.setId(id);
-                    u.setRole(Role.USER);
-                    return u;
-                });
-
-        if (emailFromKeycloak != null && !emailFromKeycloak.isBlank()) {
-            String currentEmail = user.getEmail();
-            if (currentEmail == null || currentEmail.isBlank()) {
-                user.setEmail(emailFromKeycloak.trim());
-            }
-        }
-
-        return userRepository.save(user);
-    }
-
-    @Transactional
+    @CacheEvict(value = {"dashboardStats"}, allEntries = true)
     public User getOrCreate(UUID id, String email, String username) {
         User user = userRepository.findById(id)
                 .orElseGet(() -> {
@@ -80,16 +50,10 @@ public class UserService {
 
     @Transactional
     public UserResponse getOrCreateResponse(UUID id, String email, String username) {
-        User user = getOrCreate(id, email, username);
-        return UserMapper.toResponse(user);
+        return UserMapper.toResponse(getOrCreate(id, email, username));
     }
 
-    @Transactional
-    public UserResponse getOrCreateResponse(UUID id, String emailFromKeycloak) {
-        User user = getOrCreate(id, emailFromKeycloak);
-        return UserMapper.toResponse(user);
-    }
-
+    @Transactional(readOnly = true)
     public UserResponse findUserById(UUID id) {
         User userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -97,6 +61,7 @@ public class UserService {
         return UserMapper.toResponse(userEntity);
     }
 
+    @Transactional(readOnly = true)
     public List<UserResponse> findAllUsers(Pageable pageable) {
         List<User> userEntity = userRepository.findAll(pageable).getContent();
 
@@ -105,6 +70,7 @@ public class UserService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<UserResponse> findUserByRole(Role role, Pageable pageable) {
         List<User> userEntity = userRepository.findByRole(role, pageable).getContent();
 
@@ -157,6 +123,7 @@ public class UserService {
     }
 
     @Transactional
+    @CacheEvict(value = {"dashboardStats"}, allEntries = true)
     public void deleteUser(UUID id) {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException("User not found");
@@ -164,9 +131,10 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    @Transactional(readOnly = true)
     public UserResponse findByEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
 
         return UserMapper.toResponse(user);
     }

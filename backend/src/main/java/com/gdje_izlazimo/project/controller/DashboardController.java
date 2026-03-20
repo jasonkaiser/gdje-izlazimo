@@ -12,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/admin/dashboard")
@@ -73,7 +72,7 @@ public class DashboardController {
         List<ActivityLog> activities = activityLogService.getTopRecentActivities(limit);
         List<ActivityLogResponse> response = activities.stream()
                 .map(activityLogMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
         return ResponseEntity.ok(response);
     }
 }
