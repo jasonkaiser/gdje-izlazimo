@@ -34,7 +34,7 @@ public class VenueImage {
     private String imageUrl;
 
     @Column(name = "is_primary", nullable = false)
-    private boolean isPrimary;
+    private boolean primary;
 
     @Column(name = "imagekit_file_id", nullable = false)
     private String imageKitFileId;

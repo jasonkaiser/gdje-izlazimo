@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/venue/operating-hours") // /venue-operating-hours
+@RequestMapping("/venue/operating-hours") 
 public class VenueOperatingHoursController {
 
     private final VenueOperatingHoursService venueOperatingHoursService;

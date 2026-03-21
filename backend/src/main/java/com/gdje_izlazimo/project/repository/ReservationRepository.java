@@ -20,30 +20,30 @@ import java.util.UUID;
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
 
     @Query("SELECT r FROM Reservation r " +
-            "LEFT JOIN FETCH r.venueId v " +
-            "LEFT JOIN FETCH r.userId u " +
+            "LEFT JOIN FETCH r.venue v " +
+            "LEFT JOIN FETCH r.user u " +
             "LEFT JOIN FETCH r.tableType t " +
             "WHERE r.id = :id")
     Optional<Reservation> findByIdWithDetails(@Param("id") UUID id);
 
     @Query("SELECT r FROM Reservation r " +
-            "LEFT JOIN FETCH r.venueId v " +
-            "LEFT JOIN FETCH r.userId u " +
+            "LEFT JOIN FETCH r.venue v " +
+            "LEFT JOIN FETCH r.user u " +
             "LEFT JOIN FETCH r.tableType t " +
             "WHERE v.id = :venueId")
-    Page<Reservation> findByVenueIdWithDetails(@Param("venueId") UUID venueId, Pageable pageable);
+    Page<Reservation> findByVenue_IdWithDetails(@Param("venueId") UUID venueId, Pageable pageable);
 
-    Page<Reservation> findByVenueId_Id(UUID venueId, Pageable pageable);
+    Page<Reservation> findByVenue_Id(UUID venueId, Pageable pageable);
 
     @Query("SELECT new com.gdje_izlazimo.project.dto.response.ReservationResponse(" +
-            "r.id, r.userId.id, r.venueId.id, r.phone, r.venueId.name, r.venueId.addressName, " +
+            "r.id, r.user.id, r.venue.id, r.phone, r.venue.name, r.venue.addressName, " +
             "r.reservationDate, r.reservationTime, r.numberOfPeople, r.tableType.id, " +
-            "r.status, r.specialRequests, r.rejectReason, r.created_at, r.updated_at) " +
+            "r.status, r.specialRequests, r.rejectReason, r.createdAt, r.updatedAt) " +
             "FROM Reservation r " +
-            "WHERE r.userId.id = :userId")
+            "WHERE r.user.id = :userId")
     Page<ReservationResponse> findResponsesByUserId(@Param("userId") UUID userId, Pageable pageable);
 
-    boolean existsByUserId_IdAndVenueId_IdAndReservationDateAndReservationTime(
+    boolean existsByUser_IdAndVenue_IdAndReservationDateAndReservationTime(
             UUID userId, UUID venueId, LocalDate reservationDate, LocalTime reservationTime);
 
     Long countByStatus(Status status);

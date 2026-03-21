@@ -133,7 +133,7 @@ public class ActivityLogAspect {
                     ? reservationRepository.findByIdWithDetails(reservationId)
                     : Optional.empty();
 
-            String venueName = resOpt.map(r -> r.getVenueId() != null ? r.getVenueId().getName() : "Unknown Venue")
+            String venueName = resOpt.map(r -> r.getVenue() != null ? r.getVenue().getName() : "Unknown Venue")
                     .orElse("Unknown Venue");
 
             Status status = resOpt.map(Reservation::getStatus).orElse(null);
@@ -176,7 +176,7 @@ public class ActivityLogAspect {
         String venueName = "Unknown Venue";
         if (reservationId != null) {
             venueName = reservationRepository.findByIdWithDetails(reservationId)
-                    .map(r -> r.getVenueId() != null ? r.getVenueId().getName() : "Unknown Venue")
+                    .map(r -> r.getVenue() != null ? r.getVenue().getName() : "Unknown Venue")
                     .orElse("Unknown Venue");
         }
 

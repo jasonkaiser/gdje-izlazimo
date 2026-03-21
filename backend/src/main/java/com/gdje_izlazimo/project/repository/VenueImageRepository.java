@@ -11,5 +11,5 @@ public interface VenueImageRepository extends JpaRepository<VenueImage, UUID> {
 
     List<VenueImage> findByVenue_Id(UUID venueId);
 
-    Optional<VenueImage> findByVenue_IdAndIsPrimaryTrue(UUID venueId);
+    Optional<VenueImage> findByVenue_IdAndPrimaryTrue(UUID venueId);
 }

@@ -4,64 +4,24 @@ import com.gdje_izlazimo.project.dto.request.create.CreateReservationRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateReservationRequest;
 import com.gdje_izlazimo.project.dto.response.ReservationResponse;
 import com.gdje_izlazimo.project.entity.Reservation;
-import com.gdje_izlazimo.project.entity.User;
-import com.gdje_izlazimo.project.entity.Venue;
-import com.gdje_izlazimo.project.repository.UserRepository;
-import com.gdje_izlazimo.project.repository.VenueRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.gdje_izlazimo.project.mapper.helper.SharedMapperHelper;
+import org.mapstruct.*;
 
-@Component
-public class ReservationMapper  {
 
-    private final VenueRepository venueRepository;
-    private final UserRepository userRepository;
+@Mapper(componentModel = "spring", uses = SharedMapperHelper.class,
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+public interface ReservationMapper {
 
-    public ReservationMapper(VenueRepository venueRepository, UserRepository userRepository) {
-        this.venueRepository = venueRepository;
-        this.userRepository = userRepository;
-    }
+    @Mapping(source = "venueId", target = "venue", qualifiedByName = "resolveVenue")
+    Reservation toEntity(CreateReservationRequest dto);
 
-    public Reservation toEntity(CreateReservationRequest dto){
-        Reservation createdEntity = new Reservation();
-        createdEntity.setPhone(dto.phone());
-        createdEntity.setReservationDate(dto.reservationDate());
-        createdEntity.setReservationTime(dto.reservationTime());
-        createdEntity.setSpecialRequests(dto.specialRequests());
-        createdEntity.setNumberOfPeople(dto.numberOfPeople());
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntity(UpdateReservationRequest dto, @MappingTarget Reservation entity);
 
-        Venue venue_id = venueRepository.findById(dto.venueId()).orElseThrow(
-                () -> new RuntimeException("Venue not found"));
-        createdEntity.setVenueId(venue_id);
-
-        return createdEntity;
-    }
-
-    public void updateEntity(UpdateReservationRequest dto, Reservation entity){
-        entity.setStatus(dto.status());
-    }
-
-    public ReservationResponse toResponse(Reservation entity){
-
-        var venue = entity.getVenueId();
-        var tableType = entity.getTableType();
-
-        return new ReservationResponse(
-                entity.getId(),
-                entity.getUserId().getId(),
-                venue.getId(),
-                entity.getPhone(),
-                venue.getName(),
-                venue.getAddressName(),
-                entity.getReservationDate(),
-                entity.getReservationTime(),
-                entity.getNumberOfPeople(),
-                tableType != null ? tableType.getId() : null,
-                entity.getStatus(),
-                entity.getSpecialRequests(),
-                entity.getRejectReason(),
-                entity.getCreated_at(),
-                entity.getUpdated_at()
-        );
-    }
+    @Mapping(source = "user.id",          target = "userId")
+    @Mapping(source = "venue.id",         target = "venueId")
+    @Mapping(source = "venue.name",       target = "venueName")
+    @Mapping(source = "venue.addressName",target = "venueAddress")
+    @Mapping(source = "tableType.id",     target = "tableTypeId")
+    ReservationResponse toResponse(Reservation entity);
 }

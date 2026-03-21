@@ -62,7 +62,7 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findReservationsByVenueId(UUID venueId, Pageable pageable) {
-        List<Reservation> reservations = reservationRepository.findByVenueIdWithDetails(venueId, pageable).getContent();
+        List<Reservation> reservations = reservationRepository.findByVenue_IdWithDetails(venueId, pageable).getContent();
         return reservations.stream().map(reservationMapper::toResponse).toList();
     }
 
@@ -85,7 +85,7 @@ public class ReservationService {
 
         User user = userService.getOrCreate(userId, requesterEmail, username);
 
-        if (reservationRepository.existsByUserId_IdAndVenueId_IdAndReservationDateAndReservationTime(
+        if (reservationRepository.existsByUser_IdAndVenue_IdAndReservationDateAndReservationTime(
                 user.getId(),
                 dto.venueId(),
                 dto.reservationDate(),
@@ -95,7 +95,7 @@ public class ReservationService {
         }
 
         Reservation createdReservation = reservationMapper.toEntity(dto);
-        createdReservation.setUserId(user);
+        createdReservation.setUser(user);
         createdReservation.setTableType(table);
         createdReservation.setStatus(Status.PENDING);
         Reservation savedReservation = reservationRepository.save(createdReservation);
@@ -140,7 +140,7 @@ public class ReservationService {
             if (actor.getRole() != Role.VENUE_OWNER) {
                 throw new InvalidRoleException("You are not allowed to accept reservations");
             }
-            UUID ownerId = reservation.getVenueId().getVenueOwner().getId();
+            UUID ownerId = reservation.getVenue().getVenueOwner().getId();
             if (!ownerId.equals(actor.getId())) {
                 throw new ReservationAccessDeniedException("This reservation is not for your venue");
             }
@@ -148,7 +148,7 @@ public class ReservationService {
 
         reservation.setStatus(Status.ACCEPTED);
         reservation.setRejectReason(null);
-        String requesterEmail = reservation.getUserId().getEmail();
+        String requesterEmail = reservation.getUser().getEmail();
         Reservation savedReservation = reservationRepository.save(reservation);
 
         sendReservationEmail(
@@ -179,7 +179,7 @@ public class ReservationService {
             if (actor.getRole() != Role.VENUE_OWNER) {
                 throw new InvalidRoleException("You are not allowed to reject reservations");
             }
-            UUID ownerId = reservation.getVenueId().getVenueOwner().getId();
+            UUID ownerId = reservation.getVenue().getVenueOwner().getId();
             if (!ownerId.equals(actor.getId())) {
                 throw new ReservationAccessDeniedException("This reservation is not for your venue");
             }
@@ -187,7 +187,7 @@ public class ReservationService {
 
         reservation.setStatus(Status.REJECTED);
         reservation.setRejectReason(reason != null ? reason.trim() : null);
-        String requesterEmail = reservation.getUserId().getEmail();
+        String requesterEmail = reservation.getUser().getEmail();
         Reservation savedReservation = reservationRepository.save(reservation);
 
         sendReservationEmail(
@@ -225,7 +225,7 @@ public class ReservationService {
 
         User actor = userService.getOrCreate(actorId, requesterEmail, null);
         boolean actorIsReservationOwner =
-                reservation.getUserId() != null && reservation.getUserId().getId().equals(actor.getId());
+                reservation.getUser() != null && reservation.getUser().getId().equals(actor.getId());
 
         if (actor.getRole() != Role.ADMIN && !actorIsReservationOwner) {
             throw new ReservationAccessDeniedException("You can only cancel your own reservation");

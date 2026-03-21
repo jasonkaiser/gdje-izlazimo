@@ -4,10 +4,7 @@ import com.gdje_izlazimo.project.enums.ActionType;
 import com.gdje_izlazimo.project.enums.ActivityStatus;
 import com.gdje_izlazimo.project.enums.EntityType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -19,7 +16,8 @@ import java.util.UUID;
         @Index(name = "idx_entity_type", columnList = "entity_type"),
         @Index(name = "idx_entity_id", columnList = "entity_id")
 })
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

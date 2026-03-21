@@ -18,8 +18,8 @@ public record VenueResponse(
         String phone,
         double latitude,
         double longitude,
-        LocalDateTime created_at,
-        LocalDateTime updated_at
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 
 ) {
 }

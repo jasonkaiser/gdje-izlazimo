@@ -7,5 +7,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface VenueOperatingHoursRepository extends JpaRepository<VenueOperatingHours, UUID> {
-    Optional<VenueOperatingHours> findByVenueId_Id(UUID venueId);
+    Optional<VenueOperatingHours> findByVenue_Id(UUID venueId);
 }

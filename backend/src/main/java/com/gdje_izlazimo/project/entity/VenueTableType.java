@@ -28,21 +28,21 @@ public class VenueTableType {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id", nullable = false, updatable = false)
-    private Venue venueId;
+    private Venue venue;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "table_type_id", nullable = false, updatable = false)
-    private TableType tableTypeId;
+    private TableType tableType;
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updated_at;
+    private LocalDateTime updatedAt;
 
 }

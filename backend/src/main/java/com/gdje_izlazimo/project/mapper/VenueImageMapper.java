@@ -3,47 +3,19 @@ package com.gdje_izlazimo.project.mapper;
 import com.gdje_izlazimo.project.dto.request.create.CreateVenueImageRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateVenueImageRequest;
 import com.gdje_izlazimo.project.dto.response.VenueImageResponse;
-import com.gdje_izlazimo.project.entity.Venue;
 import com.gdje_izlazimo.project.entity.VenueImage;
-import com.gdje_izlazimo.project.repository.VenueRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.gdje_izlazimo.project.mapper.helper.SharedMapperHelper;
+import org.mapstruct.*;
 
-@Component
-public class VenueImageMapper {
+@Mapper(componentModel = "spring", uses = SharedMapperHelper.class)
+public interface VenueImageMapper {
 
-    private final VenueRepository venueRepository;
+    @Mapping(source = "venueId",  target = "venue",   qualifiedByName = "resolveVenue")
+    VenueImage toEntity(CreateVenueImageRequest dto);
 
-    public VenueImageMapper(VenueRepository venueRepository) {
-        this.venueRepository = venueRepository;
-    }
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntity(UpdateVenueImageRequest dto, @MappingTarget VenueImage entity);
 
-    public VenueImage toEntity(CreateVenueImageRequest dto){
-        VenueImage createdEntity = new VenueImage();
-        createdEntity.setImageUrl(dto.imageUrl());
-        createdEntity.setPrimary(dto.isPrimary());
-
-        Venue venue_id = venueRepository.findById(dto.venueId()).orElseThrow(
-                () -> new RuntimeException("Venue not found"));
-
-        createdEntity.setVenue(venue_id);
-
-        return createdEntity;
-    }
-
-    public void updateEntity(UpdateVenueImageRequest dto, VenueImage entity){
-        entity.setPrimary(dto.isPrimary());
-    }
-
-    public VenueImageResponse toResponse(VenueImage entity){
-        return new VenueImageResponse(
-                entity.getId(),
-                entity.getVenue().getId(),
-                entity.getImageUrl(),
-                entity.isPrimary(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt()
-        );
-    }
-
+    @Mapping(source = "venue.id", target = "venueId")
+    VenueImageResponse toResponse(VenueImage entity);
 }

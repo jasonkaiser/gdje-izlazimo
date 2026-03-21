@@ -30,8 +30,8 @@ public class DashboardService {
 
         return new DashboardStatsResponse(
                 userRepository.count(),
-                venueRepository.countByIsActive(true),
-                venueRepository.countByIsActive(false),
+                venueRepository.countByActive(true),
+                venueRepository.countByActive(false),
                 reservationRepository.count(),
                 reservationRepository.countByStatus(Status.PENDING),
                 reservationRepository.countByStatus(Status.ACCEPTED),
@@ -94,7 +94,7 @@ public class DashboardService {
                         projection.getVenueName(),
                         projection.getAddressName(),
                         projection.getVenueType(),
-                        projection.getIsActive(),
+                        projection.getActive(),
                         projection.getReservationCount()
                 ))
                 .collect(Collectors.toList());

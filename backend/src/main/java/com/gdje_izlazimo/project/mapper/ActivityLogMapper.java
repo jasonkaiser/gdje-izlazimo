@@ -2,24 +2,21 @@ package com.gdje_izlazimo.project.mapper;
 
 import com.gdje_izlazimo.project.dto.response.ActivityLogResponse;
 import com.gdje_izlazimo.project.entity.ActivityLog;
-import org.springframework.stereotype.Component;
+import com.gdje_izlazimo.project.mapper.helper.SharedMapperHelper;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.UUID;
 
-@Component
-public class ActivityLogMapper {
+@Mapper(componentModel = "spring")
+public interface ActivityLogMapper {
 
-    public ActivityLogResponse toResponse(ActivityLog entity) {
-        return new ActivityLogResponse(
-                entity.getId(),
-                entity.getEntityType(),
-                UUID.fromString(entity.getEntityId()),
-                entity.getEntityName(),
-                entity.getActionType(),
-                entity.getMessage(),
-                entity.getStatus(),
-                entity.getPerformedBy(),
-                entity.getCreatedAt()
-        );
+    @Mapping(source = "entityId", target = "entityId", qualifiedByName = "stringToUUID")
+    ActivityLogResponse toResponse(ActivityLog entity);
+
+    @Named("stringToUUID")
+    default UUID stringToUUID(String id) {
+        return id != null ? UUID.fromString(id) : null;
     }
 }

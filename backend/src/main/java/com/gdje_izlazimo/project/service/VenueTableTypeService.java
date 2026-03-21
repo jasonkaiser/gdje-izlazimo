@@ -47,7 +47,7 @@ public class VenueTableTypeService {
 
     public VenueTableTypeResponse createVenueTableType(CreateVenueTableTypeRequest dto){
 
-        if (venueTableTypeRepository.existsByVenueId_IdAndTableTypeId_Id(dto.venueId(), dto.tableTypeId())) {
+        if (venueTableTypeRepository.existsByVenue_IdAndTableType_Id(dto.venueId(), dto.tableTypeId())) {
             throw new VenueTableTypeAlreadyExistsException("This Venue already has this Table Type");
         }
 

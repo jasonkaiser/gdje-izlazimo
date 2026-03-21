@@ -102,7 +102,7 @@ public class VenueService {
         Venue venue = venueRepository.findById(id).orElseThrow(
                 () -> new VenueNotFoundException("Venue does not exist"));
 
-        venueMapper.updateEntity(venue, dto);
+        venueMapper.updateEntity(dto, venue);
         Venue updatedVenue = venueRepository.save(venue);
 
         return venueMapper.toResponse(updatedVenue);

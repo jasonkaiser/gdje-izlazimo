@@ -39,7 +39,7 @@ public class VenueImageService {
                 .toList();
     }
     @Transactional(readOnly = true)
-    public List<VenueImageResponse> findByVenueId(UUID venueId) {
+    public List<VenueImageResponse> findByVenue(UUID venueId) {
         return venueImageRepository.findByVenue_Id(venueId)
                 .stream()
                 .map(venueImageMapper::toResponse)
@@ -65,7 +65,7 @@ public class VenueImageService {
     @Transactional
     public VenueImageResponse saveVenueImage(Venue venue, String imageUrl, String fileId, boolean isPrimary){
         if (isPrimary) {
-            venueImageRepository.findByVenue_IdAndIsPrimaryTrue(venue.getId())
+            venueImageRepository.findByVenue_IdAndPrimaryTrue(venue.getId())
                     .ifPresent(existing -> {
                         existing.setPrimary(false);
                         venueImageRepository.save(existing);

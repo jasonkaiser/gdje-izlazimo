@@ -3,27 +3,19 @@
     import com.gdje_izlazimo.project.dto.request.update.UpdateUserRequest;
     import com.gdje_izlazimo.project.dto.response.UserResponse;
     import com.gdje_izlazimo.project.entity.User;
+    import org.mapstruct.BeanMapping;
+    import org.mapstruct.Mapper;
+    import org.mapstruct.MappingTarget;
+    import org.mapstruct.NullValuePropertyMappingStrategy;
 
-    public class UserMapper {
+    @Mapper(componentModel = "spring")
+    public interface UserMapper {
 
 
 
-        public static void updateEntity(User user, UpdateUserRequest dto){
-            user.setName(dto.name());
-            user.setPhone(dto.phone());
-            user.setRole(dto.role());
+        @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+        void updateEntity(@MappingTarget User user, UpdateUserRequest dto);
 
-        }
+        UserResponse toResponse(User user);
 
-        public static UserResponse toResponse(User user) {
-            return new UserResponse(
-                    user.getId(),
-                    user.getName(),
-                    user.getEmail(),
-                    user.getPhone(),
-                    user.getRole(),
-                    user.getCreated_at(),
-                    user.getUpdated_at()
-            );
-        }
     }

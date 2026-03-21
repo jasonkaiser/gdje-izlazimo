@@ -38,8 +38,8 @@ public class VenueImageController {
 
     @PermitAll
     @GetMapping("/venue/{venueId}")
-    public ResponseEntity<List<VenueImageResponse>> findByVenueId(@PathVariable UUID venueId) {
-        return ResponseEntity.ok(venueImageService.findByVenueId(venueId));
+    public ResponseEntity<List<VenueImageResponse>> findByVenue(@PathVariable UUID venueId) {
+        return ResponseEntity.ok(venueImageService.findByVenue(venueId));
     }
 
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")

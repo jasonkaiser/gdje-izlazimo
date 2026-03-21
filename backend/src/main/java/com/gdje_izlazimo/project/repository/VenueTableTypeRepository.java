@@ -7,6 +7,6 @@ import java.util.UUID;
 
 public interface VenueTableTypeRepository extends JpaRepository<VenueTableType, UUID> {
 
-    boolean existsByVenueId_IdAndTableTypeId_Id(UUID venueId, UUID tableTypeId);
+    boolean existsByVenue_IdAndTableType_Id(UUID venueId, UUID tableTypeId);
 
 }

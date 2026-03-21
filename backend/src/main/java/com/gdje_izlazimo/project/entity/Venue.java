@@ -2,7 +2,6 @@ package com.gdje_izlazimo.project.entity;
 
 
 import com.gdje_izlazimo.project.enums.VenueCategory;
-import com.gdje_izlazimo.project.enums.WorkingDays;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,7 +42,7 @@ public class Venue {
     private String addressName;
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    private boolean active;
 
     @Column(name = "venue_type", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -60,9 +59,9 @@ public class Venue {
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime created_at;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updated_at;
+    private LocalDateTime updatedAt;
 }

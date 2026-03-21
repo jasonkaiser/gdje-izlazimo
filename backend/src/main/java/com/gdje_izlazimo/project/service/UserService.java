@@ -20,10 +20,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final KeycloakAdminService keycloakAdminService;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, KeycloakAdminService keycloakAdminService) {
+    public UserService(UserRepository userRepository, KeycloakAdminService keycloakAdminService, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.keycloakAdminService = keycloakAdminService;
+        this.userMapper = userMapper;
     }
 
     @Transactional
@@ -50,32 +52,29 @@ public class UserService {
 
     @Transactional
     public UserResponse getOrCreateResponse(UUID id, String email, String username) {
-        return UserMapper.toResponse(getOrCreate(id, email, username));
+        return userMapper.toResponse(getOrCreate(id, email, username));
     }
 
     @Transactional(readOnly = true)
     public UserResponse findUserById(UUID id) {
         User userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-
-        return UserMapper.toResponse(userEntity);
+        return userMapper.toResponse(userEntity);
     }
 
     @Transactional(readOnly = true)
     public List<UserResponse> findAllUsers(Pageable pageable) {
-        List<User> userEntity = userRepository.findAll(pageable).getContent();
-
-        return userEntity.stream()
-                .map(UserMapper::toResponse)
+        return userRepository.findAll(pageable).getContent()
+                .stream()
+                .map(userMapper::toResponse)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public List<UserResponse> findUserByRole(Role role, Pageable pageable) {
-        List<User> userEntity = userRepository.findByRole(role, pageable).getContent();
-
-        return userEntity.stream()
-                .map(UserMapper::toResponse)
+        return userRepository.findByRole(role, pageable).getContent()
+                .stream()
+                .map(userMapper::toResponse)
                 .toList();
     }
 
@@ -87,11 +86,10 @@ public class UserService {
 
         Role oldRole = existingUser.getRole();
 
-        UserMapper.updateEntity(existingUser, request);
+        userMapper.updateEntity(existingUser, request);
         User updatedUser = userRepository.save(existingUser);
 
         if (request.role() != null && !request.role().equals(oldRole)) {
-
             keycloakAdminService.updateUserRole(
                     id,
                     oldRole.name().toLowerCase(),
@@ -99,7 +97,7 @@ public class UserService {
             );
         }
 
-        return UserMapper.toResponse(updatedUser);
+        return userMapper.toResponse(updatedUser);
     }
 
     @Transactional
@@ -109,7 +107,6 @@ public class UserService {
         );
 
         Role oldRole = existingUser.getRole();
-
         existingUser.setRole(newRole);
         userRepository.save(existingUser);
 
@@ -119,7 +116,7 @@ public class UserService {
                 newRole.name().toLowerCase()
         );
 
-        return UserMapper.toResponse(existingUser);
+        return userMapper.toResponse(existingUser);
     }
 
     @Transactional
@@ -135,7 +132,6 @@ public class UserService {
     public UserResponse findByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email));
-
-        return UserMapper.toResponse(user);
+        return userMapper.toResponse(user);
     }
 }

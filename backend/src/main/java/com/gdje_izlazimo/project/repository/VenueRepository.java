@@ -31,7 +31,7 @@ public interface VenueRepository extends JpaRepository<Venue, UUID> {
     Optional<Venue> findByVenueOwner_Id(UUID ownerId);
 
 
-    Long countByIsActive(boolean isActive);
+    Long countByActive(boolean active);
 
 
     @Query("SELECT v.venueType as type, COUNT(v) as count " +
@@ -41,10 +41,10 @@ public interface VenueRepository extends JpaRepository<Venue, UUID> {
 
 
     @Query("SELECT v.id as venueId, v.name as venueName, v.addressName as addressName, " +
-            "v.venueType as venueType, v.isActive as isActive, COUNT(r.id) as reservationCount " +
+            "v.venueType as venueType, v.active as isActive, COUNT(r.id) as reservationCount " +
             "FROM Venue v " +
-            "LEFT JOIN Reservation r ON r.venueId.id = v.id " +
-            "GROUP BY v.id, v.name, v.addressName, v.venueType, v.isActive " +
+            "LEFT JOIN Reservation r ON r.venue.id = v.id " +
+            "GROUP BY v.id, v.name, v.addressName, v.venueType, v.active " +
             "ORDER BY COUNT(r.id) DESC")
     List<TopVenueProjection> getTopVenuesByReservations();
 
@@ -60,7 +60,7 @@ public interface VenueRepository extends JpaRepository<Venue, UUID> {
         String getVenueName();
         String getAddressName();
         VenueCategory getVenueType();
-        Boolean getIsActive();
+        Boolean getActive();
         Long getReservationCount();
     }
 }
