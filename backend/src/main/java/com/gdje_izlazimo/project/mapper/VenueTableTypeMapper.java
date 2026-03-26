@@ -17,7 +17,9 @@ public interface VenueTableTypeMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateEntity(UpdateVenueTableTypeRequest dto, @MappingTarget VenueTableType entity);
 
-    @Mapping(source = "venue.id",     target = "venueId")
-    @Mapping(source = "tableType.id", target = "tableTypeId")
+    @Mapping(source = "venue.id",                target = "venueId")
+    @Mapping(source = "tableType.id",            target = "tableTypeId")
+    @Mapping(source = "tableType.name",          target = "tableTypeName")
+    @Mapping(source = "tableType.description",   target = "tableTypeDescription")
     VenueTableTypeResponse toResponse(VenueTableType entity);
 }

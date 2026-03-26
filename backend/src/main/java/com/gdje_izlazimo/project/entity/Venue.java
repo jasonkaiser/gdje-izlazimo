@@ -12,10 +12,16 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "venues")
+@Table(name = "venues", indexes = {
+        @Index(name = "idx_venue_type", columnList = "venue_type"),
+        @Index(name = "idx_venue_is_active", columnList = "is_active"),
+        @Index(name = "idx_venue_name", columnList = "name")
+})
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -64,4 +70,7 @@ public class Venue {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "venue", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<VenueImage> images = new ArrayList<>();
 }

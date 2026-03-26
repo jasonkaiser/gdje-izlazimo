@@ -19,6 +19,10 @@ export class VenueTableTypeService {
     return this.http.get<VenueTableTypeResponseDto>(`${this.baseUrl}/${id}`);
   }
 
+  getByVenueId(venueId: string) {
+    return this.http.get<VenueTableTypeResponseDto[]>(`${this.baseUrl}/venue/${venueId}`);
+  }
+
   createVenueTableType(request: CreateVenueTableTypeRequest) {
     return this.http.post<VenueTableTypeResponseDto>(this.baseUrl, request);
   }

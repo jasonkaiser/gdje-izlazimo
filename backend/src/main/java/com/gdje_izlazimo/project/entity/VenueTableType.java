@@ -13,7 +13,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "venue_table_types")
+@Table(name = "venue_table_types", indexes = {
+        @Index(name = "idx_venue_table_type_venue_id", columnList = "venue_id"),
+        @Index(name = "idx_venue_table_type_table_type_id", columnList = "table_type_id")
+})
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
 @NoArgsConstructor

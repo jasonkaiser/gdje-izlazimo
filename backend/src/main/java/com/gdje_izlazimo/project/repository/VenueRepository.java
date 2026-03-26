@@ -16,29 +16,26 @@ public interface VenueRepository extends JpaRepository<Venue, UUID> {
 
     boolean existsByName(String name);
 
-    Page<Venue> findByVenueType(Pageable pageable, VenueCategory venueCategory);
-
-    @Query("SELECT v FROM Venue v WHERE " +
-            "(:query IS NULL OR LOWER(v.name) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-            "LOWER(v.description) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
-            "(:category IS NULL OR v.venueType = :category)")
-    Page<Venue> searchVenues(
-            @Param("query") String query,
-            @Param("category") VenueCategory category,
-            Pageable pageable
-    );
-
     Optional<Venue> findByVenueOwner_Id(UUID ownerId);
-
 
     Long countByActive(boolean active);
 
+    @Query("SELECT v.id FROM Venue v WHERE " +
+            "(CAST(:query AS string) IS NULL OR LOWER(v.name) LIKE LOWER(CONCAT('%', CAST(:query AS string), '%')) OR " +
+            "LOWER(v.description) LIKE LOWER(CONCAT('%', CAST(:query AS string), '%'))) AND " +
+            "(CAST(:category AS string) IS NULL OR v.venueType = :category)")
+    Page<UUID> findIdsBySearchCriteria(@Param("query") String query,
+                                       @Param("category") VenueCategory category,
+                                       Pageable pageable);
 
-    @Query("SELECT v.venueType as type, COUNT(v) as count " +
-            "FROM Venue v " +
-            "GROUP BY v.venueType")
+    @Query("SELECT DISTINCT v FROM Venue v LEFT JOIN FETCH v.images WHERE v.id IN :ids")
+    List<Venue> findByIdsWithImages(@Param("ids") List<UUID> ids);
+
+    @Query("SELECT v FROM Venue v LEFT JOIN FETCH v.images WHERE v.id = :id")
+    Optional<Venue> findByIdWithImages(@Param("id") UUID id);
+
+    @Query("SELECT v.venueType as type, COUNT(v) as count FROM Venue v GROUP BY v.venueType")
     List<VenueTypeBreakdown> getVenueTypeBreakdown();
-
 
     @Query("SELECT v.id as venueId, v.name as venueName, v.addressName as addressName, " +
             "v.venueType as venueType, v.active as isActive, COUNT(r.id) as reservationCount " +
@@ -48,12 +45,10 @@ public interface VenueRepository extends JpaRepository<Venue, UUID> {
             "ORDER BY COUNT(r.id) DESC")
     List<TopVenueProjection> getTopVenuesByReservations();
 
-
     interface VenueTypeBreakdown {
         VenueCategory getType();
         Long getCount();
     }
-
 
     interface TopVenueProjection {
         UUID getVenueId();

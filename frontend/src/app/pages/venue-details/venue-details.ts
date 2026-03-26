@@ -8,20 +8,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { InViewDirective } from '../../core/animations/in-view.directive';
 import { VenueService } from '../../core/api/venue-service';
 import { VenueTableTypeService } from '../../core/api/venue-table-type-service';
-import { TableTypeService } from '../../core/api/table-type-service';
 import { VenueOperatingHoursService } from '../../core/api/venue-operating-hours-service';
-
-import { VenueTableTypeResponseDto } from '../../core/models/venue-table-types/venue-table-type-response.dto';
-import { TableTypeResponseDto } from '../../core/models/table-types/table-type-response.dto';
 import { VenueOperatingHoursResponseDto } from '../../core/models/venue-operating-hours/venue-operating-hours-response.dto';
-
+import { VenueTableTypeResponseDto } from '../../core/models/venue-table-types/venue-table-type-response.dto';
 import { ReservationModal } from '../../components/modals/reservation-modal/reservation-modal';
 import { AuthService } from '../../core/auth/auth.service';
 import { CreateReservationRequest } from '../../core/models/reservations/create-reservation.request';
 import { ReservationService } from '../../core/api/reservation-service';
-
-import { VenueImageService } from '../../core/api/venue-image-service';
-import { VenueImageResponseDto } from '../../core/models/venue-images/venue-image-response';
 
 type TableTypeVm = {
   id: string;
@@ -59,13 +52,10 @@ export class VenueDetails {
   private readonly route = inject(ActivatedRoute);
   private readonly venueService = inject(VenueService);
   private readonly venueTableTypeService = inject(VenueTableTypeService);
-  private readonly tableTypeService = inject(TableTypeService);
   private readonly venueOperatingHoursService = inject(VenueOperatingHoursService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
   private readonly reservationService = inject(ReservationService);
-  private readonly venueImageService = inject(VenueImageService);
-
 
   sliderIndex = 0;
   openId: string | null = null;
@@ -139,22 +129,27 @@ export class VenueDetails {
           if (!venue) throw new Error('Venue not found');
 
           return forkJoin({
-            operatingHours: this.fetchOperatingHours(venueId).pipe(
+            operatingHours: this.venueOperatingHoursService.getByVenueId(venueId).pipe(
               catchError(() => of(null as VenueOperatingHoursResponseDto | null))
             ),
-            tableTypes: this.fetchTableTypesForVenue(venueId).pipe(
-              catchError(() => of([] as TableTypeVm[]))
-            ),
-            images: this.venueImageService.getByVenueId(venueId).pipe(
-              catchError(() => of([]))
+            tableTypes: this.venueTableTypeService.getByVenueId(venueId).pipe(
+              catchError(() => of([] as VenueTableTypeResponseDto[]))
             ),
           }).pipe(
-            map(({ operatingHours, tableTypes, images }) => {
-              if (!this.openId && tableTypes.length > 0) {
-                this.openId = tableTypes[0].id;
+            map(({ operatingHours, tableTypes }) => {
+              const mappedTableTypes = tableTypes.map((vtt) => ({
+                id: vtt.id,
+                tableTypeId: vtt.tableTypeId,
+                title: vtt.tableTypeName,
+                description: vtt.tableTypeDescription ?? 'Detalji će biti dostupni uskoro.',
+                capacityLabel: this.formatCapacityLabel(vtt.tableTypeName),
+              } satisfies TableTypeVm));
+
+              if (!this.openId && mappedTableTypes.length > 0) {
+                this.openId = mappedTableTypes[0].id;
               }
 
-              const sortedImages = [...images].sort((a, b) =>
+              const sortedImages = [...(venue.images ?? [])].sort((a, b) =>
                 a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1
               );
 
@@ -166,12 +161,12 @@ export class VenueDetails {
                 phone: venue.phone ?? '',
                 description: venue.description ?? 'Dobrodošli u naš lokal!',
                 images: sortedImages.length
-                  ? sortedImages.map(i => i.imageUrl)
+                  ? sortedImages.map((i) => i.imageUrl)
                   : this.getDefaultVenueImages(venue.venueType),
                 workingHours: operatingHours
                   ? this.formatWorkingHours(operatingHours)
                   : 'Kontaktirajte za radno vrijeme',
-                tableTypes,
+                tableTypes: mappedTableTypes,
                 tableTypesLoading: false,
                 loading: false,
                 errorMsg: '',
@@ -257,7 +252,6 @@ export class VenueDetails {
 
   createReservation(payload: CreateReservationRequest): void {
     this.reservationErrorMsg = '';
-
     this.reservationService.createReservation(payload).subscribe({
       next: () => {
         this.reservationModalShown = false;
@@ -275,66 +269,14 @@ export class VenueDetails {
     });
   }
 
-  private fetchOperatingHours(venueId: string) {
-    return this.venueOperatingHoursService.getByVenueId(venueId).pipe(
-      catchError(() =>
-        this.venueOperatingHoursService.getAllVenueOperatingHours().pipe(
-          map((all) => (all ?? []).find((x) => String(x.venueId) === venueId) ?? null)
-        )
-      )
-    );
-  }
-
-  private fetchTableTypesForVenue(venueId: string) {
-    return forkJoin({
-      venueTableTypes: this.venueTableTypeService
-        .getAllVenueTableTypes()
-        .pipe(catchError(() => of([] as VenueTableTypeResponseDto[]))),
-      allTableTypes: this.tableTypeService
-        .getAllTableTypes()
-        .pipe(catchError(() => of([] as TableTypeResponseDto[]))),
-    }).pipe(
-      map(({ venueTableTypes, allTableTypes }) => {
-        const tableTypeMap = new Map<string, TableTypeResponseDto>(
-          allTableTypes.map((tt) => [String(tt.id), tt])
-        );
-
-        return venueTableTypes
-          .filter((vtt) => String((vtt as any).venueId ?? (vtt as any).venue?.id) === venueId)
-          .map((vtt) => {
-            const ttId = String((vtt as any).tableTypeId ?? (vtt as any).tableType?.id);
-            const tt = tableTypeMap.get(ttId);
-            if (!tt) return null;
-
-            const title = tt.name ?? 'Sto';
-            return {
-              id: String(vtt.id),
-              tableTypeId: ttId,
-              title,
-              description: tt.description ?? 'Detalji će biti dostupni uskoro.',
-              capacityLabel: this.formatCapacityLabel(title),
-            } satisfies TableTypeVm;
-          })
-          .filter((x): x is TableTypeVm => x !== null);
-      })
-    );
-  }
-
   private formatWorkingHours(oh: VenueOperatingHoursResponseDto): string {
     const dayMap: Record<string, string> = {
-      MONDAY: 'PON',
-      TUESDAY: 'UTO',
-      WEDNESDAY: 'SRI',
-      THURSDAY: 'ČET',
-      FRIDAY: 'PET',
-      SATURDAY: 'SUB',
-      SUNDAY: 'NED',
+      MONDAY: 'PON', TUESDAY: 'UTO', WEDNESDAY: 'SRI',
+      THURSDAY: 'ČET', FRIDAY: 'PET', SATURDAY: 'SUB', SUNDAY: 'NED',
     };
-
     const start = dayMap[oh.startDay] ?? oh.startDay;
     const end = dayMap[oh.endDay] ?? oh.endDay;
     const trim = (t: string) => t?.slice(0, 5) ?? '';
-
     return `${start}–${end}   ${trim(oh.openTime)} – ${trim(oh.closedTime)}`;
   }
 

@@ -7,6 +7,8 @@ public record VenueTableTypeResponse(
         UUID id,
         UUID venueId,
         UUID tableTypeId,
+        String tableTypeName,
+        String tableTypeDescription,
         int quantity,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

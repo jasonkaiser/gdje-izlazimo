@@ -5,6 +5,7 @@ import com.gdje_izlazimo.project.enums.WorkingDays;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 public record VenueResponse(
@@ -19,7 +20,7 @@ public record VenueResponse(
         double latitude,
         double longitude,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
-
+        LocalDateTime updatedAt,
+        List<VenueImageResponse> images
 ) {
 }

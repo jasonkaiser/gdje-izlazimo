@@ -39,6 +39,12 @@ public class VenueTableTypeController {
 
     }
 
+    @PermitAll
+    @GetMapping("/venue/{venueId}")
+    public ResponseEntity<List<VenueTableTypeResponse>> findByVenue(@PathVariable UUID venueId) {
+        return ResponseEntity.ok(venueTableTypeService.findByVenue(venueId));
+    }
+
     @PreAuthorize("hasRole('admin')")
     @PostMapping
     public ResponseEntity<VenueTableTypeResponse> createVenueTableType(@Valid @RequestBody CreateVenueTableTypeRequest entity){

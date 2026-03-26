@@ -8,6 +8,9 @@ import com.gdje_izlazimo.project.exception.custom.VenueTableTypeAlreadyExistsExc
 import com.gdje_izlazimo.project.exception.custom.VenueTableTypeNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueTableTypeMapper;
 import com.gdje_izlazimo.project.repository.VenueTableTypeRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,62 +24,63 @@ public class VenueTableTypeService {
     private final VenueTableTypeRepository venueTableTypeRepository;
     private final VenueTableTypeMapper venueTableTypeMapper;
 
-    public VenueTableTypeService(VenueTableTypeRepository venueTableTypeRepository, VenueTableTypeMapper venueTableTypeMapper) {
+    public VenueTableTypeService(VenueTableTypeRepository venueTableTypeRepository,
+                                 VenueTableTypeMapper venueTableTypeMapper) {
         this.venueTableTypeRepository = venueTableTypeRepository;
         this.venueTableTypeMapper = venueTableTypeMapper;
     }
 
-    public List<VenueTableTypeResponse> findAllVenueTableTypes(){
-
-        List<VenueTableType> responses = venueTableTypeRepository.findAll();
-
-        return responses.stream()
+    @Cacheable("venueTableTypesAll")
+    public List<VenueTableTypeResponse> findAllVenueTableTypes() {
+        return venueTableTypeRepository.findAllWithVenueAndTableType()
+                .stream()
                 .map(venueTableTypeMapper::toResponse)
                 .toList();
+    }
 
+    @Cacheable(value="venueTableTypes", key="#venueId")
+    public List<VenueTableTypeResponse> findByVenue(UUID venueId) {
+        return venueTableTypeRepository.findByVenueIdWithVenueAndTableType(venueId)
+                .stream()
+                .map(venueTableTypeMapper::toResponse)
+                .toList();
     }
 
     public VenueTableTypeResponse findVenueTableTypeById(UUID id){
-
-        VenueTableType response = venueTableTypeRepository.findById(id).orElseThrow(
-                () -> new VenueTableTypeNotFoundException("Venue Table Type does not exist"));
-
-        return venueTableTypeMapper.toResponse(response);
-
+        return venueTableTypeRepository.findById(id)
+                .map(venueTableTypeMapper::toResponse)
+                .orElseThrow(() -> new VenueTableTypeNotFoundException("Venue Table Type does not exist"));
     }
 
-    public VenueTableTypeResponse createVenueTableType(CreateVenueTableTypeRequest dto){
 
+    @Caching(evict = {
+            @CacheEvict(value="venueTableTypes", key="#dto.venueId"),
+            @CacheEvict(value="venueTableTypesAll", allEntries = true)
+    })
+    public VenueTableTypeResponse createVenueTableType(CreateVenueTableTypeRequest dto){
         if (venueTableTypeRepository.existsByVenue_IdAndTableType_Id(dto.venueId(), dto.tableTypeId())) {
             throw new VenueTableTypeAlreadyExistsException("This Venue already has this Table Type");
         }
-
-        VenueTableType createdVenueTableType = venueTableTypeMapper.toEntity(dto);
-        VenueTableType savedVenueTableType = venueTableTypeRepository.save(createdVenueTableType);
-
-        return venueTableTypeMapper.toResponse(savedVenueTableType);
-
+        VenueTableType entity = venueTableTypeMapper.toEntity(dto);
+        return venueTableTypeMapper.toResponse(venueTableTypeRepository.save(entity));
     }
 
+    @Caching(evict = {
+            @CacheEvict(value="venueTableTypes", key="#dto.venueId"),
+            @CacheEvict(value="venueTableTypesAll", allEntries = true)
+    })
     public VenueTableTypeResponse updateVenueTableType(UpdateVenueTableTypeRequest dto, UUID id){
+        VenueTableType entity = venueTableTypeRepository.findById(id)
+                .orElseThrow(() -> new VenueTableTypeNotFoundException("Venue Table Type does not exist"));
 
-        VenueTableType venueTableType = venueTableTypeRepository.findById(id).orElseThrow(
-                () -> new VenueTableTypeNotFoundException("Venue Table Type does not exist"));
-
-        venueTableTypeMapper.updateEntity(dto, venueTableType);
-        VenueTableType updatedVenueTableType = venueTableTypeRepository.save(venueTableType);
-
-        return venueTableTypeMapper.toResponse(updatedVenueTableType);
-
+        venueTableTypeMapper.updateEntity(dto, entity);
+        return venueTableTypeMapper.toResponse(venueTableTypeRepository.save(entity));
     }
 
+    @CacheEvict(value="venueTableTypesAll", allEntries = true)
     public void deleteVenueTableType(UUID id){
-
-        if(!venueTableTypeRepository.existsById(id)){
-            throw new VenueTableTypeNotFoundException("Venue Table Type does not exist");
-        }
-        venueTableTypeRepository.deleteById(id);
-
+        VenueTableType entity = venueTableTypeRepository.findById(id)
+                .orElseThrow(() -> new VenueTableTypeNotFoundException("Venue Table Type does not exist"));
+        venueTableTypeRepository.delete(entity);
     }
-
 }

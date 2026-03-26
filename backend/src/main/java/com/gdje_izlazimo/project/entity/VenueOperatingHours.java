@@ -15,7 +15,9 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "venue_operating_hours")
+@Table(name = "venue_operating_hours", indexes = {
+        @Index(name = "idx_operating_hours_venue_id", columnList = "venue_id")
+})
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
 @NoArgsConstructor

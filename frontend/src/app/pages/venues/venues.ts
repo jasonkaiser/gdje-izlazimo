@@ -1,7 +1,7 @@
 import { AsyncPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, of, forkJoin } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -9,7 +9,6 @@ import { SearchBarComponent } from '../../components/other/search-bar/search-bar
 import { VenueCard } from '../../components/cards/venue-card/venue-card';
 
 import { VenueService } from '../../core/api/venue-service';
-import { VenueImageService } from '../../core/api/venue-image-service';
 import { VenueCategory } from '../../core/models/venues/venue-category.enum';
 import { VenueResponseDto } from '../../core/models/venues/venue-response.dto';
 
@@ -51,7 +50,6 @@ export class VenuesComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly venueService = inject(VenueService);
-  private readonly venueImageService = inject(VenueImageService);
   private readonly destroyRef = inject(DestroyRef);
 
   readonly skeleton = Array.from({ length: 8 }, (_, i) => i);
@@ -88,60 +86,21 @@ export class VenuesComponent {
   private getVmForParams(params: Params): Observable<ViewModel> {
     const { pageNo, pageSize } = params;
 
-    const cached = this.pageCache.get(pageNo);
-    if (cached) {
+    if (this.pageCache.has(pageNo)) {
       return of(this.buildVm(pageNo));
     }
 
-    const initialVm: ViewModel = {
-      items: [],
-      loading: pageNo === 1,
-      loadingMore: pageNo > 1,
-      hasMore: this.hasMoreCache.get(pageNo - 1) ?? true,
-      errorMsg: '',
-      pageNo,
-    };
-
     return this.venueService.searchVenues({
-      query: params.query ? params.query : undefined,
+      query: params.query || undefined,
       venueType: params.venueType ?? undefined,
       sortBy: 'name',
       sortDir: params.sortDir,
       pageNo,
       pageSize,
     }).pipe(
-      switchMap((venues: VenueResponseDto[]) => {
-        if (venues.length === 0) return of({ venues, imageMap: new Map<string, string>() });
-
-        // Fetch primary image for each venue in parallel
-        return forkJoin(
-          venues.map(v =>
-            this.venueImageService.getByVenueId(v.id).pipe(
-              map(images => {
-                const sorted = [...images].sort((a, b) =>
-                  a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1
-                );
-                return { venueId: v.id, imageUrl: sorted[0]?.imageUrl ?? null };
-              }),
-              catchError(() => of({ venueId: v.id, imageUrl: null as string | null }))
-            )
-          )
-        ).pipe(
-          map(results => {
-            const imageMap = new Map<string, string>(
-              results.map(r => [r.venueId, r.imageUrl ?? ''])
-            );
-            return { venues, imageMap };
-          })
-        );
-      }),
-      map(({ venues, imageMap }) => {
-        const hasMore = venues.length === pageSize;
-
-        const mapped = venues.map(v => this.toCardVm(v, imageMap.get(v.id)));
-        this.pageCache.set(pageNo, mapped);
-        this.hasMoreCache.set(pageNo, hasMore);
-
+      map((venues: VenueResponseDto[]) => {
+        this.pageCache.set(pageNo, venues.map(v => this.toCardVm(v)));
+        this.hasMoreCache.set(pageNo, venues.length === pageSize);
         return this.buildVm(pageNo);
       }),
       catchError((err) => {
@@ -154,8 +113,7 @@ export class VenuesComponent {
           errorMsg: 'Greška pri učitavanju lokala.',
           pageNo,
         });
-      }),
-      switchMap((finalVm) => of(initialVm, finalVm))
+      })
     );
   }
 
@@ -174,8 +132,8 @@ export class VenuesComponent {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
-        query: e.query?.trim() ? e.query.trim() : null,
-        venueType: e.venueType ? e.venueType : null,
+        query: e.query?.trim() || null,
+        venueType: e.venueType || null,
         sort: e.sort || 'name_asc',
         pageNo: 1,
         pageSize: 8,
@@ -185,8 +143,7 @@ export class VenuesComponent {
   }
 
   nextPage(): void {
-    const snapshot = this.route.snapshot.queryParamMap;
-    const pageNo = Number(snapshot.get('pageNo') ?? '1') || 1;
+    const pageNo = Number(this.route.snapshot.queryParamMap.get('pageNo') ?? '1') || 1;
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { pageNo: pageNo + 1 },
@@ -196,8 +153,7 @@ export class VenuesComponent {
   }
 
   prevPage(): void {
-    const snapshot = this.route.snapshot.queryParamMap;
-    const pageNo = Number(snapshot.get('pageNo') ?? '1') || 1;
+    const pageNo = Number(this.route.snapshot.queryParamMap.get('pageNo') ?? '1') || 1;
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { pageNo: Math.max(1, pageNo - 1) },
@@ -206,23 +162,26 @@ export class VenuesComponent {
     });
   }
 
-  private toCardVm(v: VenueResponseDto, imageUrl?: string): VenueCardVm {
+  private toCardVm(v: VenueResponseDto): VenueCardVm {
+    const primaryImage = [...(v.images ?? [])]
+      .sort((a, b) => (a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1))[0];
+
     return {
       id: v.id,
       title: v.name ?? '',
       category: v.venueType ?? '',
       location: v.addressName ?? '',
-      imageUrl: imageUrl || this.getFallbackImage(v.venueType),
+      imageUrl: primaryImage?.imageUrl ?? this.getFallbackImage(v.venueType),
     };
   }
 
   private getFallbackImage(type: string): string {
-    const imageMap: Record<string, string> = {
+    const fallbacks: Record<string, string> = {
       CLUB: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7',
       PUB: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1',
       RESTAURANT: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5',
       LOUNGE: 'https://images.unsplash.com/photo-1470337458703-46ad1756a187',
     };
-    return imageMap[type] ?? 'https://images.unsplash.com/photo-1514933651103-005eec06c04b';
+    return fallbacks[type] ?? 'https://images.unsplash.com/photo-1514933651103-005eec06c04b';
   }
 }

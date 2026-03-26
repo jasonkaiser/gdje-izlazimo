@@ -7,6 +7,8 @@ import com.gdje_izlazimo.project.entity.TableType;
 import com.gdje_izlazimo.project.exception.custom.TableTypeNotFoundException;
 import com.gdje_izlazimo.project.mapper.TableTypeMapper;
 import com.gdje_izlazimo.project.repository.TableTypeRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class TableTypeService {
         this.tableTypeMapper = tableTypeMapper;
     }
 
+    @Cacheable(value = "tableTypes", unless = "#result == null || #result.isEmpty()")
     public List<TableTypeResponse> findAllTableTypes(){
 
         List<TableType> responses = tableTypeRepository.findAll();
@@ -48,6 +51,7 @@ public class TableTypeService {
                 () -> new TableTypeNotFoundException("Table Type does not exist"));
     };
 
+    @CacheEvict(value = "tableTypes", allEntries = true)
     public TableTypeResponse createTableType(CreateTableTypeRequest dto){
 
         TableType createdTableType = tableTypeMapper.toEntity(dto);
@@ -57,6 +61,7 @@ public class TableTypeService {
 
     }
 
+    @CacheEvict(value = "tableTypes", allEntries = true)
     public TableTypeResponse updateTableType(UpdateTableTypeRequest dto, UUID id){
 
         TableType tableType = tableTypeRepository.findById(id).orElseThrow(
@@ -69,6 +74,7 @@ public class TableTypeService {
 
     }
 
+    @CacheEvict(value = "tableTypes", allEntries = true)
     public void deleteTableType(UUID id){
 
         if(!tableTypeRepository.existsById(id)){

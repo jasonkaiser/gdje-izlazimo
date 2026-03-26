@@ -7,6 +7,8 @@ import com.gdje_izlazimo.project.entity.VenueOperatingHours;
 import com.gdje_izlazimo.project.exception.custom.VenueOperatingHoursNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueOperatingHoursMapper;
 import com.gdje_izlazimo.project.repository.VenueOperatingHoursRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,17 +27,14 @@ public class VenueOperatingHoursService {
         this.venueOperatingHoursMapper = venueOperatingHoursMapper;
     }
 
-    public List<VenueOperatingHoursResponse> findAllVenueOperatingHours(){
-
-        List<VenueOperatingHours> responses = venueOperatingHoursRepository.findAll();
-
-        return responses.stream()
+    public List<VenueOperatingHoursResponse> findAllVenueOperatingHours() {
+        return venueOperatingHoursRepository.findAllWithVenue()
+                .stream()
                 .map(venueOperatingHoursMapper::toResponse)
                 .toList();
-
     }
 
-
+    @Cacheable(value="venueOperatingHours", key="#venueId")
     public VenueOperatingHoursResponse findByVenueId(UUID venueId) {
         return venueOperatingHoursRepository.findByVenue_Id(venueId)
                 .map(venueOperatingHoursMapper::toResponse)
@@ -43,7 +42,6 @@ public class VenueOperatingHoursService {
     }
 
     public VenueOperatingHoursResponse findVenueOperatingHoursById(UUID id){
-
         VenueOperatingHours response = venueOperatingHoursRepository.findById(id).orElseThrow(
                 () -> new VenueOperatingHoursNotFoundException("Venue Operating Hours does not exist"));
 
@@ -51,8 +49,8 @@ public class VenueOperatingHoursService {
 
     }
 
+    @CacheEvict(value="venueOperatingHours", key="#dto.venueId")
     public VenueOperatingHoursResponse createVenueOperatingHours(CreateVenueOperatingHoursRequest dto){
-
         VenueOperatingHours createdVenueOperatingHours = venueOperatingHoursMapper.toEntity(dto);
         VenueOperatingHours savedVenueOperatingHours = venueOperatingHoursRepository.save(createdVenueOperatingHours);
 
@@ -60,8 +58,8 @@ public class VenueOperatingHoursService {
 
     }
 
+    @CacheEvict(value="venueOperatingHours", key="#dto.venueId")
     public VenueOperatingHoursResponse updateVenueOperatingHours(UpdateVenueOperatingHoursRequest dto, UUID id){
-
         VenueOperatingHours venueOperatingHours = venueOperatingHoursRepository.findById(id).orElseThrow(
                 () -> new VenueOperatingHoursNotFoundException("Venue Operating Hours does not exist"));
 
@@ -72,8 +70,8 @@ public class VenueOperatingHoursService {
 
     }
 
+    @CacheEvict(value="venueOperatingHours", key="#dto.venueId")
     public void deleteVenueOperatingHours(UUID id){
-
         if(!venueOperatingHoursRepository.existsById(id)){
             throw new VenueOperatingHoursNotFoundException("Venue Operating Hours does not exist");
         }

@@ -13,7 +13,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "venue_images")
+@Table(name = "venue_images", indexes = {
+        @Index(name = "idx_venue_image_venue_id", columnList = "venue_id"),
+        @Index(name = "idx_venue_image_is_primary", columnList = "is_primary")
+})
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -47,5 +50,6 @@ public class VenueImage {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    
 
 }

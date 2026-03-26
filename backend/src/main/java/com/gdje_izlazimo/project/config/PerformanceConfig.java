@@ -43,7 +43,13 @@ public class PerformanceConfig {
                 new ConcurrentMapCache("venueTypeBreakdown"),
                 new ConcurrentMapCache("reservationStatusBreakdown"),
                 new ConcurrentMapCache("topVenues"),
-                new ConcurrentMapCache("recentActivities")
+                new ConcurrentMapCache("recentActivities"),
+                new ConcurrentMapCache("venueById"),
+                new ConcurrentMapCache("tableTypes"),
+                new ConcurrentMapCache("venueTableTypes"),
+                new ConcurrentMapCache("venueImages"),
+                new ConcurrentMapCache("venueOperatingHours"),
+                new ConcurrentMapCache("venueTableTypesAll")
         ));
         return cacheManager;
     }

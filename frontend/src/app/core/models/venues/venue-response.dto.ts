@@ -1,6 +1,14 @@
 import { VenueCategory } from "./venue-category.enum";
 
 
+export interface VenueImageDto {
+  id: string;
+  imageUrl: string;
+  isPrimary: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface VenueResponseDto {
   id: string;
   name: string;
@@ -11,6 +19,7 @@ export interface VenueResponseDto {
   phone: string;
   latitude: number;
   longitude: number;
-  created_at: string;   
-  updated_at: string;   
+  created_at: string;
+  updated_at: string;
+  images?: VenueImageDto[]; 
 }
