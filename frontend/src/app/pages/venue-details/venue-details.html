@@ -1,15 +1,12 @@
 <section class="relative overflow-hidden min-h-screen">
 
 
-  <!-- Ambient background gradients -->
   <div class="pointer-events-none fixed inset-0 z-5 overflow-hidden">
     
-    <!-- Top-left purple bloom -->
     <div class="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-30"
       style="background: radial-gradient(circle, rgba(124,58,237,0.35) 0%, rgba(109,40,217,0.12) 20%, transparent 70%);
              filter: blur(60px);"></div>
 
-    <!-- Top-right soft white -->
     <div class="absolute -top-20 right-0 w-[400px] h-[400px] rounded-full opacity-40"
       style="background: radial-gradient(circle, rgba(255,255,255,0.15) 10%, transparent 65%);
              filter: blur(50px);"></div>
@@ -26,7 +23,6 @@
   <div class="relative z-10">
     @if (vm$ | async; as vm) {
 
-      <!-- ══════════════ LOADING SKELETON ══════════════ -->
       @if (vm.loading) {
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 pt-20 space-y-6">
           <div class="text-center space-y-4">
@@ -42,7 +38,6 @@
         </div>
       }
 
-      <!-- ══════════════ ERROR STATE ══════════════ -->
       @if (!vm.loading && vm.errorMsg) {
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 pt-28 flex justify-center">
           <div class="inline-flex flex-col items-center gap-5 rounded-3xl border border-red-500/15 bg-red-500/[0.04] backdrop-blur-sm px-10 py-8 max-w-sm w-full text-center">
@@ -173,7 +168,6 @@
           </div>
         </div>
 
-        <!-- ─── STATS BAR ─────────────────────────────── -->
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 mt-5">
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
 
