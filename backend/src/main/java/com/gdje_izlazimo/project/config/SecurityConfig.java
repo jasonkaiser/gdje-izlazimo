@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/scalar/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/venues/my-venue").authenticated()
                         .requestMatchers(HttpMethod.GET, "/venues/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/events/**").permitAll()

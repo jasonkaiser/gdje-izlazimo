@@ -65,3 +65,10 @@ imagekit:
   public-key: public_pbUvUEQ3Cyz6nlsCVquSYDMCno0=
   private-key: private_9U39BvanAJrIUj8eapmiOnAEr18=
   url-endpoint: https://ik.imagekit.io/zsdkcn1pl/
+
+# API Documentation
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  scalar:
+    path: /scalar

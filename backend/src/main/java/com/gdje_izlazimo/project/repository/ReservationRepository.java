@@ -59,6 +59,16 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
             nativeQuery = true)
     List<Reservation> findTopNRecentReservations(@Param("limit") int limit);
 
+    @Query("""
+    SELECT r FROM Reservation r
+    JOIN FETCH r.user
+    JOIN FETCH r.venue v
+    JOIN FETCH v.venueOwner
+    JOIN FETCH r.tableType
+    ORDER BY r.id ASC
+    """)
+    Page<Reservation> findAllWithDetails(Pageable pageable);
+
 
     interface ReservationStatusBreakdown {
         String getStatus();

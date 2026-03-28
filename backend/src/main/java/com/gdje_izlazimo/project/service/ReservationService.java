@@ -50,15 +50,26 @@ public class ReservationService {
     }
 
     public List<ReservationResponse> findAllReservations(Pageable pageable) {
-        List<Reservation> responses = reservationRepository.findAll(pageable).getContent();
-        return responses.stream().map(reservationMapper::toResponse).toList();
+        return reservationRepository.findAllWithDetails(pageable)
+                .getContent()
+                .stream()
+                .map(reservationMapper::toResponse)
+                .toList();
     }
 
-    public ReservationResponse findReservationById(UUID id) {
-        Reservation response = reservationRepository.findByIdWithDetails(id).orElseThrow(
-                () -> new ReservationNotFoundException("Reservation does not exist")
-        );
-        return reservationMapper.toResponse(response);
+    public List<ReservationResponse> findReservationsByUserId(
+            UUID targetUserId,
+            UUID requesterId,
+            List<String> roles,
+            Pageable pageable
+    ) {
+        boolean isAdmin = roles != null && roles.contains("admin");
+
+        if (!isAdmin && !requesterId.equals(targetUserId)) {
+            throw new ReservationAccessDeniedException("You can only view your own reservations");
+        }
+
+        return reservationRepository.findResponsesByUserId(targetUserId, pageable).getContent();
     }
 
     public List<ReservationResponse> findReservationsByVenueId(UUID venueId, Pageable pageable) {
@@ -66,8 +77,11 @@ public class ReservationService {
         return reservations.stream().map(reservationMapper::toResponse).toList();
     }
 
-    public List<ReservationResponse> findReservationsByUserId(UUID userId, Pageable pageable) {
-        return reservationRepository.findResponsesByUserId(userId, pageable).getContent();
+    public ReservationResponse findReservationById(UUID id) {
+        Reservation reservation = reservationRepository.findByIdWithDetails(id).orElseThrow(
+                () -> new ReservationNotFoundException("Reservation does not exist")
+        );
+        return reservationMapper.toResponse(reservation);
     }
 
     @Transactional

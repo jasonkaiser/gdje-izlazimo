@@ -24,10 +24,14 @@ public class DashboardScheduledTasks {
     }
 
 
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedRate = 300_000)
     public void clearDashboardCache() {
-        if (cacheManager.getCache("dashboardStats") != null) {
-            cacheManager.getCache("dashboardStats").clear();
+        var cache = cacheManager.getCache("dashboardStats");
+        if (cache != null) {
+            cache.clear();
+            log.debug("Cleared dashboardStats cache");
+        } else {
+            log.warn("dashboardStats cache not found — check cache configuration");
         }
     }
 }
