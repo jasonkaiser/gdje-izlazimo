@@ -1,28 +1,22 @@
 <section class="relative overflow-hidden min-h-screen">
 
-
   <div class="pointer-events-none fixed inset-0 z-5 overflow-hidden">
-    
     <div class="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-30"
       style="background: radial-gradient(circle, rgba(124,58,237,0.35) 0%, rgba(109,40,217,0.12) 20%, transparent 70%);
              filter: blur(60px);"></div>
-
     <div class="absolute -top-20 right-0 w-[400px] h-[400px] rounded-full opacity-40"
       style="background: radial-gradient(circle, rgba(255,255,255,0.15) 10%, transparent 65%);
              filter: blur(50px);"></div>
-
-
-
   </div>
 
-      <div class="absolute bottom-60 left-1/2 -translate-x-1/2 w-[1600px] h-[800px] max-sm:bottom-0  max-sm:left-120 rounded-full opacity-45"
-      style="background: radial-gradient(ellipse, rgba(91,33,182,0.5) 0%, transparent 45%);
-             filter: blur(70px);"></div>
-
+  <div class="absolute bottom-60 left-1/2 -translate-x-1/2 w-[1600px] h-[800px] max-sm:bottom-0 max-sm:left-120 rounded-full opacity-45"
+    style="background: radial-gradient(ellipse, rgba(91,33,182,0.5) 0%, transparent 45%);
+           filter: blur(70px);"></div>
 
   <div class="relative z-10">
     @if (vm$ | async; as vm) {
 
+      <!-- ══════════════ LOADING ══════════════ -->
       @if (vm.loading) {
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 pt-20 space-y-6">
           <div class="text-center space-y-4">
@@ -38,6 +32,7 @@
         </div>
       }
 
+      <!-- ══════════════ ERROR ══════════════ -->
       @if (!vm.loading && vm.errorMsg) {
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 pt-28 flex justify-center">
           <div class="inline-flex flex-col items-center gap-5 rounded-3xl border border-red-500/15 bg-red-500/[0.04] backdrop-blur-sm px-10 py-8 max-w-sm w-full text-center">
@@ -123,7 +118,6 @@
           [style.transform]="sliderShown ? 'translateY(0)' : 'translateY(32px)'"
         >
           <div class="relative overflow-hidden rounded-[28px] border border-white/[0.06] group shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
-            <!-- Image -->
             <div
               class="h-[240px] sm:h-[390px] lg:h-[540px] w-full bg-cover bg-center transition-all duration-700 ease-in-out"
               [style.backgroundImage]="
@@ -133,7 +127,53 @@
               "
             ></div>
 
-            <!-- Prev / Next -->
+            <!-- ─── FAVORITE BUTTON — overlaid top-right of image ─── -->
+            @if (authService.hasRole('user') || !authService.authenticated()) {
+              <button
+                type="button"
+                (click)="toggleFavorite(vm.venueId)"
+                [disabled]="favoriteLoading"
+                class="favorite-btn absolute top-4 right-4 sm:top-5 sm:right-5 z-20
+                       inline-flex items-center gap-2 rounded-2xl
+                       font-dm text-[11px] tracking-[0.05em] font-medium
+                       transition-all duration-350 ease-out
+                       disabled:opacity-50 disabled:cursor-not-allowed
+                       hover:scale-[1.04] active:scale-[0.97]"
+                [class.is-favorite]="isFavorite"
+                [style]="isFavorite
+                  ? 'padding: 8px 14px 8px 10px; border: 1px solid rgba(244,63,94,0.50); background: rgba(10,6,18,0.72); backdrop-filter: blur(16px); box-shadow: 0 0 0 1px rgba(244,63,94,0.08), 0 8px 24px rgba(244,63,94,0.20); color: rgba(253,164,175,0.95);'
+                  : 'padding: 8px 14px 8px 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(10,6,18,0.60); backdrop-filter: blur(16px); box-shadow: 0 4px 16px rgba(0,0,0,0.4); color: rgba(255,255,255,0.50);'"
+              >
+                @if (favoriteLoading) {
+                  <span class="h-7 w-7 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+                    <svg class="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  <span>Učitavanje...</span>
+                } @else if (isFavorite) {
+                  <span class="heart-icon-wrap h-7 w-7 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background: rgba(244,63,94,0.20); border: 1px solid rgba(244,63,94,0.35); box-shadow: 0 0 12px rgba(244,63,94,0.20);">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="rgba(253,164,175,1)">
+                      <path d="M12 21.593c-.425-.439-8.993-8.104-8.993-12.097C3.007 6.211 5.19 4 8 4c1.726 0 3.267.857 4.25 2.175C13.233 4.857 14.774 4 16.5 4c2.81 0 4.993 2.211 4.993 5.496 0 3.993-8.568 11.658-8.993 12.097a.74.74 0 0 1-1 0Z"/>
+                    </svg>
+                  </span>
+                  <span>Sačuvano</span>
+                  <span class="w-px h-3 flex-shrink-0" style="background: rgba(244,63,94,0.25);"></span>
+                  <span class="remove-label text-[10px]" style="color: rgba(253,164,175,0.45); letter-spacing:0.04em;">Ukloni</span>
+                } @else {
+                  <span class="heart-icon-wrap h-7 w-7 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <span>Sačuvaj</span>
+                }
+              </button>
+            }
+
             <button type="button" (click)="prevImage(vm.images.length)"
               class="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2
                      h-11 w-11 rounded-full border border-white/[0.12] bg-black/50 backdrop-blur-xl
@@ -155,7 +195,6 @@
               </svg>
             </button>
 
-            <!-- Dots -->
             <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
               @for (img of vm.images; track $index) {
                 <button type="button" (click)="sliderIndex = $index"
@@ -168,6 +207,7 @@
           </div>
         </div>
 
+        <!-- ─── STATS ROW ─────────────────────────────── -->
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 mt-5">
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
 
@@ -222,10 +262,8 @@
 
               <!-- CARD: Rezerviraj Stol -->
               <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-7">
-                <!-- Top shine line -->
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
                   style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.5), transparent);"></div>
-                <!-- Ambient glow -->
                 <div class="absolute -top-16 -right-16 w-48 h-48 rounded-full"
                   style="background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%);"></div>
 
@@ -424,7 +462,6 @@
                           </div>
                         </div>
 
-                        <!-- Animated accordion body -->
                         <div class="accordion-body"
                           [style.maxHeight]="isOpen(tt.id) ? '300px' : '0px'"
                           [style.opacity]="isOpen(tt.id) ? '1' : '0'"
@@ -457,7 +494,6 @@
                   style="background: radial-gradient(circle, rgba(124,58,237,0.10) 0%, transparent 70%);"></div>
                 <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-3">O Lokalu</p>
 
-                <!-- Truncated text -->
                 <p class="font-dm text-[14px] font-light leading-[1.8] text-white/45 italic">
                   {{ shortText(vm.description, 180) }}
                 </p>
@@ -581,20 +617,15 @@
             class="fixed inset-0 z-[60] flex items-center justify-center p-4 modal-backdrop"
             (click)="descriptionModalShown = false"
           >
-            <!-- Backdrop -->
             <div class="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
-
-            <!-- Modal panel -->
             <div
               class="relative z-10 w-full max-w-lg rounded-3xl border border-white/[0.10] p-7 sm:p-9 shadow-[0_32px_80px_rgba(0,0,0,0.7)] modal-panel"
               style="background: rgba(14,12,22,0.97);"
               (click)="$event.stopPropagation()"
             >
-              <!-- Top shine -->
               <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
                 style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.5), transparent);"></div>
 
-              <!-- Header -->
               <div class="flex items-center justify-between mb-6">
                 <div>
                   <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-0.5">O Lokalu</p>
@@ -609,12 +640,11 @@
                 </button>
               </div>
 
-              <!-- Full description -->
-              <p class="font-dm text-[14px] font-light leading-[1.85] text-white/55 italic max-h-[55vh] overflow-y-auto pr-1" style="scrollbar-width: thin; scrollbar-color: rgba(124,58,237,0.3) transparent;">
+              <p class="font-dm text-[14px] font-light leading-[1.85] text-white/55 italic max-h-[55vh] overflow-y-auto pr-1"
+                 style="scrollbar-width: thin; scrollbar-color: rgba(124,58,237,0.3) transparent;">
                 {{ descriptionText }}
               </p>
 
-              <!-- Ambient glow -->
               <div class="absolute -bottom-16 -right-16 w-48 h-48 rounded-full pointer-events-none"
                 style="background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%);"></div>
             </div>
@@ -624,7 +654,5 @@
       }
     }
   </div>
-
-
 
 </section>

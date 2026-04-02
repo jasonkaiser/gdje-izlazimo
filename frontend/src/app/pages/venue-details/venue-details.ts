@@ -1,5 +1,11 @@
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  inject,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, forkJoin, of } from 'rxjs';
 import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
@@ -15,6 +21,8 @@ import { ReservationModal } from '../../components/modals/reservation-modal/rese
 import { AuthService } from '../../core/auth/auth.service';
 import { CreateReservationRequest } from '../../core/models/reservations/create-reservation.request';
 import { ReservationService } from '../../core/api/reservation-service';
+import { UserFavoriteVenueService } from '../../core/api/user-favorite-venue';
+
 
 type TableTypeVm = {
   id: string;
@@ -54,8 +62,10 @@ export class VenueDetails {
   private readonly venueTableTypeService = inject(VenueTableTypeService);
   private readonly venueOperatingHoursService = inject(VenueOperatingHoursService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly authService = inject(AuthService);
+  private readonly cdr = inject(ChangeDetectorRef); 
+  readonly authService = inject(AuthService);
   private readonly reservationService = inject(ReservationService);
+  private readonly favoriteService = inject(UserFavoriteVenueService);
 
   sliderIndex = 0;
   openId: string | null = null;
@@ -72,6 +82,9 @@ export class VenueDetails {
   descriptionModalShown = false;
   descriptionText = '';
 
+  isFavorite = false;
+  favoriteLoading = false;
+
   private readonly retry$ = new BehaviorSubject<void>(undefined);
 
   private readonly venueId$ = this.route.paramMap.pipe(
@@ -85,6 +98,8 @@ export class VenueDetails {
       this.tablesShown = false;
       this.whyUsShown = false;
       this.aboutShown = false;
+      this.isFavorite = false;
+      this.favoriteLoading = false;
     }),
     shareReplay({ bufferSize: 1, refCount: true })
   );
@@ -171,6 +186,11 @@ export class VenueDetails {
                 loading: false,
                 errorMsg: '',
               } satisfies Vm;
+            }),
+            tap((vm) => {
+              if (vm.venueId && !vm.errorMsg) {
+                this.loadFavoriteState(vm.venueId);
+              }
             })
           );
         }),
@@ -198,6 +218,46 @@ export class VenueDetails {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+
+  private loadFavoriteState(venueId: string): void {
+    if (!this.authService.hasRole('user')) return;
+    this.favoriteService.getFavorites().subscribe({
+      next: (favorites) => {
+        this.isFavorite = favorites.some((v) => v.id === venueId);
+        this.cdr.markForCheck(); 
+      },
+      error: () => {},
+    });
+  }
+
+  toggleFavorite(venueId: string): void {
+    if (!this.authService.authenticated()) {
+      this.authService.login();
+      return;
+    }
+    if (this.favoriteLoading) return;
+
+    this.favoriteLoading = true;
+    this.cdr.markForCheck();
+
+    const action$ = this.isFavorite
+      ? this.favoriteService.removeFavorite(venueId)
+      : this.favoriteService.addFavorite(venueId);
+
+    action$.subscribe({
+      next: () => {
+        this.isFavorite = !this.isFavorite;
+        this.favoriteLoading = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.favoriteLoading = false;
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+
   retry(): void {
     this.retry$.next();
   }
@@ -220,12 +280,12 @@ export class VenueDetails {
     return this.openId === id;
   }
 
-  onTitleInView(v: boolean): void { if (v) this.titleShown = true; }
-  onSliderInView(v: boolean): void { if (v) this.sliderShown = true; }
+  onTitleInView(v: boolean): void   { if (v) this.titleShown   = true; }
+  onSliderInView(v: boolean): void  { if (v) this.sliderShown  = true; }
   onReserveInView(v: boolean): void { if (v) this.reserveShown = true; }
-  onTablesInView(v: boolean): void { if (v) this.tablesShown = true; }
-  onWhyUsInView(v: boolean): void { if (v) this.whyUsShown = true; }
-  onAboutInView(v: boolean): void { if (v) this.aboutShown = true; }
+  onTablesInView(v: boolean): void  { if (v) this.tablesShown  = true; }
+  onWhyUsInView(v: boolean): void   { if (v) this.whyUsShown   = true; }
+  onAboutInView(v: boolean): void   { if (v) this.aboutShown   = true; }
 
   shortText(text: string, maxChars = 180): string {
     const t = (text ?? '').trim().replace(/\s+/g, ' ');
@@ -255,6 +315,7 @@ export class VenueDetails {
     this.reservationService.createReservation(payload).subscribe({
       next: () => {
         this.reservationModalShown = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error(err);
@@ -265,6 +326,7 @@ export class VenueDetails {
         } else {
           this.reservationErrorMsg = 'Došlo je do greške. Pokušaj ponovo.';
         }
+        this.cdr.markForCheck();
       },
     });
   }
@@ -275,16 +337,16 @@ export class VenueDetails {
       THURSDAY: 'ČET', FRIDAY: 'PET', SATURDAY: 'SUB', SUNDAY: 'NED',
     };
     const start = dayMap[oh.startDay] ?? oh.startDay;
-    const end = dayMap[oh.endDay] ?? oh.endDay;
-    const trim = (t: string) => t?.slice(0, 5) ?? '';
+    const end   = dayMap[oh.endDay]   ?? oh.endDay;
+    const trim  = (t: string) => t?.slice(0, 5) ?? '';
     return `${start}–${end}   ${trim(oh.openTime)} – ${trim(oh.closedTime)}`;
   }
 
   private formatCapacityLabel(name: string): string {
     const n = name.toLowerCase();
-    if (n.includes('vip')) return '6–10 Osoba';
-    if (n.includes('separe')) return '4–8 Osoba';
-    if (n.includes('šank') || n.includes('sank')) return '1–2 Osobe';
+    if (n.includes('vip'))                              return '6–10 Osoba';
+    if (n.includes('separe'))                           return '4–8 Osoba';
+    if (n.includes('šank') || n.includes('sank'))      return '1–2 Osobe';
     return '2–6 Osoba';
   }
 
