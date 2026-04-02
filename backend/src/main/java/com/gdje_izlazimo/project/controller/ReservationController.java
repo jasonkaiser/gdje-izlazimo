@@ -143,7 +143,8 @@ public class ReservationController {
             @Valid @RequestBody CreateReservationRequest entity
     ) {
         String email = jwt.getClaimAsString("email");
-        return ResponseEntity.ok(reservationService.createReservation(entity, jwt.getSubject(), email, null));
+        String phone = jwt.getClaimAsString("phone");
+        return ResponseEntity.ok(reservationService.createReservation(entity, jwt.getSubject(), email, null, phone));
     }
 
     @Operation(summary = "Update a reservation", description = "Updates an existing reservation. Requires role: venue_owner or admin")

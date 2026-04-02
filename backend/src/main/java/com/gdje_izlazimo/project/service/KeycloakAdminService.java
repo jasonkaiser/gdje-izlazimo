@@ -4,11 +4,11 @@ import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.RoleRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class KeycloakAdminService {
@@ -46,5 +46,23 @@ public class KeycloakAdminService {
         userResource.roles().realmLevel().add(Collections.singletonList(newRoleRep));
 
         userResource.logout();
+    }
+
+    public void updateUserAttribute(UUID keycloakUserId, String attributeName, String value) {
+        UserResource userResource = keycloak.realm(realm).users().get(keycloakUserId.toString());
+
+        UserRepresentation user = userResource.toRepresentation();
+
+        Map<String, List<String>> attributes = user.getAttributes();
+        if (attributes == null) attributes = new HashMap<>();
+
+        if (value != null && !value.isBlank()) {
+            attributes.put(attributeName, List.of(value.trim()));
+        } else {
+            attributes.remove(attributeName);
+        }
+
+        user.setAttributes(attributes);
+        userResource.update(user);
     }
 }

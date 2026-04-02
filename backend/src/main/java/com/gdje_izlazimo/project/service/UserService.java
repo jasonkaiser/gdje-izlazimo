@@ -30,7 +30,7 @@ public class UserService {
 
     @Transactional
     @CacheEvict(value = {"dashboardStats"}, allEntries = true)
-    public User getOrCreate(UUID id, String email, String username) {
+    public User getOrCreate(UUID id, String email, String username, String phoneNumber) {
         User user = userRepository.findById(id)
                 .orElseGet(() -> {
                     User u = new User();
@@ -47,12 +47,16 @@ public class UserService {
             user.setName(username.trim());
         }
 
+        if (phoneNumber != null && !phoneNumber.isBlank()) {
+            user.setPhone(phoneNumber.trim());
+        }
+
         return userRepository.save(user);
     }
 
     @Transactional
-    public UserResponse getOrCreateResponse(UUID id, String email, String username) {
-        return userMapper.toResponse(getOrCreate(id, email, username));
+    public UserResponse getOrCreateResponse(UUID id, String email, String username, String phoneNumber) {
+        return userMapper.toResponse(getOrCreate(id, email, username, phoneNumber));
     }
 
     @Transactional(readOnly = true)
@@ -95,6 +99,10 @@ public class UserService {
                     oldRole.name().toLowerCase(),
                     request.role().name().toLowerCase()
             );
+        }
+
+        if (request.phone() != null) {
+            keycloakAdminService.updateUserAttribute(id, "phone", request.phone());
         }
 
         return userMapper.toResponse(updatedUser);

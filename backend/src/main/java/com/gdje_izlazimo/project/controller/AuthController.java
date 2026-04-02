@@ -40,8 +40,9 @@ public class AuthController {
         UUID userId = UUID.fromString(jwt.getSubject());
         String email = jwt.getClaimAsString("email");
         String username = jwt.getClaimAsString("preferred_username");
+        String phoneNumber = jwt.getClaimAsString("phone");
 
-        UserResponse userResponse = userService.getOrCreateResponse(userId, email, username);
+        UserResponse userResponse = userService.getOrCreateResponse(userId, email, username, phoneNumber);
 
         return ResponseEntity.ok(userResponse);
     }

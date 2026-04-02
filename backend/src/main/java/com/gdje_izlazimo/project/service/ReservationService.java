@@ -86,7 +86,7 @@ public class ReservationService {
 
     @Transactional
     @CacheEvict(value = {"dashboardStats", "reservationStatusBreakdown", "topVenues"}, allEntries = true)
-    public ReservationResponse createReservation(CreateReservationRequest dto, String keycloakSub, String requesterEmail, String username) {
+    public ReservationResponse createReservation(CreateReservationRequest dto, String keycloakSub, String requesterEmail, String username, String phoneNumber) {
         LocalDateTime requested = LocalDateTime.of(dto.reservationDate(), dto.reservationTime());
         LocalDateTime now = LocalDateTime.now(ZoneId.of("Europe/Sarajevo"));
 
@@ -97,7 +97,7 @@ public class ReservationService {
         UUID userId = UUID.fromString(keycloakSub);
         TableType table = tableTypeService.findEntityById(dto.tableTypeId());
 
-        User user = userService.getOrCreate(userId, requesterEmail, username);
+        User user = userService.getOrCreate(userId, requesterEmail, username, phoneNumber);
 
         if (reservationRepository.existsByUser_IdAndVenue_IdAndReservationDateAndReservationTime(
                 user.getId(),
@@ -148,7 +148,7 @@ public class ReservationService {
         }
 
         UUID actorId = UUID.fromString(keycloakSub);
-        User actor = userService.getOrCreate(actorId, null, null);
+        User actor = userService.getOrCreate(actorId, null, null, null);
 
         if (actor.getRole() != Role.ADMIN) {
             if (actor.getRole() != Role.VENUE_OWNER) {
@@ -186,7 +186,7 @@ public class ReservationService {
         }
 
         UUID actorId = UUID.fromString(keycloakSub);
-        User actor = userService.getOrCreate(actorId, null, null);
+        User actor = userService.getOrCreate(actorId, null, null, null);
 
 
         if (actor.getRole() != Role.ADMIN) {
@@ -237,7 +237,7 @@ public class ReservationService {
 
         UUID actorId = UUID.fromString(keycloakSub);
 
-        User actor = userService.getOrCreate(actorId, requesterEmail, null);
+        User actor = userService.getOrCreate(actorId, requesterEmail, null, null);
         boolean actorIsReservationOwner =
                 reservation.getUser() != null && reservation.getUser().getId().equals(actor.getId());
 
