@@ -48,7 +48,6 @@ export class AuthService {
 
         return true;
       } catch (error) {
-        console.error('Keycloak initialization failed', error);
         this.initialized = false;
         queueMicrotask(() => this.syncAuthState());
         return false;
@@ -83,7 +82,6 @@ export class AuthService {
       queueMicrotask(() => this.syncAuthState());
       return this.keycloak.token ?? undefined;
     } catch (error) {
-      console.error('Failed to refresh token', error);
       queueMicrotask(() => this.syncAuthState());
       return this.keycloak.token ?? undefined;
     }

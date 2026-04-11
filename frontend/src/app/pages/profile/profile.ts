@@ -1,13 +1,8 @@
 import {
-  Component,
-  OnInit,
-  inject,
-  DestroyRef,
-  signal,
-  computed,
+  Component, OnInit, inject, DestroyRef,
+  signal, computed, ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError, switchMap, forkJoin, of, tap } from 'rxjs';
@@ -23,65 +18,56 @@ import { ReservationResponseDto } from '../../core/models/reservations/reservati
 import { ReservationStatus } from '../../core/models/reservations/reservation-status.enum';
 import { Role } from '../../core/models/users/user-role.enum';
 
-type EditState = { name: string; phone: string };
-type SaveState = 'idle' | 'saving' | 'success' | 'error';
+type EditState  = { name: string; phone: string };
+type SaveState  = 'idle' | 'saving' | 'success' | 'error';
 
 interface ReservationStats {
-  total: number;
-  upcoming: number;
-  past: number;
-  cancelled: number;
-  pending: number;
-  accepted: number;
+  total: number; upcoming: number; past: number;
+  cancelled: number; pending: number; accepted: number;
 }
 
 interface VenueTypeStat {
-  type: string;
-  label: string;
-  count: number;
+  type: string; label: string; count: number;
   percentage: number;
-  color: string;
-  bgColor: string;
 }
 
 export interface FavoriteVenueVm {
-  id: string;
-  name: string;
-  venueType: string;
-  address: string;
-  imageUrl: string;
-  typeLabel: string;
-  typeColor: string;
+  id: string; name: string; venueType: string;
+  address: string; imageUrl: string;
+  typeLabel: string; typeColor: string;
 }
+
+interface StatusStyle { label: string; badge: string; }
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgClass],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
 export class Profile implements OnInit {
-  private readonly authService    = inject(AuthService);
-  private readonly authApiService = inject(AuthApiService);
-  private readonly userService    = inject(UserService);
+  private readonly authService        = inject(AuthService);
+  private readonly authApiService     = inject(AuthApiService);
+  private readonly userService        = inject(UserService);
   private readonly reservationService = inject(ReservationService);
   private readonly favoriteService    = inject(UserFavoriteVenueService);
-  private readonly router         = inject(Router);
-  private readonly destroyRef     = inject(DestroyRef);
+  private readonly router             = inject(Router);
+  private readonly destroyRef         = inject(DestroyRef);
 
-  user         = signal<UserResponseDto | null>(null);
-  reservations = signal<ReservationResponseDto[]>([]);
-  favorites    = signal<FavoriteVenueVm[]>([]);
-  loading      = signal(true);
-  errorMsg     = signal('');
+  readonly user         = signal<UserResponseDto | null>(null);
+  readonly reservations = signal<ReservationResponseDto[]>([]);
+  readonly favorites    = signal<FavoriteVenueVm[]>([]);
+  readonly loading      = signal(true);
+  readonly errorMsg     = signal('');
 
-  editing   = signal(false);
-  editState = signal<EditState>({ name: '', phone: '' });
-  saveState = signal<SaveState>('idle');
-  saveError = signal('');
+  readonly editing   = signal(false);
+  readonly editState = signal<EditState>({ name: '', phone: '' });
+  readonly saveState = signal<SaveState>('idle');
+  readonly saveError = signal('');
 
-  removingFavoriteId = signal<string | null>(null);
+  readonly removingFavoriteId = signal<string | null>(null);
 
   readonly roleLabel = computed(() => {
     const role = this.user()?.role;
@@ -97,59 +83,51 @@ export class Profile implements OnInit {
     return 'sky';
   });
 
-  readonly initials = computed(() => {
-    const name = this.user()?.name ?? '';
-    return name.split(' ').map(w => w[0]?.toUpperCase() ?? '').slice(0, 2).join('');
-  });
+  readonly initials = computed(() =>
+    (this.user()?.name ?? '').split(' ').map((w) => w[0]?.toUpperCase() ?? '').slice(0, 2).join('')
+  );
 
   readonly memberSince = computed(() => {
     const raw = this.user()?.createdAt;
     if (!raw) return '';
-    return new Date(raw).toLocaleDateString('bs-BA', {
-      year: 'numeric', month: 'long', day: 'numeric',
-    });
+    return new Date(raw).toLocaleDateString('bs-BA', { year: 'numeric', month: 'long', day: 'numeric' });
   });
 
   readonly reservationStats = computed((): ReservationStats => {
     const list = this.reservations();
     const now  = new Date();
-    const toDateTime = (r: ReservationResponseDto) => {
-      const time = (r.reservationTime ?? '00:00').slice(0, 5);
-      return new Date(`${r.reservationDate}T${time}:00`);
-    };
+    const dt   = (r: ReservationResponseDto) =>
+      new Date(`${r.reservationDate}T${(r.reservationTime ?? '00:00').slice(0, 5)}:00`);
     return {
       total:     list.length,
-      upcoming:  list.filter(r => r.status !== ReservationStatus.CANCELLED && toDateTime(r) >= now).length,
-      past:      list.filter(r => r.status !== ReservationStatus.CANCELLED && toDateTime(r) <  now).length,
-      cancelled: list.filter(r => r.status === ReservationStatus.CANCELLED).length,
-      pending:   list.filter(r => r.status === ReservationStatus.PENDING).length,
-      accepted:  list.filter(r => r.status === ReservationStatus.ACCEPTED).length,
+      upcoming:  list.filter((r) => r.status !== ReservationStatus.CANCELLED && dt(r) >= now).length,
+      past:      list.filter((r) => r.status !== ReservationStatus.CANCELLED && dt(r) <  now).length,
+      cancelled: list.filter((r) => r.status === ReservationStatus.CANCELLED).length,
+      pending:   list.filter((r) => r.status === ReservationStatus.PENDING).length,
+      accepted:  list.filter((r) => r.status === ReservationStatus.ACCEPTED).length,
     };
   });
 
   readonly venueTypeStats = computed((): VenueTypeStat[] => {
     const list = this.reservations();
     if (!list.length) return [];
+
     const counts = new Map<string, number>();
     for (const r of list) {
-      const type = (r as any).venueType ?? (r as any).venue?.venueType ?? 'UNKNOWN';
+      const type = r.venueType ?? 'UNKNOWN';
       counts.set(type, (counts.get(type) ?? 0) + 1);
     }
-    const colorMap: Record<string, { color: string; bgColor: string; label: string }> = {
-      CLUB:       { color: 'text-purple-400',  bgColor: 'bg-purple-500',  label: 'Klub'     },
-      PUB:        { color: 'text-blue-400',    bgColor: 'bg-blue-500',    label: 'Pub'      },
-      LOUNGE:     { color: 'text-emerald-400', bgColor: 'bg-emerald-500', label: 'Lounge'   },
-      RESTAURANT: { color: 'text-amber-400',   bgColor: 'bg-amber-500',   label: 'Restoran' },
-      UNKNOWN:    { color: 'text-white/40',    bgColor: 'bg-white/20',    label: 'Ostalo'   },
+
+    const labelMap: Record<string, string> = {
+      CLUB: 'Klub', PUB: 'Pub', LOUNGE: 'Lounge', RESTAURANT: 'Restoran', UNKNOWN: 'Ostalo',
     };
+
     return Array.from(counts.entries())
       .map(([type, count]) => ({
         type,
-        label:      colorMap[type]?.label   ?? type,
+        label:      labelMap[type] ?? type,
         count,
         percentage: Math.round((count / list.length) * 1000) / 10,
-        color:      colorMap[type]?.color   ?? 'text-white/40',
-        bgColor:    colorMap[type]?.bgColor ?? 'bg-white/20',
       }))
       .sort((a, b) => b.count - a.count);
   });
@@ -161,14 +139,29 @@ export class Profile implements OnInit {
       .slice(0, 5)
   );
 
+  private readonly statusStyles: Record<string, StatusStyle> = {
+    PENDING:   { label: 'Na čekanju', badge: 'border-amber-500/25 bg-amber-500/[0.08] text-amber-400/80'   },
+    ACCEPTED:  { label: 'Prihvaćena', badge: 'border-emerald-500/25 bg-emerald-500/[0.08] text-emerald-400/80' },
+    REJECTED:  { label: 'Odbijena',   badge: 'border-rose-500/25 bg-rose-500/[0.08] text-rose-400/80'     },
+    CANCELLED: { label: 'Otkazana',   badge: 'border-white/10 bg-white/[0.03] text-white/30'              },
+  };
+
+  getStatusStyle(status: string): StatusStyle {
+    return this.statusStyles[status] ?? this.statusStyles['CANCELLED'];
+  }
+
+  getBarWidth(pct: number): string {
+    return `${Math.max(pct, 2)}%`;
+  }
+
   ngOnInit(): void {
     this.authApiService.me().pipe(
-      tap(user => this.user.set(user)),
-      switchMap(user =>
+      tap((user) => this.user.set(user)),
+      switchMap((user) =>
         forkJoin({
           reservations: this.reservationService.getReservationsByUser(user.id, {
             pageSize: 1000, sortBy: 'reservationDate', sortDir: 'DESC',
-          }).pipe(catchError(() => of([]))),
+          }).pipe(catchError(() => of([] as ReservationResponseDto[]))),
           favorites: this.favoriteService.getFavorites().pipe(catchError(() => of([]))),
         })
       ),
@@ -179,8 +172,8 @@ export class Profile implements OnInit {
           CLUB: 'Klub', PUB: 'Pub', LOUNGE: 'Lounge', RESTAURANT: 'Restoran',
         };
         const typeColor: Record<string, string> = {
-          CLUB: 'text-purple-400', PUB: 'text-blue-400',
-          LOUNGE: 'text-emerald-400', RESTAURANT: 'text-amber-400',
+          CLUB: 'text-purple-400/80', PUB: 'text-blue-400/80',
+          LOUNGE: 'text-emerald-400/80', RESTAURANT: 'text-amber-400/80',
         };
         const defaultImages: Record<string, string> = {
           CLUB:       'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80',
@@ -192,10 +185,11 @@ export class Profile implements OnInit {
         this.favorites.set(
           favorites.map((v: any) => {
             const vType = v.venueType ?? 'UNKNOWN';
-            const primaryImage = v.images?.find((i: any) => i.isPrimary)?.imageUrl
-              ?? v.images?.[0]?.imageUrl
-              ?? defaultImages[vType]
-              ?? 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=800&q=80';
+            const primaryImage =
+              v.images?.find((i: any) => i.isPrimary)?.imageUrl ??
+              v.images?.[0]?.imageUrl ??
+              defaultImages[vType] ??
+              'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=800&q=80';
             return {
               id:        v.id,
               name:      v.name ?? '',
@@ -207,10 +201,10 @@ export class Profile implements OnInit {
             } satisfies FavoriteVenueVm;
           })
         );
+
         this.loading.set(false);
       }),
-      catchError(err => {
-        console.error(err);
+      catchError((err) => {
         this.errorMsg.set('Greška pri učitavanju profila.');
         this.loading.set(false);
         return of(null);
@@ -224,10 +218,7 @@ export class Profile implements OnInit {
     if (this.removingFavoriteId()) return;
     this.removingFavoriteId.set(venueId);
     this.favoriteService.removeFavorite(venueId).subscribe({
-      next: () => {
-        this.favorites.update(list => list.filter(v => v.id !== venueId));
-        this.removingFavoriteId.set(null);
-      },
+      next:  () => { this.favorites.update((list) => list.filter((v) => v.id !== venueId)); this.removingFavoriteId.set(null); },
       error: () => this.removingFavoriteId.set(null),
     });
   }
@@ -260,16 +251,13 @@ export class Profile implements OnInit {
     this.saveState.set('saving');
     this.saveError.set('');
 
-    const request: UpdateUserRequest = { name: name.trim(), phone: phone.trim(), role: u.role };
-
-    this.userService.updateUser(request, u.id).pipe(
-      tap(updated => {
+    this.userService.updateUser({ name: name.trim(), phone: phone.trim(), role: u.role } satisfies UpdateUserRequest, u.id).pipe(
+      tap((updated) => {
         this.user.set(updated);
         this.saveState.set('success');
         setTimeout(() => { this.editing.set(false); this.saveState.set('idle'); }, 1200);
       }),
-      catchError(err => {
-        console.error(err);
+      catchError((err) => {
         this.saveError.set('Greška pri čuvanju. Pokušaj ponovo.');
         this.saveState.set('error');
         return of(null);
@@ -278,39 +266,7 @@ export class Profile implements OnInit {
     ).subscribe();
   }
 
-  updateEditName(value: string): void  { this.editState.update(s => ({ ...s, name: value })); }
-  updateEditPhone(value: string): void { this.editState.update(s => ({ ...s, phone: value })); }
+  updateEditName(value: string): void  { this.editState.update((s) => ({ ...s, name: value })); }
+  updateEditPhone(value: string): void { this.editState.update((s) => ({ ...s, phone: value })); }
   logout(): void { this.authService.logout(); }
-
-  getStatusLabel(status: string): string {
-    const map: Record<string, string> = {
-      PENDING: 'Na čekanju', ACCEPTED: 'Prihvaćena',
-      REJECTED: 'Odbijena',  CANCELLED: 'Otkazana',
-    };
-    return map[status] ?? status;
-  }
-
-  getStatusColor(status: string): string {
-    const map: Record<string, string> = {
-      PENDING:   'text-amber-400',
-      ACCEPTED:  'text-emerald-400',
-      REJECTED:  'text-rose-400',
-      CANCELLED: 'text-white/35',
-    };
-    return map[status] ?? 'text-white/35';
-  }
-
-  getStatusBadgeBg(status: string): string {
-    const map: Record<string, string> = {
-      PENDING:   'border-amber-500/25 bg-amber-500/[0.08]',
-      ACCEPTED:  'border-emerald-500/25 bg-emerald-500/[0.08]',
-      REJECTED:  'border-rose-500/25 bg-rose-500/[0.08]',
-      CANCELLED: 'border-white/10 bg-white/[0.03]',
-    };
-    return map[status] ?? 'border-white/10 bg-white/[0.03]';
-  }
-
-  getBarWidth(pct: number): string {
-    return `${Math.max(pct, 2)}%`;
-  }
 }

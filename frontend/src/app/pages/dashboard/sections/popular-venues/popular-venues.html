@@ -5,10 +5,9 @@
       <h2 class="font-sora text-5xl font-regular tracking-tight max-sm:justify-self-center gradient-text text-white mb-20">
         {{ title }}
       </h2>
-
     </div>
 
-    <!-- Desktop controls only -->
+    <!-- Desktop controls -->
     <div class="hidden sm:flex items-center gap-3 shrink-0">
       <div class="flex items-center gap-2">
         <button
@@ -18,7 +17,7 @@
           class="grid h-9 w-25 place-items-center rounded-full border border-white/15 bg-white/5 text-white/80 transition hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
           aria-label="Previous"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
@@ -29,36 +28,41 @@
           class="grid h-9 w-25 place-items-center rounded-full border border-white/15 bg-white/5 text-white/80 transition hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
           aria-label="Next"
         >
-     
-           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
       </div>
 
       <a
-
         href="/venues"
         class="h-9 rounded-full bg-violet-600 px-4 text-xs flex items-center font-semibold uppercase tracking-wide text-white transition hover:bg-violet-500"
       >
         POGLEDAJ SVE <span class="ml-1">↗</span>
-    </a>
+      </a>
     </div>
   </div>
 
   <!-- Carousel -->
   <div class="mt-6 -mx-4 sm:mx-0">
+
     <!-- Mobile: Vertical Stack -->
     <div class="sm:hidden flex flex-col gap-6 px-4">
-      @for (v of venues; track v.title) {
-        <div class="w-full max-w-[380px] mx-auto">
-          <app-venue-card
-            [title]="v.title"
-            [category]="v.category"
-            [location]="v.location"
-            [imageUrl]="v.imageUrl"
-          />
-        </div>
+      @if (_venues.length === 0) {
+        @for (_ of [1,2,3]; track $index) {
+          <div class="w-full max-w-[380px] mx-auto h-[220px] rounded-2xl bg-white/5 animate-pulse"></div>
+        }
+      } @else {
+        @for (v of _venues; track v.id) {
+          <div class="w-full max-w-[380px] mx-auto">
+            <app-venue-card
+              [title]="v.title"
+              [category]="v.category"
+              [location]="v.location"
+              [imageUrl]="v.imageUrl"
+            />
+          </div>
+        }
       }
     </div>
 
@@ -73,34 +77,37 @@
              overscroll-x-contain scroll-smooth"
       aria-label="Popular venues"
     >
-      @for (v of venues; track v.title; let i = $index) {
-        <div
-          data-card
-          class="shrink-0
-                 [scroll-snap-align:start]
-                 transition-opacity duration-300"
-          [class.opacity-40]="isPeekDesktopLeftOrRight(i)"
-        >
-          <div class="w-[300px] lg:w-[360px]">
-            <app-venue-card
-              [title]="v.title"
-              [category]="v.category"
-              [location]="v.location"
-              [imageUrl]="v.imageUrl"
-            />
+      @if (_venues.length === 0) {
+        @for (_ of [1,2,3,4]; track $index) {
+          <div class="shrink-0 w-[300px] lg:w-[360px] h-[220px] rounded-2xl bg-white/5 animate-pulse"></div>
+        }
+      } @else {
+        @for (v of _venues; track v.id; let i = $index) {
+          <div
+            data-card
+            class="shrink-0 [scroll-snap-align:start] transition-opacity duration-300"
+            [class.opacity-40]="isPeekDesktopLeftOrRight(i)"
+          >
+            <div class="w-[300px] lg:w-[360px]">
+              <app-venue-card
+                [id]="v.id" 
+                [title]="v.title"
+                [category]="v.category"
+                [location]="v.location"
+                [imageUrl]="v.imageUrl"
+              />
+            </div>
           </div>
-        </div>
-      } @empty {
-        <div class="text-white/60">No venues</div>
+        }
       }
     </div>
 
-    <!-- Mobile CTA at bottom only - 10% narrower from both sides -->
-    <button
-      type="button"
-      class="mt-10 h-10 w-[87%] mx-auto block rounded-full bg-violet-600 px-4 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-violet-500 sm:hidden"
+    <!-- Mobile CTA -->
+    <a
+      href="/venues"
+      class="mt-10 h-10 w-[87%] mx-auto flex items-center justify-center rounded-full bg-violet-600 px-4 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-violet-500 sm:hidden"
     >
       POGLEDAJ SVE <span class="ml-1">↗</span>
-    </button>
+    </a>
   </div>
 </section>

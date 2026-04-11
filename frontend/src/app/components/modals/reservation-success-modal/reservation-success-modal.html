@@ -1,0 +1,103 @@
+<div class="rsm-backdrop" (click)="close.emit()">
+  <div class="rsm-panel" (click)="$event.stopPropagation()">
+
+    <div class="rsm-particles" aria-hidden="true">
+      @for (p of [1,2,3,4,5,6,7,8,9,10,11,12]; track p) {
+        <span class="rsm-particle" [attr.data-i]="p"></span>
+      }
+    </div>
+
+    <div class="rsm-top-line"></div>
+
+      <div class="rsm-icon-wrap">
+        <svg class="rsm-check" viewBox="0 0 52 52" fill="none">
+          <circle
+            class="rsm-check-circle"
+            cx="26" cy="26" r="24"
+            stroke="rgba(124,58,237,0.4)"
+            stroke-width="1.5"
+          />
+          <circle
+            class="rsm-check-circle-fill"
+            cx="26" cy="26" r="24"
+            stroke="url(#grad)"
+            stroke-width="1.5"
+          />
+          <path
+            class="rsm-check-path"
+            d="M14 27l9 9 16-18"
+            stroke="#a78bfa"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <defs>
+            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#a78bfa"/>
+              <stop offset="100%" stop-color="#7c3aed"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <p class="rsm-eyebrow">Rezervacija potvrđena</p>
+      <h2 class="rsm-title">Mjesto osigurano!</h2>
+      <p class="rsm-sub">
+        Vaša rezervacija u lokalu <span>{{ venueName }}</span> je uspješno kreirana
+        i trenutno je na čekanju.
+      </p>
+
+    <div class="rsm-email-notice">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2Z" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p>Poslali smo vam email potvrdu. Obavijestit ćemo vas kada lokal <span>prihvati ili odbije</span> rezervaciju.</p>
+    </div>
+
+    @if (tableType || date || time || guests) {
+      <div class="rsm-details">
+        @if (tableType) {
+          <div class="rsm-detail-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M7 10V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3" stroke-linecap="round"/>
+              <path d="M6 12h12v4H6v-4Z" stroke-linejoin="round"/>
+              <path d="M7 20v-4M17 20v-4" stroke-linecap="round"/>
+            </svg>
+            <span>{{ tableType }}</span>
+          </div>
+        }
+        @if (date) {
+          <div class="rsm-detail-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z" stroke-linecap="round"/>
+            </svg>
+            <span>{{ date }}</span>
+          </div>
+        }
+        @if (time) {
+          <div class="rsm-detail-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="9"/>
+              <path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ time }}</span>
+          </div>
+        }
+        @if (guests) {
+          <div class="rsm-detail-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-linecap="round"/>
+            </svg>
+            <span>{{ guests }} {{ guests === 1 ? 'osoba' : guests < 5 ? 'osobe' : 'osoba' }}</span>
+          </div>
+        }
+      </div>
+    }
+
+    <button class="rsm-btn" (click)="close.emit()">
+      Odlično, hvala!
+    </button>
+
+    <div class="rsm-bottom-glow"></div>
+  </div>
+</div>

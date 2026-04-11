@@ -73,7 +73,7 @@ public class VenueTableTypeController {
             @ApiResponse(responseCode = "403", description = "Access denied")
     })
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<VenueTableTypeResponse> createVenueTableType(
             @Valid @RequestBody CreateVenueTableTypeRequest entity) {
@@ -88,7 +88,7 @@ public class VenueTableTypeController {
             @ApiResponse(responseCode = "403", description = "Access denied")
     })
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
     public ResponseEntity<VenueTableTypeResponse> updateVenueTableType(
             @Parameter(description = "Venue table type UUID") @PathVariable UUID id,
@@ -103,7 +103,7 @@ public class VenueTableTypeController {
             @ApiResponse(responseCode = "403", description = "Access denied")
     })
     @SecurityRequirement(name = "bearerAuth")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteVenueTableType(
             @Parameter(description = "Venue table type UUID") @PathVariable UUID id) {

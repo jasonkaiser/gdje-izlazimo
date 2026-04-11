@@ -20,6 +20,7 @@ public interface ReservationMapper {
 
     @Mapping(source = "user.id",          target = "userId")
     @Mapping(source = "venue.id",         target = "venueId")
+    @Mapping(source = "venue.venueType",   target = "venueType")
     @Mapping(source = "venue.name",       target = "venueName")
     @Mapping(source = "venue.addressName",target = "venueAddress")
     @Mapping(source = "tableType.id",     target = "tableTypeId")

@@ -45,7 +45,6 @@ export class RejectReasonModalComponent {
         error: (err) => {
           this.isLoading = false;
           this.error = 'Greška pri odbijanju rezervacije. Pokušajte ponovo.';
-          console.error('[RejectReasonModal] Reject failed:', err);
         }
       });
   }

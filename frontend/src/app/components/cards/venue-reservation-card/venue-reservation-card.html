@@ -109,7 +109,7 @@
       @if (reservation.phone) {
         {{ reservation.phone }}
       } @else {
-        Gost #{{ reservation.userId?.slice(-4) ?? '—' }}
+        Gost #{{ reservation.userId.slice(-4)}}
       }
     </h3>
     <p
@@ -155,7 +155,7 @@
         <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="1.8" />
       </svg>
       <span class="font-dm font-medium text-[12px] text-white/80">
-        {{ reservation.reservationTime ?? '—' }}
+        {{ reservation.reservationTime }}
       </span>
     </div>
 

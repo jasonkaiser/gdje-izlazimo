@@ -26,9 +26,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             Authorization: `Bearer ${token}`
           }
         });
-      } else {
-        console.warn('No Keycloak token for:', req.url);
-      }
+      } else {}
 
       return next(req);
     })

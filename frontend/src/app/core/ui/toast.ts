@@ -23,9 +23,7 @@ export class ToastService {
   private timer?: number;
 
   show(message: string, variant: Variant = 'error', autoHideMs = 3000) {
-    // Only run in browser
     if (!isPlatformBrowser(this.platformId)) {
-      console.log('[Toast] SSR - skipping:', message);
       return;
     }
 

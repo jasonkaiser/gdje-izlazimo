@@ -36,7 +36,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
     Page<Reservation> findByVenue_Id(UUID venueId, Pageable pageable);
 
     @Query("SELECT new com.gdje_izlazimo.project.dto.response.ReservationResponse(" +
-            "r.id, r.user.id, r.venue.id, r.phone, r.venue.name, r.venue.addressName, " +
+            "r.id, r.user.id, r.venue.id, r.phone, r.venue.name, r.venue.venueType, r.venue.addressName, " +
             "r.reservationDate, r.reservationTime, r.numberOfPeople, r.tableType.id, " +
             "r.status, r.specialRequests, r.rejectReason, r.createdAt, r.updatedAt) " +
             "FROM Reservation r " +

@@ -8,9 +8,9 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, forkJoin, of } from 'rxjs';
-import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
+import { take } from 'rxjs/operators';
 import { InViewDirective } from '../../core/animations/in-view.directive';
 import { VenueService } from '../../core/api/venue-service';
 import { VenueTableTypeService } from '../../core/api/venue-table-type-service';
@@ -22,7 +22,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { CreateReservationRequest } from '../../core/models/reservations/create-reservation.request';
 import { ReservationService } from '../../core/api/reservation-service';
 import { UserFavoriteVenueService } from '../../core/api/user-favorite-venue';
-
+import { ReservationSuccessModal } from '../../components/modals/reservation-success-modal/reservation-success-modal';
 
 type TableTypeVm = {
   id: string;
@@ -43,14 +43,30 @@ type Vm = {
   images: string[];
   tableTypes: TableTypeVm[];
   tableTypesLoading: boolean;
+  totalCapacity: number;
   loading: boolean;
   errorMsg: string;
+  isFavorite: boolean;
+};
+
+const EMPTY_VM: Omit<Vm, 'venueId' | 'loading' | 'errorMsg'> = {
+  venueName: '',
+  category: '',
+  address: '',
+  workingHours: '',
+  phone: '',
+  description: '',
+  images: [],
+  tableTypes: [],
+  tableTypesLoading: false,
+  totalCapacity: 0,
+  isFavorite: false,
 };
 
 @Component({
   selector: 'app-venue-details',
   standalone: true,
-  imports: [InViewDirective, AsyncPipe, ReservationModal],
+  imports: [InViewDirective, AsyncPipe, ReservationModal, ReservationSuccessModal],
   templateUrl: './venue-details.html',
   styleUrls: ['./venue-details.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,7 +78,7 @@ export class VenueDetails {
   private readonly venueTableTypeService = inject(VenueTableTypeService);
   private readonly venueOperatingHoursService = inject(VenueOperatingHoursService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly cdr = inject(ChangeDetectorRef); 
+  private readonly cdr = inject(ChangeDetectorRef);
   readonly authService = inject(AuthService);
   private readonly reservationService = inject(ReservationService);
   private readonly favoriteService = inject(UserFavoriteVenueService);
@@ -82,8 +98,12 @@ export class VenueDetails {
   descriptionModalShown = false;
   descriptionText = '';
 
-  isFavorite = false;
   favoriteLoading = false;
+
+  successModalShown = false;
+  successDetails: { tableType: string; date: string; time: string; guests: number } = {
+    tableType: '', date: '', time: '', guests: 0
+  };
 
   private readonly retry$ = new BehaviorSubject<void>(undefined);
 
@@ -98,7 +118,6 @@ export class VenueDetails {
       this.tablesShown = false;
       this.whyUsShown = false;
       this.aboutShown = false;
-      this.isFavorite = false;
       this.favoriteLoading = false;
     }),
     shareReplay({ bufferSize: 1, refCount: true })
@@ -109,31 +128,16 @@ export class VenueDetails {
     switchMap((venueId) => {
       if (!venueId) {
         return of<Vm>({
+          ...EMPTY_VM,
           venueId: '',
-          venueName: '',
-          category: '',
-          address: '',
-          workingHours: '',
-          phone: '',
-          description: '',
-          images: [],
-          tableTypes: [],
-          tableTypesLoading: false,
           loading: false,
           errorMsg: 'Neispravan link (nedostaje ID lokala).',
         });
       }
 
       const loadingVm: Vm = {
+        ...EMPTY_VM,
         venueId,
-        venueName: '',
-        category: '',
-        address: '',
-        workingHours: '',
-        phone: '',
-        description: '',
-        images: [],
-        tableTypes: [],
         tableTypesLoading: true,
         loading: true,
         errorMsg: '',
@@ -143,6 +147,10 @@ export class VenueDetails {
         switchMap((venue) => {
           if (!venue) throw new Error('Venue not found');
 
+          const favorites$ = this.authService.hasRole('user')
+            ? this.favoriteService.getFavorites().pipe(catchError(() => of([])))
+            : of([]);
+
           return forkJoin({
             operatingHours: this.venueOperatingHoursService.getByVenueId(venueId).pipe(
               catchError(() => of(null as VenueOperatingHoursResponseDto | null))
@@ -150,14 +158,15 @@ export class VenueDetails {
             tableTypes: this.venueTableTypeService.getByVenueId(venueId).pipe(
               catchError(() => of([] as VenueTableTypeResponseDto[]))
             ),
+            favorites: favorites$,
           }).pipe(
-            map(({ operatingHours, tableTypes }) => {
+            map(({ operatingHours, tableTypes, favorites }) => {
               const mappedTableTypes = tableTypes.map((vtt) => ({
                 id: vtt.id,
                 tableTypeId: vtt.tableTypeId,
                 title: vtt.tableTypeName,
                 description: vtt.tableTypeDescription ?? 'Detalji će biti dostupni uskoro.',
-                capacityLabel: this.formatCapacityLabel(vtt.tableTypeName),
+                capacityLabel: `${vtt.minCapacity}–${vtt.maxCapacity} Osoba`,
               } satisfies TableTypeVm));
 
               if (!this.openId && mappedTableTypes.length > 0) {
@@ -166,6 +175,10 @@ export class VenueDetails {
 
               const sortedImages = [...(venue.images ?? [])].sort((a, b) =>
                 a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1
+              );
+
+              const totalCapacity = tableTypes.reduce(
+                (sum, vtt) => sum + vtt.quantity * vtt.maxCapacity, 0
               );
 
               return {
@@ -183,54 +196,30 @@ export class VenueDetails {
                   : 'Kontaktirajte za radno vrijeme',
                 tableTypes: mappedTableTypes,
                 tableTypesLoading: false,
+                totalCapacity,
                 loading: false,
                 errorMsg: '',
+                isFavorite: (favorites as Array<{ id: string }>).some((v) => v.id === venueId),
               } satisfies Vm;
-            }),
-            tap((vm) => {
-              if (vm.venueId && !vm.errorMsg) {
-                this.loadFavoriteState(vm.venueId);
-              }
             })
           );
         }),
-        catchError((err) => {
-          console.error(err);
+        catchError(() => {
           return of<Vm>({
+            ...EMPTY_VM,
             venueId,
-            venueName: '',
-            category: '',
-            address: '',
-            workingHours: '',
-            phone: '',
-            description: '',
-            images: [],
-            tableTypes: [],
-            tableTypesLoading: false,
             loading: false,
             errorMsg: 'Lokal nije pronađen ili je došlo do greške.',
           });
         }),
-        switchMap((finalVm) => of(loadingVm, finalVm))
+        startWith(loadingVm)
       );
     }),
     takeUntilDestroyed(this.destroyRef),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-
-  private loadFavoriteState(venueId: string): void {
-    if (!this.authService.hasRole('user')) return;
-    this.favoriteService.getFavorites().subscribe({
-      next: (favorites) => {
-        this.isFavorite = favorites.some((v) => v.id === venueId);
-        this.cdr.markForCheck(); 
-      },
-      error: () => {},
-    });
-  }
-
-  toggleFavorite(venueId: string): void {
+  toggleFavorite(vm: Vm): void {
     if (!this.authService.authenticated()) {
       this.authService.login();
       return;
@@ -240,13 +229,13 @@ export class VenueDetails {
     this.favoriteLoading = true;
     this.cdr.markForCheck();
 
-    const action$ = this.isFavorite
-      ? this.favoriteService.removeFavorite(venueId)
-      : this.favoriteService.addFavorite(venueId);
+    const action$ = vm.isFavorite
+      ? this.favoriteService.removeFavorite(vm.venueId)
+      : this.favoriteService.addFavorite(vm.venueId);
 
     action$.subscribe({
       next: () => {
-        this.isFavorite = !this.isFavorite;
+        vm.isFavorite = !vm.isFavorite;
         this.favoriteLoading = false;
         this.cdr.markForCheck();
       },
@@ -256,7 +245,6 @@ export class VenueDetails {
       },
     });
   }
-
 
   retry(): void {
     this.retry$.next();
@@ -315,10 +303,19 @@ export class VenueDetails {
     this.reservationService.createReservation(payload).subscribe({
       next: () => {
         this.reservationModalShown = false;
-        this.cdr.markForCheck();
+        this.vm$.pipe(take(1)).subscribe(vm => {
+          const found = vm.tableTypes.find(t => t.tableTypeId === payload.tableTypeId);
+          this.successDetails = {
+            tableType: found?.title ?? payload.tableTypeId,
+            date: payload.reservationDate ?? '',
+            time: payload.reservationTime ?? '',
+            guests: payload.numberOfPeople ?? 0,
+          };
+          this.successModalShown = true;
+          this.cdr.markForCheck();
+        });
       },
       error: (err) => {
-        console.error(err);
         if (err.status === 409) {
           this.reservationErrorMsg = 'Već imaš rezervaciju za ovaj lokal danas.';
         } else if (err.status === 400) {
@@ -340,14 +337,6 @@ export class VenueDetails {
     const end   = dayMap[oh.endDay]   ?? oh.endDay;
     const trim  = (t: string) => t?.slice(0, 5) ?? '';
     return `${start}–${end}   ${trim(oh.openTime)} – ${trim(oh.closedTime)}`;
-  }
-
-  private formatCapacityLabel(name: string): string {
-    const n = name.toLowerCase();
-    if (n.includes('vip'))                              return '6–10 Osoba';
-    if (n.includes('separe'))                           return '4–8 Osoba';
-    if (n.includes('šank') || n.includes('sank'))      return '1–2 Osobe';
-    return '2–6 Osoba';
   }
 
   private getDefaultVenueImages(type: string): string[] {

@@ -40,6 +40,12 @@ public class VenueTableType {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
+    @Column(name = "min_capacity", nullable = false)
+    private int minCapacity;
+
+    @Column(name = "max_capacity", nullable = false)
+    private int maxCapacity;
+
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

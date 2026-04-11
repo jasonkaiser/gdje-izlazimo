@@ -26,7 +26,6 @@ export class VenueReservationCardComponent {
   @Output() reject      = new EventEmitter<string>();
   @Output() viewDetails = new EventEmitter<string>();
 
-  // Status styles matching reservation-card.ts exactly
   readonly statusStyles: Record<ReservationStatus, StatusStyle> = {
     PENDING: {
       accent: 'rgba(255,174,0',
@@ -65,7 +64,6 @@ export class VenueReservationCardComponent {
     return labels[status] ?? status;
   }
 
-  // Output emitters
   onAccept():      void { this.accept.emit(this.reservation.id); }
   onReject():      void { this.reject.emit(this.reservation.id); }
   onViewDetails(): void { this.viewDetails.emit(this.reservation.id); }

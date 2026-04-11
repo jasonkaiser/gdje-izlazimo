@@ -5,6 +5,8 @@ export interface VenueTableTypeResponseDto {
   tableTypeName: string;
   tableTypeDescription: string;
   quantity: number;
+  minCapacity: number;
+  maxCapacity: number;
   createdAt: string;
   updatedAt: string;
 }

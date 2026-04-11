@@ -119,7 +119,6 @@ export class UserModalComponent implements OnInit {
           window.dispatchEvent(new CustomEvent('user-updated'));
         },
         error: (err) => {
-          console.error('[UserModal] Failed to update user:', err);
           this.toastService.show('Greška pri ažuriranju korisnika', 'error');
           this.isSubmitting = false;
         }

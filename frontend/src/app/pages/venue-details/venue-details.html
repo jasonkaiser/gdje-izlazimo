@@ -16,7 +16,6 @@
   <div class="relative z-10">
     @if (vm$ | async; as vm) {
 
-      <!-- ══════════════ LOADING ══════════════ -->
       @if (vm.loading) {
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 pt-20 space-y-6">
           <div class="text-center space-y-4">
@@ -32,7 +31,6 @@
         </div>
       }
 
-      <!-- ══════════════ ERROR ══════════════ -->
       @if (!vm.loading && vm.errorMsg) {
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 pt-28 flex justify-center">
           <div class="inline-flex flex-col items-center gap-5 rounded-3xl border border-red-500/15 bg-red-500/[0.04] backdrop-blur-sm px-10 py-8 max-w-sm w-full text-center">
@@ -52,17 +50,14 @@
         </div>
       }
 
-      <!-- ══════════════ MAIN CONTENT ══════════════ -->
       @if (!vm.loading && !vm.errorMsg) {
 
-        <!-- ─── HERO ─────────────────────────────────── -->
         <div
           inView (inViewChange)="onTitleInView($event)"
           class="pt-20 sm:pt-28 pb-8 text-center transition-all duration-700 ease-out"
           [style.opacity]="titleShown ? '1' : '0'"
           [style.transform]="titleShown ? 'translateY(0)' : 'translateY(24px)'"
         >
-          <!-- Category pill -->
           <div class="flex justify-center mb-6">
             <span class="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-500/[0.07] backdrop-blur-sm
                          px-4 py-1.5 font-dm text-[10px] tracking-[0.2em] uppercase text-violet-300/70">
@@ -71,13 +66,11 @@
             </span>
           </div>
 
-          <!-- Venue name -->
           <h1 class="font-sora font-regular text-5xl sm:text-7xl lg:text-[96px] tracking-[-0.03em] leading-[0.95]
                      hero-title from-white via-white/90 to-white/40 -mb-5 bg-clip-text text-transparent px-4">
             {{ vm.venueName }}
           </h1>
 
-          <!-- Meta info row -->
           <div class="mt-7 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-4">
             @if (vm.address) {
               <span class="inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.03] backdrop-blur-sm
@@ -110,7 +103,6 @@
           </div>
         </div>
 
-        <!-- ─── IMAGE SLIDER ──────────────────────────── -->
         <div
           inView (inViewChange)="onSliderInView($event)"
           class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 transition-all duration-700 ease-out delay-100"
@@ -127,11 +119,10 @@
               "
             ></div>
 
-            <!-- ─── FAVORITE BUTTON — overlaid top-right of image ─── -->
             @if (authService.hasRole('user') || !authService.authenticated()) {
               <button
                 type="button"
-                (click)="toggleFavorite(vm.venueId)"
+                (click)="toggleFavorite(vm)"
                 [disabled]="favoriteLoading"
                 class="favorite-btn absolute top-4 right-4 sm:top-5 sm:right-5 z-20
                        inline-flex items-center gap-2 rounded-2xl
@@ -139,8 +130,8 @@
                        transition-all duration-350 ease-out
                        disabled:opacity-50 disabled:cursor-not-allowed
                        hover:scale-[1.04] active:scale-[0.97]"
-                [class.is-favorite]="isFavorite"
-                [style]="isFavorite
+                [class.is-favorite]="vm.isFavorite"
+                [style]="vm.isFavorite
                   ? 'padding: 8px 14px 8px 10px; border: 1px solid rgba(244,63,94,0.50); background: rgba(10,6,18,0.72); backdrop-filter: blur(16px); box-shadow: 0 0 0 1px rgba(244,63,94,0.08), 0 8px 24px rgba(244,63,94,0.20); color: rgba(253,164,175,0.95);'
                   : 'padding: 8px 14px 8px 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(10,6,18,0.60); backdrop-filter: blur(16px); box-shadow: 0 4px 16px rgba(0,0,0,0.4); color: rgba(255,255,255,0.50);'"
               >
@@ -152,7 +143,7 @@
                     </svg>
                   </span>
                   <span>Učitavanje...</span>
-                } @else if (isFavorite) {
+                } @else if (vm.isFavorite) {
                   <span class="heart-icon-wrap h-7 w-7 rounded-xl flex items-center justify-center flex-shrink-0"
                         style="background: rgba(244,63,94,0.20); border: 1px solid rgba(244,63,94,0.35); box-shadow: 0 0 12px rgba(244,63,94,0.20);">
                     <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="rgba(253,164,175,1)">
@@ -207,7 +198,6 @@
           </div>
         </div>
 
-        <!-- ─── STATS ROW ─────────────────────────────── -->
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 mt-5">
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
 
@@ -231,9 +221,11 @@
             <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
                         group hover:border-amber-500/25 hover:bg-amber-500/[0.04] transition-all duration-300 cursor-default">
               <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-amber-500/8 blur-2xl -translate-y-6 translate-x-6 group-hover:bg-amber-500/18 transition-colors duration-300"></div>
-              <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/25 mb-2">Kapacitet</p>
-              <p class="font-sora text-[32px] font-bold text-white leading-none">100<span class="font-dm text-[13px] text-white/25 ml-1.5">os.</span></p>
-            </div>
+              <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/25 mb-2">Ukupno Stolova</p>
+              <p class="font-sora text-[32px] font-bold text-white leading-none">
+                {{ vm.totalCapacity }}
+              </p>           
+              </div>
 
             <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
                         group hover:border-blue-500/25 hover:bg-blue-500/[0.04] transition-all duration-300 cursor-default">
@@ -248,11 +240,9 @@
           </div>
         </div>
 
-        <!-- ─── MAIN 2-COL LAYOUT ─────────────────────── -->
         <div class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 sm:mt-10 max-w-[1660px]">
           <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-6 lg:gap-7 items-start">
 
-            <!-- ═══ LEFT COLUMN ═══ -->
             <div
               inView (inViewChange)="onReserveInView($event)"
               class="space-y-5 transition-all duration-700 ease-out delay-100"
@@ -260,7 +250,6 @@
               [style.transform]="reserveShown ? 'translateX(0)' : 'translateX(-20px)'"
             >
 
-              <!-- CARD: Rezerviraj Stol -->
               <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-7">
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
                   style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.5), transparent);"></div>
@@ -289,7 +278,6 @@
                     style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);"></div>
                 </button>
 
-                <!-- Info rows -->
                 <div class="mt-6 pt-6 border-t border-white/[0.05] space-y-3">
                   @if (vm.address) {
                     <div class="flex items-center gap-3 group/row cursor-default">
@@ -328,7 +316,6 @@
                 </div>
               </div>
 
-              <!-- CARD: Ponuda & Pogodnosti -->
               <div
                 inView (inViewChange)="onWhyUsInView($event)"
                 class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 transition-all duration-700 ease-out delay-150"
@@ -359,7 +346,6 @@
                 </div>
               </div>
 
-              <!-- CARD: Kako Funkcioniše -->
               <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7">
                 <div class="absolute top-0 left-0 right-0 h-px"
                   style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);"></div>
@@ -393,10 +379,8 @@
 
             </div>
 
-            <!-- ═══ RIGHT COLUMN ═══ -->
             <div class="space-y-5">
 
-              <!-- CARD: Vrste Stolova (accordion) -->
               <div
                 inView (inViewChange)="onAboutInView($event)"
                 class="transition-all duration-700 ease-out"
@@ -488,7 +472,6 @@
                 </div>
               </div>
 
-              <!-- CARD: O Lokalu -->
               <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7">
                 <div class="absolute top-0 right-0 h-40 w-40 rounded-full -translate-y-10 translate-x-10"
                   style="background: radial-gradient(circle, rgba(124,58,237,0.10) 0%, transparent 70%);"></div>
@@ -509,7 +492,6 @@
                 }
               </div>
 
-              <!-- CARD: Zašto Gdje Izlazimo -->
               <div
                 inView (inViewChange)="onTablesInView($event)"
                 class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7 transition-all duration-700 ease-out delay-200"
@@ -549,10 +531,8 @@
 
         <div class="h-32 sm:h-44"></div>
 
-        <!-- ─── STICKY CTA ────────────────────────────── -->
         <div class="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
 
-          <!-- Desktop FAB -->
           <div class="hidden lg:block absolute bottom-8 right-8 pointer-events-auto">
             <button type="button" (click)="toggleReservation()"
               class="group relative inline-flex items-center gap-2.5 px-7 py-4 rounded-2xl overflow-hidden
@@ -570,7 +550,6 @@
             </button>
           </div>
 
-          <!-- Mobile bar -->
           <div class="lg:hidden pointer-events-auto">
             <div class="border-t border-white/[0.05] px-4 py-3 backdrop-blur-2xl"
               style="background: rgba(8,7,15,0.88); box-shadow: 0 -16px 40px rgba(0,0,0,0.5);">
@@ -594,7 +573,6 @@
 
         </div>
 
-        <!-- ─── RESERVATION MODAL ─────────────────────── -->
         @if (reservationModalShown) {
           <app-reservation-modal
             (close)="reservationModalShown = false"
@@ -605,13 +583,23 @@
           ></app-reservation-modal>
         }
 
+        @if (successModalShown) {
+          <app-reservation-success-modal
+            [venueName]="vm.venueName"
+            [tableType]="successDetails.tableType"
+            [date]="successDetails.date"
+            [time]="successDetails.time"
+            [guests]="successDetails.guests"
+            (close)="successModalShown = false"
+          ></app-reservation-success-modal>
+       }
+
         @if (reservationErrorMsg) {
           <div class="fixed bottom-24 lg:bottom-8 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl border border-red-500/20 bg-red-500/[0.08] backdrop-blur-xl">
             <p class="font-dm text-[13px] text-red-300/90">{{ reservationErrorMsg }}</p>
           </div>
         }
 
-        <!-- ─── DESCRIPTION MODAL ─────────────────────── -->
         @if (descriptionModalShown) {
           <div
             class="fixed inset-0 z-[60] flex items-center justify-center p-4 modal-backdrop"

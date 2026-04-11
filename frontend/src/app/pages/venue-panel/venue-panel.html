@@ -1,20 +1,15 @@
-<!-- venue-panel.html — PREMIUM REDESIGN v3 with Improved Filters -->
-
-<!-- Radial glow decoration -->
 <div class="pointer-events-none absolute inset-x-0 top-0 flex justify-center overflow-hidden">
   <div class="h-[420px] w-[720px] rounded-full bg-white/[0.03] blur-[120px]"></div>
 </div>
 
 <section class="relative w-full overflow-visible py-16 sm:py-20 mt-15 z-50 px-7 sm:px-18">
 
-  <!-- Page Title -->
   <div class="animate-fade-in text-center sm:text-center mb-20">
     <h1 class="font-sora text-5xl font-regular tracking-tight text-white gradient-text">
       Upravljanje Lokalom
     </h1>
   </div>
 
-  <!-- Venue Info Card -->
   @if (venue$ | async; as venue) {
     <article 
       class="group relative overflow-hidden
@@ -28,64 +23,41 @@
              hover:shadow-[0_18px_55px_rgba(0,0,0,0.70)]
              animate-fade-in-delay-1"
     >
-      <!-- Left accent bar with venue glow -->
       <span
         class="pointer-events-none absolute left-0 top-4 bottom-4 w-[2px]
-               rounded-full
-               opacity-70
-               transition-all duration-300
-               group-hover:opacity-100"
-        style="
-          background: linear-gradient(to bottom, 
-            rgba(139,92,246,0) 0%, 
-            rgba(139,92,246,0.95) 18%, 
-            rgba(139,92,246,0.95) 82%, 
-            rgba(139,92,246,0) 100%);
-          box-shadow: 0 0 30px rgba(139,92,246,0.85);
-        "
+               rounded-full opacity-70 transition-all duration-300 group-hover:opacity-100"
+        style="background: linear-gradient(to bottom, rgba(139,92,246,0) 0%, rgba(139,92,246,0.95) 18%, rgba(139,92,246,0.95) 82%, rgba(139,92,246,0) 100%);
+               box-shadow: 0 0 30px rgba(139,92,246,0.85);"
       ></span>
 
-      <!-- Corner accents -->
       <span
         class="pointer-events-none absolute left-0 top-0 h-[44px] w-[150px]
-              rounded-tl-3xl
-              border-l-[2px] border-t-[2px] border-purple-500/30
-              opacity-20
-              transition-opacity duration-300
-              group-hover:opacity-45
+              rounded-tl-3xl border-l-[2px] border-t-[2px] border-purple-500/30
+              opacity-20 transition-opacity duration-300 group-hover:opacity-45
               [mask-image:radial-gradient(circle_at_top_left,black_25%,transparent_75%)]"
       ></span>
 
       <span
         class="pointer-events-none absolute left-0 bottom-0 h-[44px] w-[150px]
-              rounded-bl-3xl
-              border-l-[2px] border-b-[2px] border-purple-500/30
-              opacity-20
-              transition-opacity duration-300
-              group-hover:opacity-45
+              rounded-bl-3xl border-l-[2px] border-b-[2px] border-purple-500/30
+              opacity-20 transition-opacity duration-300 group-hover:opacity-45
               [mask-image:radial-gradient(circle_at_bottom_left,black_25%,transparent_75%)]"
       ></span>
 
-      <!-- Subtle hover sheen -->
       <span
         class="pointer-events-none absolute inset-0 opacity-0
                bg-[linear-gradient(120deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_35%,rgba(255,255,255,0.04)_70%,rgba(255,255,255,0)_100%)]
-               transition-opacity duration-300
-               group-hover:opacity-100"
+               transition-opacity duration-300 group-hover:opacity-100"
       ></span>
 
-      <!-- Content -->
       <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         
-        <!-- Left: Venue info -->
         <div class="flex flex-col gap-3">
-          <!-- Venue name + badges -->
           <div class="flex items-center gap-3 flex-wrap">
             <h2 class="font-sora text-[26px] sm:text-[28px] font-semibold text-white/95 leading-tight">
               {{ venue.name }}
             </h2>
             
-            <!-- Venue type badge -->
             <span
               class="inline-flex items-center rounded-full px-3 py-1 font-dm text-[11px] tracking-[0.12em] uppercase"
               style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); color: rgba(167,139,250,1);"
@@ -93,7 +65,6 @@
               {{ venue.venueType }}
             </span>
             
-            <!-- Active status badge -->
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-dm text-[11px] tracking-[0.12em] uppercase"
               [style.background]="venue.isActive ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'"
@@ -108,7 +79,6 @@
             </span>
           </div>
 
-          <!-- Address + Phone -->
           <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
             <span class="font-dm text-[13px] text-white/50 flex items-center gap-1.5">
               <svg class="h-3.5 w-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -127,60 +97,54 @@
           </div>
         </div>
 
-<!-- Right: Edit + Active Toggle -->
-<div class="flex items-center gap-4 flex-shrink-0 flex-wrap">
+        <div class="flex items-center gap-4 flex-shrink-0 flex-wrap">
 
-  <!-- EDIT VENUE BUTTON -->
-  <button
-    (click)="editVenue(venue)"
-    class="venue-edit-btn group"
-    title="Uredi lokal"
-  >
-    <svg class="h-4 w-4 transition-transform duration-200 group-hover:scale-110" 
-         fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" 
-            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
-    </svg>
-    <span class="font-dm text-[12px] tracking-[0.08em] uppercase">Uredi lokal</span>
-  </button>
+          <button
+            (click)="editVenue(venue)"
+            class="venue-edit-btn group"
+            title="Uredi lokal"
+          >
+            <svg class="h-4 w-4 transition-transform duration-200 group-hover:scale-110" 
+                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" 
+                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
+            </svg>
+            <span class="font-dm text-[12px] tracking-[0.08em] uppercase">Uredi lokal</span>
+          </button>
 
-    <!-- STATUS TOGGLE (your existing code) -->
-      <div class="flex items-center gap-3">
-        <span class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/40">Status lokala</span>
-        <button
-          (click)="toggleVenueActive(venue)"
-          [disabled]="isTogglingActive"
-          class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
-                transition-all duration-200 ease-in-out focus:outline-none
-                disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
-          [style.background]="venue.isActive ? 'rgba(34,197,94,0.9)' : 'rgba(255,255,255,0.15)'"
-          [attr.aria-checked]="venue.isActive"
-          role="switch"
-        >
-          <span
-            class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
-            [style.transform]="venue.isActive ? 'translateX(20px)' : 'translateX(0px)'"
-          ></span>
-        </button>
-        @if (toggleSuccessMsg) {
-          <span class="font-dm text-[11px] text-green-400 animate-fade-in">{{ toggleSuccessMsg }}</span>
-        }
-        @if (toggleErrorMsg) {
-          <span class="font-dm text-[11px] text-red-400 animate-fade-in">{{ toggleErrorMsg }}</span>
-        }
-      </div>
+          <div class="flex items-center gap-3">
+            <span class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/40">Status lokala</span>
+            <button
+              (click)="toggleVenueActive(venue)"
+              [disabled]="isTogglingActive"
+              class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
+                    transition-all duration-200 ease-in-out focus:outline-none
+                    disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
+              [style.background]="venue.isActive ? 'rgba(34,197,94,0.9)' : 'rgba(255,255,255,0.15)'"
+              [attr.aria-checked]="venue.isActive"
+              role="switch"
+            >
+              <span
+                class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
+                [style.transform]="venue.isActive ? 'translateX(20px)' : 'translateX(0px)'"
+              ></span>
+            </button>
+            @if (toggleSuccessMsg) {
+              <span class="font-dm text-[11px] text-green-400 animate-fade-in">{{ toggleSuccessMsg }}</span>
+            }
+            @if (toggleErrorMsg) {
+              <span class="font-dm text-[11px] text-red-400 animate-fade-in">{{ toggleErrorMsg }}</span>
+            }
+          </div>
 
-    </div>
-
+        </div>
       </div>
     </article>
   }
 
-  <!-- Stats Row -->
   @if (tabCounts$ | async; as counts) {
     <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 animate-fade-in-delay-2">
 
-      <!-- Total Reservations -->
       <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 
                   transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
         <div class="flex items-center gap-2 mb-3">
@@ -194,7 +158,6 @@
         <span class="font-sora text-[32px] font-semibold text-white/95">{{ counts.ALL }}</span>
       </div>
 
-      <!-- Pending -->
       <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 
                   transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
         <div class="flex items-center gap-2 mb-3">
@@ -208,7 +171,6 @@
         <span class="font-sora text-[32px] font-semibold" style="color: rgba(255,174,0,0.95)">{{ counts.PENDING }}</span>
       </div>
 
-      <!-- Today's Reservations -->
       <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 
                   transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
         <div class="flex items-center gap-2 mb-3">
@@ -219,10 +181,11 @@
           </div>
           <span class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50">Danas</span>
         </div>
-        <span class="font-sora text-[32px] font-semibold" style="color: rgba(96,165,250,0.95)">{{ todayCount$ | async }}</span>
+        @if (todayReservations$ | async; as todayList) {
+          <span class="font-sora text-[32px] font-semibold" style="color: rgba(96,165,250,0.95)">{{ todayList.length }}</span>
+        }
       </div>
 
-      <!-- Cancelled -->
       <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 
                   transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
         <div class="flex items-center gap-2 mb-3">
@@ -239,150 +202,132 @@
     </div>
   }
 
-<!-- TODAY'S RESERVATIONS HIGHLIGHT -->
-@if (todayReservations$ | async; as todayReservations) {
-  @if (todayReservations.length > 0) {
-    <div
-      class="mt-6 animate-fade-in-delay-2
-             relative overflow-hidden rounded-2xl
-             border transition-all duration-300 hover:-translate-y-0.5"
-      style="background: rgba(59,130,246,0.06); border-color: rgba(59,130,246,0.2);"
-    >
+  @if (todayReservations$ | async; as todayReservations) {
+    @if (todayReservations.length > 0) {
+      <div
+        class="mt-6 animate-fade-in-delay-2 relative overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-0.5"
+        style="background: rgba(59,130,246,0.06); border-color: rgba(59,130,246,0.2);"
+      >
 
-      <!-- ── MOBILE layout (stacked) ── -->
-      <div class="flex flex-col gap-0 sm:hidden">
+        <div class="flex flex-col gap-0 sm:hidden">
 
-        <!-- Top row: icon + label + big count -->
-        <div class="flex items-center justify-between px-5 pt-5 pb-4">
-          <div class="flex items-center gap-3">
-            <div
-              class="flex items-center justify-center h-9 w-9 rounded-xl flex-shrink-0"
-              style="background: rgba(59,130,246,0.15);"
-            >
-              <svg class="h-4 w-4" style="color: rgba(96,165,250,1);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
-              </svg>
+          <div class="flex items-center justify-between px-5 pt-5 pb-4">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex items-center justify-center h-9 w-9 rounded-xl flex-shrink-0"
+                style="background: rgba(59,130,246,0.15);"
+              >
+                <svg class="h-4 w-4" style="color: rgba(96,165,250,1);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                </svg>
+              </div>
+              <span class="font-dm text-[11px] tracking-[0.14em] uppercase" style="color: rgba(96,165,250,0.8);">
+                Današnje rezervacije
+              </span>
             </div>
-            <span class="font-dm text-[11px] tracking-[0.14em] uppercase" style="color: rgba(96,165,250,0.8);">
-              Današnje rezervacije
-            </span>
+
+            <div class="flex flex-col items-end gap-0.5">
+              <span class="font-sora text-[28px] font-semibold leading-none" style="color: rgba(96,165,250,0.95);">
+                {{ todayReservations.length }}
+              </span>
+              <span class="font-dm text-[10px] tracking-[0.10em] uppercase text-white/35 leading-none">
+                {{ todayReservations.length === 1 ? 'rezervacija' : 'rezervacije' }}
+              </span>
+            </div>
           </div>
 
-          <!-- Count badge -->
-          <div class="flex flex-col items-end gap-0.5">
-            <span class="font-sora text-[28px] font-semibold leading-none" style="color: rgba(96,165,250,0.95);">
-              {{ todayReservations.length }}
-            </span>
-            <span class="font-dm text-[10px] tracking-[0.10em] uppercase text-white/35 leading-none">
-              {{ todayReservations.length === 1 ? 'rezervacija' : 'rezervacije' }}
-            </span>
-          </div>
-        </div>
+          <div class="h-px mx-5" style="background: rgba(59,130,246,0.12);"></div>
 
-        <!-- Divider -->
-        <div class="h-px mx-5" style="background: rgba(59,130,246,0.12);"></div>
-
-        <!-- Time pills -->
-        <div class="flex flex-wrap gap-2 px-5 py-4">
-          @for (r of todayReservations.slice(0, 5); track r.id) {
-            <span
-              class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-dm"
-              style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: rgba(147,197,253,1);"
-            >
-              {{ r.reservationTime }} • {{ r.numberOfPeople }} os.
-            </span>
-          }
-          @if (todayReservations.length > 5) {
-            <span class="inline-flex items-center rounded-full px-3 py-1.5 text-[12px] font-dm text-white/40">
-              +{{ todayReservations.length - 5 }} više
-            </span>
-          }
-        </div>
-
-        <!-- Divider -->
-        <div class="h-px mx-5" style="background: rgba(59,130,246,0.12);"></div>
-
-        <!-- Prikaži button — full width on mobile -->
-        <div class="px-5 py-4">
-          <button
-            (click)="viewTodayReservations()"
-            class="w-full rounded-xl py-2.5 font-dm text-[12px] tracking-[0.10em] uppercase transition-all
-                   hover:bg-blue-500/10 active:scale-95"
-            style="border: 1px solid rgba(59,130,246,0.3); color: rgba(96,165,250,0.9);"
-          >
-            Prikaži sve
-          </button>
-        </div>
-
-      </div>
-
-      <!-- ── DESKTOP layout (horizontal, unchanged) ── -->
-      <div class="hidden sm:flex items-center gap-4 px-6 py-5">
-
-        <!-- Icon -->
-        <div
-          class="flex items-center justify-center h-10 w-10 rounded-xl flex-shrink-0"
-          style="background: rgba(59,130,246,0.15);"
-        >
-          <svg class="h-5 w-5" style="color: rgba(96,165,250,1);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
-          </svg>
-        </div>
-
-        <!-- Label + time pills -->
-        <div class="flex flex-col gap-2 flex-1 min-w-0">
-          <span class="font-dm text-[11px] tracking-[0.14em] uppercase" style="color: rgba(96,165,250,0.8);">
-            Današnje rezervacije
-          </span>
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-2 px-5 py-4">
             @for (r of todayReservations.slice(0, 5); track r.id) {
               <span
-                class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-dm"
+                class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-dm"
                 style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: rgba(147,197,253,1);"
               >
                 {{ r.reservationTime }} • {{ r.numberOfPeople }} os.
               </span>
             }
             @if (todayReservations.length > 5) {
-              <span class="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-dm text-white/40">
+              <span class="inline-flex items-center rounded-full px-3 py-1.5 text-[12px] font-dm text-white/40">
                 +{{ todayReservations.length - 5 }} više
               </span>
             }
           </div>
+
+          <div class="h-px mx-5" style="background: rgba(59,130,246,0.12);"></div>
+
+          <div class="px-5 py-4">
+            <button
+              (click)="viewTodayReservations()"
+              class="w-full rounded-xl py-2.5 font-dm text-[12px] tracking-[0.10em] uppercase transition-all
+                     hover:bg-blue-500/10 active:scale-95"
+              style="border: 1px solid rgba(59,130,246,0.3); color: rgba(96,165,250,0.9);"
+            >
+              Prikaži sve
+            </button>
+          </div>
+
         </div>
 
-        <!-- Right side: count + button -->
-        <div class="flex flex-col items-end justify-center gap-2 flex-shrink-0 self-center">
-          <span class="font-sora text-[26px] font-semibold leading-none" style="color: rgba(96,165,250,0.95);">
-            {{ todayReservations.length }}
-          </span>
-          <span class="font-dm text-[10px] tracking-[0.12em] uppercase text-white/35 leading-none">
-            {{ todayReservations.length === 1 ? 'rezervacija' : 'rezervacije' }}
-          </span>
-          <button
-            (click)="viewTodayReservations()"
-            class="mt-1 rounded-full border px-4 py-1.5 font-dm text-[11px] tracking-[0.10em] uppercase transition-all
-                   hover:bg-blue-500/10 hover:-translate-y-0.5"
-            style="border-color: rgba(59,130,246,0.3); color: rgba(96,165,250,0.9);"
+        <div class="hidden sm:flex items-center gap-4 px-6 py-5">
+
+          <div
+            class="flex items-center justify-center h-10 w-10 rounded-xl flex-shrink-0"
+            style="background: rgba(59,130,246,0.15);"
           >
-            Prikaži
-          </button>
+            <svg class="h-5 w-5" style="color: rgba(96,165,250,1);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+            </svg>
+          </div>
+
+          <div class="flex flex-col gap-2 flex-1 min-w-0">
+            <span class="font-dm text-[11px] tracking-[0.14em] uppercase" style="color: rgba(96,165,250,0.8);">
+              Današnje rezervacije
+            </span>
+            <div class="flex flex-wrap gap-2">
+              @for (r of todayReservations.slice(0, 5); track r.id) {
+                <span
+                  class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-dm"
+                  style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: rgba(147,197,253,1);"
+                >
+                  {{ r.reservationTime }} • {{ r.numberOfPeople }} os.
+                </span>
+              }
+              @if (todayReservations.length > 5) {
+                <span class="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-dm text-white/40">
+                  +{{ todayReservations.length - 5 }} više
+                </span>
+              }
+            </div>
+          </div>
+
+          <div class="flex flex-col items-end justify-center gap-2 flex-shrink-0 self-center">
+            <span class="font-sora text-[26px] font-semibold leading-none" style="color: rgba(96,165,250,0.95);">
+              {{ todayReservations.length }}
+            </span>
+            <span class="font-dm text-[10px] tracking-[0.12em] uppercase text-white/35 leading-none">
+              {{ todayReservations.length === 1 ? 'rezervacija' : 'rezervacije' }}
+            </span>
+            <button
+              (click)="viewTodayReservations()"
+              class="mt-1 rounded-full border px-4 py-1.5 font-dm text-[11px] tracking-[0.10em] uppercase transition-all
+                     hover:bg-blue-500/10 hover:-translate-y-0.5"
+              style="border-color: rgba(59,130,246,0.3); color: rgba(96,165,250,0.9);"
+            >
+              Prikaži
+            </button>
+          </div>
+
         </div>
 
       </div>
-
-    </div>
+    }
   }
-}
-  <!-- ============================================ -->
-  <!-- IMPROVED SEARCH & FILTER SECTION -->
-  <!-- ============================================ -->
+
   <div class="mt-10 animate-fade-in-delay-3">
     
-    <!-- Main Search Bar with Filter Toggle -->
     <div class="flex flex-col sm:flex-row gap-3">
       
-      <!-- Search Input -->
       <div class="flex-1 relative">
         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
           <svg class="h-4 w-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -395,9 +340,7 @@
           (ngModelChange)="onSearchChange()"
           placeholder="Pretraži po telefonu, broju ljudi, zahtjevima..."
           class="w-full h-12 pl-11 pr-4
-                 rounded-2xl 
-                 border border-white/10 
-                 bg-white/[0.03]
+                 rounded-2xl border border-white/10 bg-white/[0.03]
                  font-dm text-[13px] text-white placeholder-white/30
                  transition-all duration-200
                  focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05]
@@ -415,14 +358,11 @@
         }
       </div>
 
-      <!-- Filter Toggle Button -->
       <button
         (click)="toggleFilter()"
-        class="h-12 px-5 rounded-2xl 
-               border border-white/10 bg-white/[0.03]
+        class="h-12 px-5 rounded-2xl border border-white/10 bg-white/[0.03]
                font-dm text-[12px] tracking-[0.08em] uppercase text-white/60
-               transition-all duration-200
-               hover:bg-white/[0.05] hover:border-white/15
+               transition-all duration-200 hover:bg-white/[0.05] hover:border-white/15
                flex items-center gap-2 justify-center whitespace-nowrap"
         [class.border-purple-500/30]="filterOpen"
         [class.bg-purple-500/5]="filterOpen"
@@ -437,15 +377,12 @@
         }
       </button>
 
-      <!-- Clear All Filters (only if any filter active) -->
       @if (searchQuery || dateFrom || dateTo || sortBy !== 'date-desc') {
         <button
           (click)="clearAllFilters()"
-          class="h-12 px-5 rounded-2xl 
-                 border border-red-500/20 bg-red-500/5
+          class="h-12 px-5 rounded-2xl border border-red-500/20 bg-red-500/5
                  font-dm text-[12px] tracking-[0.08em] uppercase text-red-400/80
-                 transition-all duration-200
-                 hover:bg-red-500/10 hover:border-red-500/30
+                 transition-all duration-200 hover:bg-red-500/10 hover:border-red-500/30
                  flex items-center gap-2"
         >
           <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -456,58 +393,39 @@
       }
     </div>
 
-    <!-- Expandable Advanced Filters Panel -->
     @if (filterOpen) {
-      <div class="mt-3 rounded-2xl border  border-white/10 
-                 bg-white/[0.03] backdrop-blur-sm animate-slide-down shadow-xl">
+      <div class="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm animate-slide-down shadow-xl">
         <div class="p-6">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             
-            <!-- Date From -->
             <div class="flex flex-col gap-2">
-              <label class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 pl-1">
-                Od datuma
-              </label>
+              <label class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 pl-1">Od datuma</label>
               <div class="custom-date-input-wrapper">
                 <input
                   type="date"
                   [(ngModel)]="dateFrom"
                   (ngModelChange)="onDateFilterChange()"
-                  class="custom-date-input w-full h-11 px-4
-                         rounded-xl 
-                         border border-white/10 
-                         bg-white/[0.03]
-                         font-dm text-[13px] text-white
-                         transition-all duration-200
-                         focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05]
-                         hover:border-white/15"
+                  class="custom-date-input w-full h-11 px-4 rounded-xl border border-white/10 bg-white/[0.03]
+                         font-dm text-[13px] text-white transition-all duration-200
+                         focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"
                 />
               </div>
             </div>
 
-            <!-- Date To -->
             <div class="flex flex-col gap-2">
-              <label class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 pl-1">
-                Do datuma
-              </label>
+              <label class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 pl-1">Do datuma</label>
               <div class="custom-date-input-wrapper">
                 <input
                   type="date"
                   [(ngModel)]="dateTo"
                   (ngModelChange)="onDateFilterChange()"
-                  class="custom-date-input w-full h-11 px-4
-                         rounded-xl 
-                         border border-white/10 
-                         bg-white/[0.03]
-                         font-dm text-[13px] text-white
-                         transition-all duration-200
-                         focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05]
-                         hover:border-white/15"
+                  class="custom-date-input w-full h-11 px-4 rounded-xl border border-white/10 bg-white/[0.03]
+                         font-dm text-[13px] text-white transition-all duration-200
+                         focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"
                 />
               </div>
             </div>
 
-            <!-- Sort By -->
             <div class="dropdown-wrapper-special">
               <app-dropdown
                 label="SORTIRAJ PO"
@@ -525,11 +443,9 @@
 
   </div>
 
-  <!-- Tab Filters -->
   @if (tabCounts$ | async; as counts) {
     <div class="mt-3 sm:mt-6">
 
-      <!-- Mobile dropdown -->
       <div class="sm:hidden mb-6">
         <button
           (click)="toggleMobileTab()"
@@ -567,7 +483,6 @@
         }
       </div>
 
-      <!-- Desktop pills - UPDATED TO MATCH RESERVATIONS.HTML -->
       <div class="hidden sm:flex items-center gap-3 sm:gap-4">
         @for (tab of allTabs; track tab) {
           <button
@@ -589,7 +504,6 @@
     </div>
   }
 
-  <!-- Reservations List -->
   @if (vm$ | async; as vm) {
 
     @if (vm.loading) {
@@ -620,7 +534,6 @@
         </p>
       </div>
     } @else {
-      <!-- FIXED: Center cards on all screen sizes with proper gap -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-20 justify-items-center">
         @for (r of vm.items; track r.id; let i = $index) {
           <app-venue-reservation-card
@@ -635,7 +548,6 @@
       </div>
     }
 
-    <!-- Pagination -->
     @if (!vm.loading && !vm.errorMsg && (vm.pageNo > 1 || vm.hasMore)) {
       <div class="mt-12 flex items-center justify-center gap-4">
         <button

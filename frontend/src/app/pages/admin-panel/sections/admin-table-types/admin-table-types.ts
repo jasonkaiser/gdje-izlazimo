@@ -44,7 +44,6 @@ export class AdminTableTypesComponent implements OnInit {
   private readonly modalService = inject(ModalService);
   private readonly destroyRef = inject(DestroyRef);
 
-  // State
   showModal = false;
   isEditing = false;
   editingId: string | null = null;
@@ -54,10 +53,8 @@ export class AdminTableTypesComponent implements OnInit {
     description: ''
   };
 
-  // Subjects
   private readonly refresh$ = new BehaviorSubject<void>(undefined);
 
-  // Observables
   vm$!: Observable<ViewModel>;
 
   ngOnInit(): void {
@@ -75,7 +72,6 @@ export class AdminTableTypesComponent implements OnInit {
             errorMsg: ''
           })),
           catchError(err => {
-            console.error('[AdminTableTypes] Failed to load table types:', err);
             this.toastService.show('Greška pri učitavanju tipova stolova', 'error');
             return of({
               items: [],
@@ -141,7 +137,6 @@ export class AdminTableTypesComponent implements OnInit {
     };
 
     if (this.isEditing && this.editingId) {
-      // Update
       this.tableTypeService.updateTableType(this.editingId, request)
         .pipe(take(1))
         .subscribe({
@@ -151,12 +146,10 @@ export class AdminTableTypesComponent implements OnInit {
             this.toastService.show('Tip stola uspješno ažuriran', 'success');
           },
           error: err => {
-            console.error('[AdminTableTypes] Failed to update:', err);
             this.toastService.show('Greška pri ažuriranju', 'error');
           }
         });
     } else {
-      // Create
       this.tableTypeService.createTableType(request)
         .pipe(take(1))
         .subscribe({
@@ -166,7 +159,6 @@ export class AdminTableTypesComponent implements OnInit {
             this.toastService.show('Tip stola uspješno kreiran', 'success');
           },
           error: err => {
-            console.error('[AdminTableTypes] Failed to create:', err);
             this.toastService.show('Greška pri kreiranju', 'error');
           }
         });
@@ -196,7 +188,6 @@ export class AdminTableTypesComponent implements OnInit {
                 this.toastService.show('Tip stola uspješno obrisan', 'success');
               },
               error: err => {
-                console.error('[AdminTableTypes] Failed to delete:', err);
                 this.toastService.show('Greška pri brisanju', 'error');
               }
             });

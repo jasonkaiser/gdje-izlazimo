@@ -99,7 +99,6 @@ export class AdminReservationsComponent implements OnInit {
           sortDir: 'DESC' 
         }).pipe(
           catchError(err => {
-            console.error('[AdminReservations] Failed to load reservations:', err);
             this.toastService.show('Greška pri učitavanju rezervacija', 'error');
             return of([] as ReservationResponseDto[]);
           })
@@ -132,12 +131,10 @@ export class AdminReservationsComponent implements OnInit {
                   switchMap(dateRange =>
                     this.pageNo$.pipe(
                       map(pageNo => {
-                        // Apply filters
                         let filtered = this.applySearch(allReservations, search);
                         filtered = this.applyStatusFilter(filtered, statusFilter);
                         filtered = this.applyDateRange(filtered, dateRange);
 
-                        // Paginate
                         const start = (pageNo - 1) * this.pageSize;
                         const end = start + this.pageSize;
                         const slice = filtered.slice(start, end);
@@ -282,7 +279,6 @@ export class AdminReservationsComponent implements OnInit {
                 this.toastService.show('Rezervacija uspješno otkazana', 'success');
               },
               error: err => {
-                console.error('[AdminReservations] Failed to cancel reservation:', err);
                 this.toastService.show('Greška pri otkazivanju rezervacije', 'error');
               }
             });
@@ -313,7 +309,6 @@ export class AdminReservationsComponent implements OnInit {
                 this.toastService.show('Rezervacija uspješno obrisana', 'success');
               },
               error: err => {
-                console.error('[AdminReservations] Failed to delete reservation:', err);
                 this.toastService.show('Greška pri brisanju rezervacije', 'error');
               }
             });

@@ -112,7 +112,7 @@ class ReservationServiceTest {
     void shouldReturnReservationById() {
         ReservationResponse expectedResponse = new ReservationResponse(
                 reservationId, userId, venueId, "+38761000000",
-                "Test Venue", "Test Address",
+                "Test Venue", VenueCategory.CLUB, "Test Address",
                 LocalDate.now().plusDays(1), LocalTime.of(20, 0),
                 4, tableTypeId, Status.PENDING, null, null,
                 LocalDateTime.now(), LocalDateTime.now()
@@ -165,7 +165,7 @@ class ReservationServiceTest {
 
         ReservationResponse expectedResponse = new ReservationResponse(
                 reservationId, userId, venueId, "+38761000000",
-                "Test Venue", "Test Address",
+                "Test Venue", VenueCategory.CLUB, "Test Address",
                 LocalDate.now().plusDays(1), LocalTime.of(20, 0),
                 4, tableTypeId, Status.PENDING, null, null,
                 LocalDateTime.now(), LocalDateTime.now()

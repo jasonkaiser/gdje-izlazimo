@@ -84,7 +84,6 @@ export class AdminPanelComponent implements OnInit {
   
     this.currentUser$ = this.authService.me().pipe(
       catchError(err => {
-        console.error('[AdminPanel] Failed to load current user:', err);
         this.router.navigate(['/login']);
         return of({} as UserResponseDto);
       }),

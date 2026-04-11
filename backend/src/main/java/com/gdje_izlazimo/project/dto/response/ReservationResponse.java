@@ -1,6 +1,7 @@
 package com.gdje_izlazimo.project.dto.response;
 
 import com.gdje_izlazimo.project.enums.Status;
+import com.gdje_izlazimo.project.enums.VenueCategory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ public record ReservationResponse(
         UUID venueId,
         String phone,
         String venueName,
+        VenueCategory venueType,
         String venueAddress,
         LocalDate reservationDate,
         LocalTime reservationTime,

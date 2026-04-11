@@ -1,304 +1,231 @@
-@if(reservation){
+@if (reservation()) {
   <article
-  class="group relative w-full max-w-[380px] sm:max-w-[400px]  
-         rounded-3xl overflow-hidden
-         bg-[#090909]
-         border border-white/10
-         shadow-[0_10px_30px_rgba(0,0,0,0.55)]
-         px-7 sm:px-8 py-4 sm:py-5
-         transition-all duration-300 ease-out
-         hover:-translate-y-1 hover:shadow-[0_18px_55px_rgba(0,0,0,0.70)]
-         hover:border-white/16"
->
-  <!-- LEFT ACCENT (realistic, follows corners + fades) -->
-  <!-- 1) main vertical glow line with top/bottom fade -->
-<span
-  class="pointer-events-none absolute left-0 top-3 bottom-3 w-[2px]
-         rounded-full
-         opacity-70
-         transition-all duration-300
-         group-hover:opacity-100
-         group-hover:scale-y-[1.02]
-         group-hover:filter-[brightness(1.1)]
+    class="group relative w-full max-w-[380px] sm:max-w-[400px]
+           rounded-3xl overflow-hidden
+           bg-[#090909]
+           border border-white/10
+           shadow-[0_10px_30px_rgba(0,0,0,0.55)]
+           px-7 sm:px-8 py-4 sm:py-5
+           transition-all duration-300 ease-out
+           hover:-translate-y-1 hover:shadow-[0_18px_55px_rgba(0,0,0,0.70)]
+           hover:border-white/16"
+  >
 
-
-"
-  [style.background]="
-    'linear-gradient(to bottom,' +
-    style().accent + ',0) 0%,' +
-    style().accent + ',0.95) 18%,' +
-    style().accent + ',0.95) 82%,' +
-    style().accent + ',0) 100%)'
-  "
-  [style.boxShadow]="
-    reservation.status === 'CANCELLED'
-      ? 'none'
-      : '0 0 30px ' + style().accent + ',0.85)'
-  "
-></span>
-
-
-
-  <!-- 2) top-left corner stroke (wraps around radius) -->
     <span
-      class="pointer-events-none absolute left-0 top-0 h-[44px] w-[150px]
-            rounded-tl-3xl
-            border-l-[2px] border-t-[2px]
-            opacity-20
-            transition-opacity duration-300
-            group-hover:opacity-45
-            [mask-image:radial-gradient(circle_at_top_left,black_25%,transparent_75%)]"
-      [style.borderColor]="style().accent + ',1)'"
+      class="pointer-events-none absolute left-0 top-3 bottom-3 w-[2px]
+             rounded-full opacity-70 transition-all duration-300
+             group-hover:opacity-100"
+      [style.background]="
+        'linear-gradient(to bottom,' +
+        style().accent + ',0) 0%,' +
+        style().accent + ',0.95) 18%,' +
+        style().accent + ',0.95) 82%,' +
+        style().accent + ',0) 100%)'
+      "
+      [style.boxShadow]="
+        reservation()!.status === 'CANCELLED'
+          ? 'none'
+          : '0 0 30px ' + style().accent + ',0.85)'
+      "
     ></span>
 
+    <span
+      class="pointer-events-none absolute left-0 top-0 h-[44px] w-[150px]
+             rounded-tl-3xl border-l-[2px] border-t-[2px]
+             opacity-20 transition-opacity duration-300 group-hover:opacity-45
+             [mask-image:radial-gradient(circle_at_top_left,black_25%,transparent_75%)]"
+      [style.borderColor]="style().accent + ',1)'"
+    ></span>
 
     <span
       class="pointer-events-none absolute left-0 bottom-0 h-[44px] w-[150px]
-            rounded-bl-3xl
-            border-l-[2px] border-b-[2px]
-            opacity-20
-            transition-opacity duration-300
-            group-hover:opacity-45
-            [mask-image:radial-gradient(circle_at_bottom_left,black_25%,transparent_75%)]"
+             rounded-bl-3xl border-l-[2px] border-b-[2px]
+             opacity-20 transition-opacity duration-300 group-hover:opacity-45
+             [mask-image:radial-gradient(circle_at_bottom_left,black_25%,transparent_75%)]"
       [style.borderColor]="style().accent + ',1)'"
     ></span>
 
-
-
-  <!-- SUBTLE hover sheen (modern glass) -->
-  <span
-    class="pointer-events-none absolute inset-0 opacity-0
-           bg-[linear-gradient(120deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_35%,rgba(255,255,255,0.04)_70%,rgba(255,255,255,0)_100%)]
-           transition-opacity duration-300
-           group-hover:opacity-100"
-  ></span>
-
-  <!-- radial highlight overlay -->
-  <span
-    class="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full
-           opacity-60 blur-2xl
-           bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0)_60%)]
-           transition-all duration-300
-           group-hover:opacity-90 group-hover:blur-3xl"
-  ></span>
-
-  <!-- Top row: badge + kebab -->
-  <div class="relative flex items-start justify-between gap-3 mb-7">
-    <!-- STATUS BADGE -->
-    <div
-    class="inline-flex items-center rounded-full px-3 py-1 transition-all duration-300"
-    [style.background]="style().badgeBg"
-  >
     <span
-      class="font-sora text-[10px] sm:text-[11px]
-            font-light tracking-[0.14em] uppercase"
-      [style.color]="style().badgeText"
-    >
-      {{ reservation.status }}
-    </span>
-  </div>
+      class="pointer-events-none absolute inset-0 opacity-0
+             bg-[linear-gradient(120deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_35%,rgba(255,255,255,0.04)_70%,rgba(255,255,255,0)_100%)]
+             transition-opacity duration-300 group-hover:opacity-100"
+    ></span>
 
+    <span
+      class="pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full
+             opacity-60 blur-2xl
+             bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0)_60%)]
+             transition-all duration-300 group-hover:opacity-90 group-hover:blur-3xl"
+    ></span>
 
-    <!-- Triple dot icon button with menu -->
-    <div class="relative">
-      <button
-        type="button"
-        (click)="toggleMenu(); $event.stopPropagation()"
-        class="h-5 w-12 rounded-2xl
-               bg-white/5 border border-white/10
-               grid place-items-center
-               transition-all duration-300
-               hover:bg-white/10 hover:border-white/20"
-        [class.bg-white/10]="menuOpen"
-        [class.border-white/20]="menuOpen"
-        aria-label="Opcije"
+    <div class="relative flex items-start justify-between gap-3 mb-7">
+      <div
+        class="inline-flex items-center rounded-full px-3 py-1 transition-all duration-300"
+        [style.background]="style().badgeBg"
       >
-        <span class="flex gap-1 transition-opacity duration-300 hover:opacity-80">
-          <span class="h-1 w-1 rounded-full bg-white/50"></span>
-          <span class="h-1 w-1 rounded-full bg-white/50"></span>
-          <span class="h-1 w-1 rounded-full bg-white/50"></span>
-        </span>
-      </button>
-
-      <!-- Dropdown menu -->
-      @if (menuOpen) {
-        <div
-          class="absolute right-0 top-full mt-2 z-50
-                 w-[180px] rounded-2xl
-                 bg-[#0A0A0A] border border-white/10
-                 shadow-[0_12px_60px_rgba(0,0,0,0.95)]
-                 py-2 animate-slide-down"
-          (click)="$event.stopPropagation()"
+        <span
+          class="font-sora text-[10px] sm:text-[11px] font-light tracking-[0.14em] uppercase"
+          [style.color]="style().badgeText"
         >
-          <button
-            type="button"
-            (click)="onViewDetails(); closeMenu()"
-            class="w-full flex items-center gap-3
-                   px-4 py-2.5
-                   font-dm text-[12px] text-white/75
-                   hover:bg-white/5 hover:text-white
-                   transition-all"
-          >
-            <svg class="h-4 w-4 text-white/50" viewBox="0 0 24 24" fill="none">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Vidi detalje
-          </button>
+          {{ reservation()!.status }}
+        </span>
+      </div>
 
-          @if (reservation.status === 'PENDING' || reservation.status === 'ACCEPTED') {
+      <div class="relative">
+        <button
+          type="button"
+          (click)="toggleMenu(); $event.stopPropagation()"
+          class="h-5 w-12 rounded-2xl bg-white/5 border border-white/10
+                 grid place-items-center transition-all duration-300
+                 hover:bg-white/10 hover:border-white/20"
+          [class.bg-white/10]="menuOpen"
+          [class.border-white/20]="menuOpen"
+          aria-label="Opcije"
+        >
+          <span class="flex gap-1 transition-opacity duration-300 hover:opacity-80">
+            <span class="h-1 w-1 rounded-full bg-white/50"></span>
+            <span class="h-1 w-1 rounded-full bg-white/50"></span>
+            <span class="h-1 w-1 rounded-full bg-white/50"></span>
+          </span>
+        </button>
+
+        @if (menuOpen) {
+          <div
+            class="absolute right-0 top-full mt-2 z-50
+                   w-[180px] rounded-2xl bg-[#0A0A0A] border border-white/10
+                   shadow-[0_12px_60px_rgba(0,0,0,0.95)] py-2 animate-slide-down"
+            (click)="$event.stopPropagation()"
+          >
             <button
               type="button"
-              (click)="onCancel(); closeMenu()"
-              class="w-full flex items-center gap-3
-                     px-4 py-2.5
+              (click)="onViewDetails(); closeMenu()"
+              class="w-full flex items-center gap-3 px-4 py-2.5
                      font-dm text-[12px] text-white/75
-                     hover:bg-white/5 hover:text-red-400
-                     transition-all"
+                     hover:bg-white/5 hover:text-white transition-all"
             >
               <svg class="h-4 w-4 text-white/50" viewBox="0 0 24 24" fill="none">
-                <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              Otkaži rezervaciju
+              Vidi detalje
             </button>
-          }
 
-          <div class="h-px bg-white/10 my-1 mx-2"></div>
+            @if (reservation()!.status === 'PENDING' || reservation()!.status === 'ACCEPTED') {
+              <button
+                type="button"
+                (click)="onCancel(); closeMenu()"
+                class="w-full flex items-center gap-3 px-4 py-2.5
+                       font-dm text-[12px] text-white/75
+                       hover:bg-white/5 hover:text-red-400 transition-all"
+              >
+                <svg class="h-4 w-4 text-white/50" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Otkaži rezervaciju
+              </button>
+            }
 
-          <button
-            type="button"
-            (click)="closeMenu()"
-            class="w-full flex items-center gap-3
-                   px-4 py-2.5
-                   font-dm text-[12px] text-white/75
-                   hover:bg-white/5 hover:text-white
-                   transition-all"
-          >
-            <svg class="h-4 w-4 text-white/50" viewBox="0 0 24 24" fill="none">
-              <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            Zatvori
-          </button>
-        </div>
+            <div class="h-px bg-white/10 my-1 mx-2"></div>
+
+            <button
+              type="button"
+              (click)="closeMenu()"
+              class="w-full flex items-center gap-3 px-4 py-2.5
+                     font-dm text-[12px] text-white/75
+                     hover:bg-white/5 hover:text-white transition-all"
+            >
+              <svg class="h-4 w-4 text-white/50" viewBox="0 0 24 24" fill="none">
+                <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Zatvori
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="relative mt-10">
+      <h3
+        class="font-sora font-semibold text-[26px] sm:text-[30px]
+               tracking-[0.02em] text-white leading-tight
+               transition-transform duration-300 group-hover:translate-x-[1px]"
+      >
+        {{ reservation()!.venueName }}
+      </h3>
+      <p class="mb-5 font-dm font-light text-[12px] tracking-[0.02em] text-white/60">
+        {{ reservation()!.venueAddress }}
+      </p>
+    </div>
+
+    <div class="relative mt-4 flex flex-wrap gap-3">
+      <div class="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10
+                  px-3 py-1.5 transition-all duration-300
+                  group-hover:bg-white/6 group-hover:border-white/15 hover:-translate-y-[1px]">
+        <svg class="h-4 w-4 text-white/30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="1.8"/>
+        </svg>
+        <span class="font-dm font-medium text-[12px] text-white/80">{{ reservation()!.reservationTime }}</span>
+      </div>
+
+      <div class="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10
+                  px-3 py-1.5 transition-all duration-300
+                  group-hover:bg-white/6 group-hover:border-white/15 hover:-translate-y-[1px]">
+        <svg class="h-4 w-4 text-white/30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M8 3v3M16 3v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M4 9h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M6 5h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+        <span class="font-dm font-medium text-[12px] text-white/80">{{ reservation()!.reservationDate }}</span>
+      </div>
+
+      <div class="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10
+                  px-3 py-1.5 transition-all duration-300
+                  group-hover:bg-white/6 group-hover:border-white/15 hover:-translate-y-[1px]">
+        <svg class="h-4 w-4 text-white/30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z" stroke="currentColor" stroke-width="2"/>
+          <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="font-dm font-medium text-[12px] text-white/80">{{ reservation()!.numberOfPeople }}</span>
+      </div>
+    </div>
+
+    <div class="relative mt-15 flex items-center justify-between gap-3">
+      <app-button-component class="shrink-0" variance="secondary" size="sm" (click)="onViewDetails()">
+        Vidi detaljno
+      </app-button-component>
+
+      @if (reservation()!.status === 'PENDING' || reservation()!.status === 'ACCEPTED') {
+        <button
+          type="button"
+          (click)="onCancel()"
+          class="shrink-0 rounded-xl bg-white/5 border border-white/15
+                 px-4 py-2 font-dm font-normal text-[12px] text-white/60
+                 transition-all duration-300
+                 hover:text-white/85 hover:bg-white/10 hover:border-white/25 hover:-translate-y-px"
+        >
+          Otkaži
+        </button>
+      }
+
+      @if (reservation()!.status === 'REJECTED') {
+        <button
+          type="button"
+          (click)="onViewRejectReason()"
+          class="w-full rounded-xl bg-red-500/10 border border-red-500/30
+                 px-4 py-2.5 font-dm font-medium text-[12px] tracking-[0.08em] uppercase
+                 text-red-400 transition-all duration-300
+                 hover:bg-red-500/20 hover:border-red-500/50 hover:-translate-y-px
+                 hover:shadow-[0_8px_24px_rgba(239,68,68,0.15)]
+                 inline-flex items-center justify-center gap-2"
+        >
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Razlog odbijanja
+        </button>
       }
     </div>
-  </div>
 
-  <!-- Title + address -->
-  <div class="relative mt-10">
-    <h3
-      class="font-sora font-semibold text-[26px] sm:text-[30px]
-             tracking-[0.02em] text-white leading-tight
-             transition-transform duration-300
-             group-hover:translate-x-[1px]"
-    >
-      {{ reservation.venueName }} 
-    </h3>
-    <p
-      class="mb-5 font-dm font-light text-[12px]
-             tracking-[0.02em] text-white/60"
-    >
-      {{ reservation.venueAddress }}
-    </p>
-  </div>
-
-  <!-- Info pills -->
-  <div class="relative mt-4 flex flex-wrap gap-3">
-    <!-- pill shared feel: pop on hover -->
-    <div
-      class="inline-flex items-center gap-2 rounded-full
-             bg-white/5 border border-white/10
-             px-3 py-1.5
-             transition-all duration-300
-             group-hover:bg-white/6 group-hover:border-white/15
-             hover:-translate-y-[1px]"
-    >
-      <svg class="h-4 w-4 text-white/30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-        <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="currentColor" stroke-width="1.8" />
-      </svg>
-      <span class="font-dm font-medium text-[12px] text-white/80">{{ reservation.reservationTime }}</span>
-    </div>
-
-    <div
-      class="inline-flex items-center gap-2 rounded-full
-             bg-white/5 border border-white/10
-             px-3 py-1.5
-             transition-all duration-300
-             group-hover:bg-white/6 group-hover:border-white/15
-             hover:-translate-y-[1px]"
-    >
-      <svg class="h-4 w-4 text-white/30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M8 3v3M16 3v3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-        <path d="M4 9h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-        <path d="M6 5h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
-      </svg>
-      <span class="font-dm font-medium text-[12px] text-white/80">{{ reservation.reservationDate }}</span>
-    </div>
-
-    <div
-      class="inline-flex items-center gap-2 rounded-full
-             bg-white/5 border border-white/10
-             px-3 py-1.5
-             transition-all duration-300
-             group-hover:bg-white/6 group-hover:border-white/15
-             hover:-translate-y-[1px]"
-    >
-      <svg class="h-4 w-4 text-white/30" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z" stroke="currentColor" stroke-width="2" />
-        <path d="M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-      </svg>
-      <span class="font-dm font-medium text-[12px] text-white/80">{{ reservation.numberOfPeople }}</span>
-    </div>
-  </div>
-
-  <!-- Actions -->
-  <div class="relative mt-15 flex items-center justify-between gap-3">
-    <app-button-component class="shrink-0" variance="secondary" size="sm" (click)="onViewDetails()">
-      Vidi detaljno
-    </app-button-component>
-    @if (reservation.status === 'PENDING' || reservation.status === 'ACCEPTED') {
-      <button
-        type="button"
-        (click)="onCancel()"
-        class="shrink-0 rounded-xl
-              bg-white/5 border border-white/15
-              px-4 py-2
-              font-dm font-normal text-[12px]
-              text-white/60
-              transition-all duration-300
-              hover:text-white/85 hover:bg-white/10 hover:border-white/25
-              hover:-translate-y-px"
-              
-      >
-        Otkaži
-      </button>
-    }
-
-    @if (reservation?.status === 'REJECTED') {
-    <button
-      type="button"
-      (click)="onViewRejectReason()"
-      class="w-full rounded-xl
-            bg-red-500/10 border border-red-500/30
-            px-4 py-2.5
-            font-dm font-medium text-[12px] tracking-[0.08em] uppercase
-            text-red-400
-            transition-all duration-300
-            hover:bg-red-500/20 hover:border-red-500/50
-            hover:-translate-y-px
-            hover:shadow-[0_8px_24px_rgba(239,68,68,0.15)]
-            inline-flex items-center justify-center gap-2"
-    >
-      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Razlog odbijanja
-    </button>
-  }
-
-
-
-  </div>
-</article>
+  </article>
 }

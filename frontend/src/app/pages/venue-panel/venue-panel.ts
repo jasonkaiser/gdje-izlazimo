@@ -1,7 +1,7 @@
 import {
   Component, ChangeDetectionStrategy, OnInit, inject, DestroyRef
 } from '@angular/core';
-import { CommonModule, AsyncPipe, DatePipe } from '@angular/common';
+import { CommonModule, AsyncPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   BehaviorSubject, Observable, combineLatest, of, EMPTY
@@ -10,7 +10,6 @@ import {
   switchMap, map, catchError, shareReplay, take, tap, debounceTime
 } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
 
 import { ReservationResponseDto } from '../../core/models/reservations/reservation-response.dto';
 import { VenueResponseDto } from '../../core/models/venues/venue-response.dto';
@@ -23,7 +22,6 @@ import { RejectReasonModalComponent } from '../../components/modals/reject-reaso
 import { UpdateVenueRequest } from '../../core/models/venues/update-venue.request';
 import { AppDropdown } from '../../components/other/dropdown/dropdown';
 import { VenueModalComponent } from '../../components/modals/venue-modal/venue-modal';
-
 
 type VenueTab = 'ALL' | 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED';
 
@@ -45,12 +43,11 @@ type ViewModel = {
 
 type SortOption = 'date-desc' | 'date-asc' | 'time-asc' | 'time-desc' | 'people-desc' | 'people-asc';
 
-
 @Component({
   selector: 'app-venue-panel',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, AsyncPipe, DatePipe, VenueReservationCardComponent, FormsModule, AppDropdown],
+  imports: [CommonModule, AsyncPipe, VenueReservationCardComponent, FormsModule, AppDropdown],
   templateUrl: './venue-panel.html',
   styleUrl: './venue-panel.css',
 })
@@ -62,67 +59,57 @@ export class VenuePanelComponent implements OnInit {
   private readonly destroyRef         = inject(DestroyRef);
 
   activeTab: VenueTab = 'ALL';
-  filterOpen           = false;
-  mobileTabOpen        = false;  
-  isTogglingActive     = false;
-  toggleSuccessMsg     = '';
-  toggleErrorMsg       = '';
-  private venueId      = '';
+  filterOpen          = false;
+  mobileTabOpen       = false;
+  isTogglingActive    = false;
+  toggleSuccessMsg    = '';
+  toggleErrorMsg      = '';
+  private venueId     = '';
 
   searchQuery = '';
-  dateFrom = '';
-  dateTo = '';
+  dateFrom    = '';
+  dateTo      = '';
   sortBy: SortOption = 'date-desc';
 
   readonly allTabs: VenueTab[] = ['ALL', 'PENDING', 'ACCEPTED', 'REJECTED', 'CANCELLED'];
-  readonly pageSize = 8; 
+  readonly pageSize = 8;
 
   readonly sortOptions = [
-    { value: 'date-desc' as SortOption, label: 'Datum ↓ (najnovije)' },
-    { value: 'date-asc' as SortOption, label: 'Datum ↑ (najstarije)' },
-    { value: 'time-asc' as SortOption, label: 'Vrijeme ↑ (ranije)' },
-    { value: 'time-desc' as SortOption, label: 'Vrijeme ↓ (kasnije)' },
+    { value: 'date-desc'   as SortOption, label: 'Datum ↓ (najnovije)' },
+    { value: 'date-asc'    as SortOption, label: 'Datum ↑ (najstarije)' },
+    { value: 'time-asc'    as SortOption, label: 'Vrijeme ↑ (ranije)' },
+    { value: 'time-desc'   as SortOption, label: 'Vrijeme ↓ (kasnije)' },
     { value: 'people-desc' as SortOption, label: 'Broj ljudi ↓ (najviše)' },
-    { value: 'people-asc' as SortOption, label: 'Broj ljudi ↑ (najmanje)' },
-  ]; 
+    { value: 'people-asc'  as SortOption, label: 'Broj ljudi ↑ (najmanje)' },
+  ];
 
-  private readonly tab$    = new BehaviorSubject<VenueTab>('ALL');
-  private readonly pageNo$ = new BehaviorSubject<number>(1);
-  private readonly refresh$ = new BehaviorSubject<void>(undefined);
-  
-  private readonly search$ = new BehaviorSubject<string>('');
+  private readonly tab$       = new BehaviorSubject<VenueTab>('ALL');
+  private readonly pageNo$    = new BehaviorSubject<number>(1);
+  private readonly refresh$   = new BehaviorSubject<void>(undefined);
+  private readonly search$    = new BehaviorSubject<string>('');
   private readonly dateRange$ = new BehaviorSubject<{ from: string; to: string }>({ from: '', to: '' });
-  private readonly sort$ = new BehaviorSubject<SortOption>('date-desc');
+  private readonly sort$      = new BehaviorSubject<SortOption>('date-desc');
 
-  reservations$!: Observable<ReservationResponseDto[]>;
-  tabCounts$!:    Observable<VenueTabCounts>;
-  venue$!:        Observable<VenueResponseDto>;
-  vm$!:           Observable<ViewModel>;
+  venue$!:              Observable<VenueResponseDto>;
+  tabCounts$!:          Observable<VenueTabCounts>;
+  vm$!:                 Observable<ViewModel>;
+  todayReservations$!:  Observable<ReservationResponseDto[]>;
 
-  todayReservations$!: Observable<ReservationResponseDto[]>;
-  todayCount$!: Observable<number>;
-
+  private reservations$!: Observable<ReservationResponseDto[]>;
 
   ngOnInit(): void {
-    this.initializeStreams();
-  }
-
-
-  private initializeStreams(): void {
-
     this.venue$ = this.venueService.getMyVenue().pipe(
-      tap(venue => { this.venueId = venue.id; }),
-      catchError(err => {
-        console.error('[VenuePanelComponent] Failed to load venue:', err);
+      tap((venue) => { this.venueId = venue.id; }),
+      catchError((err) => {
         return EMPTY;
       }),
-      shareReplay({ bufferSize: 1, refCount: true }),
-      takeUntilDestroyed(this.destroyRef)
+      takeUntilDestroyed(this.destroyRef),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     this.reservations$ = this.venue$.pipe(
       take(1),
-      switchMap(venue =>
+      switchMap((venue) =>
         this.refresh$.pipe(
           switchMap(() =>
             this.reservationService.getReservationsByVenue(venue.id, {
@@ -130,39 +117,29 @@ export class VenuePanelComponent implements OnInit {
               sortBy: 'reservationDate',
               sortDir: 'DESC',
             }).pipe(
-              catchError(err => {
-                console.error('[VenuePanelComponent] Failed to load reservations:', err);
+              catchError((err) => {
                 return of([] as ReservationResponseDto[]);
               })
             )
           )
         )
       ),
-      shareReplay({ bufferSize: 1, refCount: true }),
-      takeUntilDestroyed(this.destroyRef)
+      takeUntilDestroyed(this.destroyRef),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     this.tabCounts$ = this.reservations$.pipe(
-      map(list => this.countTabs(list)),
+      map((list) => this.countTabs(list)),
       takeUntilDestroyed(this.destroyRef)
     );
 
     this.todayReservations$ = this.reservations$.pipe(
-      map(list => {
+      map((list) => {
         const today = new Date().toISOString().slice(0, 10);
         return list
-          .filter(r => r.reservationDate?.startsWith(today))
-          .sort((a, b) => {
-            const timeA = a.reservationTime ?? '00:00';
-            const timeB = b.reservationTime ?? '00:00';
-            return timeA.localeCompare(timeB);
-          });
+          .filter((r) => r.reservationDate?.startsWith(today))
+          .sort((a, b) => (a.reservationTime ?? '00:00').localeCompare(b.reservationTime ?? '00:00'));
       }),
-      takeUntilDestroyed(this.destroyRef)
-    );
-
-    this.todayCount$ = this.todayReservations$.pipe(
-      map(list => list.length),
       takeUntilDestroyed(this.destroyRef)
     );
 
@@ -172,126 +149,81 @@ export class VenuePanelComponent implements OnInit {
       this.reservations$,
       this.search$.pipe(debounceTime(300)),
       this.dateRange$,
-      this.sort$
+      this.sort$,
     ]).pipe(
-      switchMap(([tab, pageNo, allReservations, search, dateRange, sort]) =>
-        this.getVmForParams(tab, pageNo, allReservations, search, dateRange, sort)
+      map(([tab, pageNo, allReservations, search, dateRange, sort]) =>
+        this.buildVm(tab, pageNo, allReservations, search, dateRange, sort)
       ),
-      shareReplay({ bufferSize: 1, refCount: true }),
-      takeUntilDestroyed(this.destroyRef)
+      takeUntilDestroyed(this.destroyRef),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
-
-  private getVmForParams(
+  private buildVm(
     tab: VenueTab,
     pageNo: number,
     allReservations: ReservationResponseDto[],
     search: string,
     dateRange: { from: string; to: string },
     sort: SortOption
-  ): Observable<ViewModel> {
-    
-    let filtered = this.applyFilter(allReservations, tab);
-    filtered = this.applySearch(filtered, search);
-    filtered = this.applyDateRange(filtered, dateRange);
-    filtered = this.applySort(filtered, sort);
+  ): ViewModel {
+    let filtered = tab === 'ALL' ? allReservations : allReservations.filter((r) => r.status === tab);
+
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      filtered = filtered.filter((r) =>
+        r.phone?.toLowerCase().includes(q) ||
+        r.numberOfPeople?.toString().includes(q) ||
+        r.userId?.toLowerCase().includes(q) ||
+        r.specialRequests?.toLowerCase().includes(q)
+      );
+    }
+
+    if (dateRange.from || dateRange.to) {
+      filtered = filtered.filter((r) => {
+        if (!r.reservationDate) return false;
+        if (dateRange.from && r.reservationDate < dateRange.from) return false;
+        if (dateRange.to   && r.reservationDate > dateRange.to)   return false;
+        return true;
+      });
+    }
+
+    filtered = this.sortReservations(filtered, sort);
 
     const start   = (pageNo - 1) * this.pageSize;
     const end     = start + this.pageSize;
-    const slice   = filtered.slice(start, end);
-    const hasMore = end < filtered.length;
 
-    return of({
-      items:       slice,
-      loading:     false,
-      hasMore,
-      errorMsg:    '',
+    return {
+      items:    filtered.slice(start, end),
+      loading:  false,
+      hasMore:  end < filtered.length,
+      errorMsg: '',
       pageNo,
-    });
+    };
   }
 
-
-  private applyFilter(
-    list: ReservationResponseDto[],
-    tab: VenueTab
-  ): ReservationResponseDto[] {
-    if (tab === 'ALL') return list;
-    return list.filter(r => r.status === tab);
-  }
-
-  private applySearch(
-    list: ReservationResponseDto[],
-    search: string
-  ): ReservationResponseDto[] {
-    if (!search.trim()) return list;
-    
-    const query = search.toLowerCase();
-    return list.filter(r => {
-      const phone = r.phone?.toLowerCase() || '';
-      const people = r.numberOfPeople?.toString() || '';
-      const userId = r.userId?.toLowerCase() || '';
-      const requests = r.specialRequests?.toLowerCase() || '';
-      
-      return phone.includes(query) || 
-             people.includes(query) || 
-             userId.includes(query) ||
-             requests.includes(query);
-    });
-  }
-
-  private applyDateRange(
-    list: ReservationResponseDto[],
-    dateRange: { from: string; to: string }
-  ): ReservationResponseDto[] {
-    if (!dateRange.from && !dateRange.to) return list;
-    
-    return list.filter(r => {
-      if (!r.reservationDate) return false;
-      
-      const resDate = r.reservationDate;
-      
-      if (dateRange.from && resDate < dateRange.from) return false;
-      if (dateRange.to && resDate > dateRange.to) return false;
-      
-      return true;
-    });
-  }
-
-  private applySort(
-    list: ReservationResponseDto[],
-    sort: SortOption
-  ): ReservationResponseDto[] {
-    const sorted = [...list];
-    
+  private sortReservations(list: ReservationResponseDto[], sort: SortOption): ReservationResponseDto[] {
+    const s = [...list];
     switch (sort) {
-      case 'date-desc':
-        return sorted.sort((a, b) => (b.reservationDate || '').localeCompare(a.reservationDate || ''));
-      case 'date-asc':
-        return sorted.sort((a, b) => (a.reservationDate || '').localeCompare(b.reservationDate || ''));
-      case 'time-asc':
-        return sorted.sort((a, b) => (a.reservationTime || '').localeCompare(b.reservationTime || ''));
-      case 'time-desc':
-        return sorted.sort((a, b) => (b.reservationTime || '').localeCompare(a.reservationTime || ''));
-      case 'people-desc':
-        return sorted.sort((a, b) => (b.numberOfPeople || 0) - (a.numberOfPeople || 0));
-      case 'people-asc':
-        return sorted.sort((a, b) => (a.numberOfPeople || 0) - (b.numberOfPeople || 0));
-      default:
-        return sorted;
+      case 'date-desc':    return s.sort((a, b) => (b.reservationDate ?? '').localeCompare(a.reservationDate ?? ''));
+      case 'date-asc':     return s.sort((a, b) => (a.reservationDate ?? '').localeCompare(b.reservationDate ?? ''));
+      case 'time-asc':     return s.sort((a, b) => (a.reservationTime ?? '').localeCompare(b.reservationTime ?? ''));
+      case 'time-desc':    return s.sort((a, b) => (b.reservationTime ?? '').localeCompare(a.reservationTime ?? ''));
+      case 'people-desc':  return s.sort((a, b) => (b.numberOfPeople ?? 0) - (a.numberOfPeople ?? 0));
+      case 'people-asc':   return s.sort((a, b) => (a.numberOfPeople ?? 0) - (b.numberOfPeople ?? 0));
+      default:             return s;
     }
   }
 
   private countTabs(list: ReservationResponseDto[]): VenueTabCounts {
     return {
       ALL:       list.length,
-      PENDING:   list.filter(r => r.status === 'PENDING').length,
-      ACCEPTED:  list.filter(r => r.status === 'ACCEPTED').length,
-      REJECTED:  list.filter(r => r.status === 'REJECTED').length,
-      CANCELLED: list.filter(r => r.status === 'CANCELLED').length,
+      PENDING:   list.filter((r) => r.status === 'PENDING').length,
+      ACCEPTED:  list.filter((r) => r.status === 'ACCEPTED').length,
+      REJECTED:  list.filter((r) => r.status === 'REJECTED').length,
+      CANCELLED: list.filter((r) => r.status === 'CANCELLED').length,
     };
   }
-
 
   onSearchChange(): void {
     this.search$.next(this.searchQuery);
@@ -315,9 +247,9 @@ export class VenuePanelComponent implements OnInit {
 
   clearAllFilters(): void {
     this.searchQuery = '';
-    this.dateFrom = '';
-    this.dateTo = '';
-    this.sortBy = 'date-desc';
+    this.dateFrom    = '';
+    this.dateTo      = '';
+    this.sortBy      = 'date-desc';
     this.search$.next('');
     this.dateRange$.next({ from: '', to: '' });
     this.sort$.next('date-desc');
@@ -327,15 +259,14 @@ export class VenuePanelComponent implements OnInit {
   viewTodayReservations(): void {
     const today = new Date().toISOString().slice(0, 10);
     this.dateFrom = today;
-    this.dateTo = today;
+    this.dateTo   = today;
     this.onDateFilterChange();
   }
 
-
   setTab(tab: VenueTab): void {
-    this.activeTab  = tab;
-    this.filterOpen = false;
-    this.mobileTabOpen = false;  
+    this.activeTab     = tab;
+    this.filterOpen    = false;
+    this.mobileTabOpen = false;
     this.tab$.next(tab);
     this.pageNo$.next(1);
   }
@@ -368,7 +299,6 @@ export class VenuePanelComponent implements OnInit {
     return labels[tab];
   }
 
-
   acceptReservation(id: string): void {
     this.reservationService.acceptReservation(id)
       .pipe(take(1))
@@ -377,27 +307,18 @@ export class VenuePanelComponent implements OnInit {
           this.pageNo$.next(1);
           this.refresh$.next();
         },
-        error: err => {
-          console.error('[VenuePanelComponent] Accept failed:', err);
-        },
       });
   }
 
   rejectReservation(id: string): void {
-    this.venue$.pipe(take(1)).subscribe(venue => {
+    this.venue$.pipe(take(1)).subscribe((venue) => {
       const ref = this.modalService.open(RejectReasonModalComponent, {
-        data: {
-          reservationId: id,
-          venueName:     venue?.name,
-        },
+        data: { reservationId: id, venueName: venue?.name },
       });
-
-      ref.instance.confirmed
-        .pipe(take(1))
-        .subscribe(() => {
-          this.pageNo$.next(1);
-          this.refresh$.next();
-        });
+      ref.instance.confirmed.pipe(take(1)).subscribe(() => {
+        this.pageNo$.next(1);
+        this.refresh$.next();
+      });
     });
   }
 
@@ -405,17 +326,9 @@ export class VenuePanelComponent implements OnInit {
     this.reservationService.getReservationById(id)
       .pipe(take(1))
       .subscribe({
-        next: reservation => {
-          this.modalService.open(ReservationDetailsModalComponent, {
-            data: reservation,
-          });
-        },
-        error: err => {
-          console.error('[VenuePanelComponent] Load details failed:', err);
-        },
+        next: (reservation) => this.modalService.open(ReservationDetailsModalComponent, { data: reservation }),
       });
   }
-
 
   toggleVenueActive(venue: VenueResponseDto): void {
     if (this.isTogglingActive) return;
@@ -429,7 +342,7 @@ export class VenuePanelComponent implements OnInit {
       phone:       venue.phone,
       description: venue.description,
       isActive:    !venue.isActive,
-      addressName: venue.addressName
+      addressName: venue.addressName,
     };
 
     this.venueService.updateVenue(updateRequest, venue.id)
@@ -441,19 +354,16 @@ export class VenuePanelComponent implements OnInit {
           this.refresh$.next();
           setTimeout(() => { this.toggleSuccessMsg = ''; }, 3000);
         },
-        error: err => {
+        error: (err) => {
           this.isTogglingActive = false;
           this.toggleErrorMsg   = 'Greška pri ažuriranju';
-          console.error('[VenuePanelComponent] Toggle active failed:', err);
           setTimeout(() => { this.toggleErrorMsg = ''; }, 3000);
         },
       });
   }
 
   editVenue(venue: VenueResponseDto): void {
-    const ref = this.modalService.open(VenueModalComponent, {
-      data: { mode: 'edit', venue }
-    });
+    this.modalService.open(VenueModalComponent, { data: { mode: 'edit', venue } });
 
     const handler = () => {
       this.refresh$.next();

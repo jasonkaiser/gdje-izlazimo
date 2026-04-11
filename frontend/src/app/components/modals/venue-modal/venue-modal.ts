@@ -20,6 +20,9 @@ import { VenueOperatingHoursService } from '../../../core/api/venue-operating-ho
 import { AuthService } from '../../../core/auth/auth.service';
 import { VenueImageService } from '../../../core/api/venue-image-service';
 import { VenueImageResponseDto } from '../../../core/models/venue-images/venue-image-response';
+import { TableTypeService } from '../../../core/api/table-type-service';
+import { VenueTableTypeService } from '../../../core/api/venue-table-type-service';
+import { TableTypeResponseDto } from '../../../core/models/table-types/table-type-response.dto';
 
 interface VenueModalData {
   mode: 'create' | 'edit';
@@ -36,7 +39,18 @@ interface HoursSlot {
   isDeleting: boolean;
 }
 
-type ModalTab = 'details' | 'hours' | 'images';
+interface TableSlot {
+  id: string | null;
+  tableTypeId: string;
+  tableTypeName: string;
+  quantity: number;
+  minCapacity: number;
+  maxCapacity: number;
+  isSaving: boolean;
+  isDeleting: boolean;
+}
+
+type ModalTab = 'details' | 'hours' | 'images' | 'tables';
 
 @Component({
   selector: 'app-venue-modal',
@@ -48,15 +62,18 @@ type ModalTab = 'details' | 'hours' | 'images';
 export class VenueModalComponent implements OnInit {
   @Input() data!: VenueModalData;
 
-  private readonly modalService      = inject(ModalService);
-  private readonly venueService      = inject(VenueService);
-  private readonly userService       = inject(UserService);
-  private readonly hoursService      = inject(VenueOperatingHoursService);
-  private readonly toastService      = inject(ToastService);
-  private readonly authService       = inject(AuthService);
-  private readonly venueImageService = inject(VenueImageService);
-  private readonly cdr               = inject(ChangeDetectorRef);
+  private readonly modalService        = inject(ModalService);
+  private readonly venueService        = inject(VenueService);
+  private readonly userService         = inject(UserService);
+  private readonly hoursService        = inject(VenueOperatingHoursService);
+  private readonly toastService        = inject(ToastService);
+  private readonly authService         = inject(AuthService);
+  private readonly venueImageService   = inject(VenueImageService);
+  private readonly tableTypeService    = inject(TableTypeService);
+  private readonly venueTableTypeService = inject(VenueTableTypeService);
+  private readonly cdr                 = inject(ChangeDetectorRef);
 
+  // images
   images: VenueImageResponseDto[]  = [];
   isLoadingImages                  = false;
   isUploadingImage                 = false;
@@ -67,6 +84,13 @@ export class VenueModalComponent implements OnInit {
   deletingImageId: string | null   = null;
   settingPrimaryId: string | null  = null;
 
+  // tables
+  availableTableTypes: TableTypeResponseDto[] = [];
+  tableSlots: TableSlot[]                     = [];
+  isLoadingTables                             = false;
+  isLoadingTableTypes                         = false;
+
+  // general
   mode: 'create' | 'edit' = 'create';
   venueId: string | null  = null;
   isSubmitting            = false;
@@ -125,6 +149,10 @@ export class VenueModalComponent implements OnInit {
     return this.venueOwners.map(o => ({ value: o.id, label: `${o.name} (${o.email})` }));
   }
 
+  get tableTypeOptions(): Array<{ value: string; label: string }> {
+    return this.availableTableTypes.map(t => ({ value: t.id, label: t.name }));
+  }
+
   formData = {
     name:         '',
     description:  '',
@@ -152,11 +180,8 @@ export class VenueModalComponent implements OnInit {
            (this.mode === 'edit' || !!this.formData.venueOwnerId);
   }
 
-
   ngOnInit(): void {
     this.mode = this.data.mode;
-
-    console.log('[VenueModal] roles:', this.authService.getRoles(), '| isAdmin:', this.isAdmin);
 
     if (this.mode === 'edit' && this.data.venue) {
       this.venueId = this.data.venue.id;
@@ -173,20 +198,184 @@ export class VenueModalComponent implements OnInit {
       };
       this.loadOperatingHours();
       this.loadImages();
+      this.loadTableTypes();
+      this.loadTableSlots();
     } else if (this.mode === 'create') {
       this.loadVenueOwners();
       this.hoursSlot = this.buildDefaultSlot();
     }
   }
 
-
   setTab(tab: ModalTab): void {
     this.activeTab = tab;
     if (tab === 'images' && this.venueId && this.images.length === 0 && !this.isLoadingImages) {
       this.loadImages();
     }
+    if (tab === 'tables' && this.venueId && this.tableSlots.length === 0 && !this.isLoadingTables) {
+      this.loadTableSlots();
+    }
   }
 
+  // ── TABLE TYPES ────────────────────────────────────────────────────
+
+  loadTableTypes(): void {
+    this.isLoadingTableTypes = true;
+    this.tableTypeService.getAllTableTypes()
+      .pipe(take(1))
+      .subscribe({
+        next: types => {
+          this.availableTableTypes = types;
+          this.isLoadingTableTypes = false;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.toastService.show('Greška pri učitavanju tipova stolova', 'error');
+          this.isLoadingTableTypes = false;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  loadTableSlots(): void {
+    if (!this.venueId) return;
+    this.isLoadingTables = true;
+    this.cdr.markForCheck();
+
+    this.venueTableTypeService.getByVenueId(this.venueId)
+      .pipe(take(1))
+      .subscribe({
+        next: rows => {
+          this.tableSlots = rows.map(r => ({
+            id:          r.id,
+            tableTypeId: r.tableTypeId,
+            tableTypeName: r.tableTypeName,
+            quantity:    r.quantity,
+            minCapacity: r.minCapacity,
+            maxCapacity: r.maxCapacity,
+            isSaving:    false,
+            isDeleting:  false,
+          }));
+          this.isLoadingTables = false;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.toastService.show('Greška pri učitavanju stolova', 'error');
+          this.isLoadingTables = false;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  addTableSlot(): void {
+    this.tableSlots.push({
+      id:           null,
+      tableTypeId:  '',
+      tableTypeName: '',
+      quantity:     1,
+      minCapacity:  2,
+      maxCapacity:  6,
+      isSaving:     false,
+      isDeleting:   false,
+    });
+    this.cdr.markForCheck();
+  }
+
+  saveTableSlot(slot: TableSlot): void {
+    if (!this.venueId || !slot.tableTypeId) {
+      this.toastService.show('Izaberi tip stola', 'error');
+      return;
+    }
+    if (slot.quantity < 1) {
+      this.toastService.show('Količina mora biti veća od 0', 'error');
+      return;
+    }
+    if (slot.minCapacity < 1 || slot.maxCapacity < 1) {
+      this.toastService.show('Kapacitet mora biti veći od 0', 'error');
+      return;
+    }
+    if (slot.minCapacity > slot.maxCapacity) {
+      this.toastService.show('Minimalni kapacitet ne može biti veći od maksimalnog', 'error');
+      return;
+    }
+
+    slot.isSaving = true;
+    this.cdr.markForCheck();
+
+    if (slot.id) {
+      this.venueTableTypeService.updateVenueTableType(slot.id, {
+        quantity:    slot.quantity,
+        minCapacity: slot.minCapacity,
+        maxCapacity: slot.maxCapacity,
+      }).pipe(take(1)).subscribe({
+        next: () => {
+          slot.isSaving = false;
+          this.toastService.show('Sto ažuriran', 'success');
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.toastService.show('Greška pri ažuriranju stola', 'error');
+          slot.isSaving = false;
+          this.cdr.markForCheck();
+        }
+      });
+    } else {
+      this.venueTableTypeService.createVenueTableType({
+        venueId:     this.venueId,
+        tableTypeId: slot.tableTypeId,
+        quantity:    slot.quantity,
+        minCapacity: slot.minCapacity,
+        maxCapacity: slot.maxCapacity,
+      }).pipe(take(1)).subscribe({
+        next: created => {
+          slot.id           = created.id;
+          slot.tableTypeName = created.tableTypeName;
+          slot.isSaving     = false;
+          this.toastService.show('Sto dodan', 'success');
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.toastService.show('Greška pri dodavanju stola', 'error');
+          slot.isSaving = false;
+          this.cdr.markForCheck();
+        }
+      });
+    }
+  }
+
+  deleteTableSlot(slot: TableSlot, index: number): void {
+    if (!slot.id) {
+      this.tableSlots.splice(index, 1);
+      this.cdr.markForCheck();
+      return;
+    }
+
+    slot.isDeleting = true;
+    this.cdr.markForCheck();
+
+    this.venueTableTypeService.deleteVenueTableType(slot.id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.tableSlots.splice(index, 1);
+          this.toastService.show('Sto uklonjen', 'success');
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.toastService.show('Greška pri uklanjanju stola', 'error');
+          slot.isDeleting = false;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  onTableTypeChange(slot: TableSlot, tableTypeId: string): void {
+    slot.tableTypeId = tableTypeId;
+    const found = this.availableTableTypes.find(t => t.id === tableTypeId);
+    slot.tableTypeName = found?.name ?? '';
+    this.cdr.markForCheck();
+  }
+
+  // ── VENUE OWNERS ───────────────────────────────────────────────────
 
   loadVenueOwners(): void {
     this.isLoadingOwners = true;
@@ -198,8 +387,7 @@ export class VenueModalComponent implements OnInit {
           this.isLoadingOwners = false;
           this.cdr.markForCheck();
         },
-        error: err => {
-          console.error('[VenueModal] Failed to load owners:', err);
+        error: () => {
           this.toastService.show('Greška pri učitavanju vlasnika lokala', 'error');
           this.isLoadingOwners = false;
           this.cdr.markForCheck();
@@ -207,6 +395,7 @@ export class VenueModalComponent implements OnInit {
       });
   }
 
+  // ── OPERATING HOURS ────────────────────────────────────────────────
 
   loadOperatingHours(): void {
     if (!this.venueId) return;
@@ -218,7 +407,6 @@ export class VenueModalComponent implements OnInit {
         catchError((err: any) => {
           this.isLoadingHours = false;
           if (err?.status === 404) return of(null);
-          console.error('[VenueModal] Failed to load operating hours:', err);
           this.toastService.show('Greška pri učitavanju radnog vremena', 'error');
           return of(null);
         })
@@ -265,8 +453,7 @@ export class VenueModalComponent implements OnInit {
           this.toastService.show('Radno vrijeme ažurirano', 'success');
           this.cdr.markForCheck();
         },
-        error: err => {
-          console.error('[VenueModal] Failed to update hours:', err);
+        error: () => {
           this.toastService.show('Greška pri ažuriranju radnog vremena', 'error');
           slot.isSaving = false;
           this.cdr.markForCheck();
@@ -283,8 +470,7 @@ export class VenueModalComponent implements OnInit {
           this.toastService.show('Radno vrijeme sačuvano', 'success');
           this.cdr.markForCheck();
         },
-        error: err => {
-          console.error('[VenueModal] Failed to create hours:', err);
+        error: () => {
           this.toastService.show('Greška pri kreiranju radnog vremena', 'error');
           slot.isSaving = false;
           this.cdr.markForCheck();
@@ -298,6 +484,8 @@ export class VenueModalComponent implements OnInit {
     return `${this.dayLabelsShort[slot.startDay]} – ${this.dayLabelsShort[slot.endDay]}`;
   }
 
+  // ── IMAGES ─────────────────────────────────────────────────────────
+
   loadImages(): void {
     if (!this.venueId) return;
     this.isLoadingImages = true;
@@ -306,7 +494,7 @@ export class VenueModalComponent implements OnInit {
     this.venueImageService.getByVenueId(this.venueId)
       .pipe(take(1))
       .subscribe({
-        next: (imgs) => {
+        next: imgs => {
           this.images = [...imgs].sort((a, b) =>
             a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1
           );
@@ -339,9 +527,8 @@ export class VenueModalComponent implements OnInit {
 
     this.uploadError = '';
     this.selectedFile = file;
-
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
       this.selectedFilePreview = e.target?.result as string;
       this.cdr.markForCheck();
     };
@@ -427,6 +614,7 @@ export class VenueModalComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
+  // ── MODAL / FORM ───────────────────────────────────────────────────
 
   onClose(): void {
     this.modalService.close();
@@ -485,13 +673,10 @@ export class VenueModalComponent implements OnInit {
               endDay:     slot.endDay,
               openTime:   slot.openTime,
               closedTime: slot.closedTime,
-            }).pipe(
-              catchError(err => {
-                console.error('[VenueModal] Venue created but failed to save hours:', err);
-                this.toastService.show('Lokal kreiran, ali radno vrijeme nije sačuvano', 'error');
-                return of(null);
-              })
-            );
+            }).pipe(catchError(() => {
+              this.toastService.show('Lokal kreiran, ali radno vrijeme nije sačuvano', 'error');
+              return of(null);
+            }));
           }
           return of(null);
         })
@@ -502,8 +687,7 @@ export class VenueModalComponent implements OnInit {
           this.modalService.close();
           window.dispatchEvent(new CustomEvent('venue-updated'));
         },
-        error: err => {
-          console.error('[VenueModal] Failed to create venue:', err);
+        error: () => {
           this.toastService.show('Greška pri kreiranju lokala', 'error');
           this.isSubmitting = false;
           this.cdr.markForCheck();
@@ -531,8 +715,7 @@ export class VenueModalComponent implements OnInit {
           this.modalService.close();
           window.dispatchEvent(new CustomEvent('venue-updated'));
         },
-        error: err => {
-          console.error('[VenueModal] Failed to update venue:', err);
+        error: () => {
           this.toastService.show('Greška pri ažuriranju lokala', 'error');
           this.isSubmitting = false;
           this.cdr.markForCheck();

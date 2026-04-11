@@ -4,7 +4,7 @@ import {
   OnInit,
   inject,
   DestroyRef,
-  HostListener
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +15,7 @@ import {
   catchError,
   shareReplay,
   debounceTime,
-  take
+  take,
 } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -51,51 +51,49 @@ interface ViewModel {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, AppDropdown],
   templateUrl: './admin-users.html',
-  styleUrl: './admin-users.css'
+  styleUrl: './admin-users.css',
 })
 export class AdminUsersComponent implements OnInit {
 
-  private readonly userService = inject(UserService);
-  private readonly modalService = inject(ModalService);
-  private readonly toastService = inject(ToastService);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly userService   = inject(UserService);
+  private readonly modalService  = inject(ModalService);
+  private readonly toastService  = inject(ToastService);
+  private readonly destroyRef    = inject(DestroyRef);
 
   searchQuery = '';
   roleFilter: RoleFilter = 'ALL';
   readonly pageSize = 10;
 
   readonly roleFilterOptions = [
-    { value: 'ALL' as const, label: 'Sve uloge' },
-    { value: Role.USER, label: 'Korisnici' },
-    { value: Role.VENUE_OWNER, label: 'Vlasnici lokala' },
-    { value: Role.ADMIN, label: 'Administratori' }
+    { value: 'ALL' as const,       label: 'Sve uloge' },
+    { value: Role.USER,            label: 'Korisnici' },
+    { value: Role.VENUE_OWNER,     label: 'Vlasnici lokala' },
+    { value: Role.ADMIN,           label: 'Administratori' },
   ];
 
-  private readonly search$ = new BehaviorSubject<string>('');
-  private readonly roleFilter$ = new BehaviorSubject<RoleFilter>('ALL');
-  private readonly pageNo$ = new BehaviorSubject<number>(1);
-  private readonly refresh$ = new BehaviorSubject<void>(undefined);
+  private readonly search$      = new BehaviorSubject<string>('');
+  private readonly roleFilter$  = new BehaviorSubject<RoleFilter>('ALL');
+  private readonly pageNo$      = new BehaviorSubject<number>(1);
+  private readonly refresh$     = new BehaviorSubject<void>(undefined);
 
   users$!: Observable<UserResponseDto[]>;
   stats$!: Observable<UserStats>;
-  vm$!: Observable<ViewModel>;
-
-  ngOnInit(): void {
-    this.initializeStreams();
-  }
+  vm$!:    Observable<ViewModel>;
 
   @HostListener('window:user-updated')
   onUserUpdated(): void {
     this.refresh$.next();
   }
 
-  private initializeStreams(): void {
+  ngOnInit(): void {
+    this.initializeStreams();
+  }
 
+  private initializeStreams(): void {
     this.users$ = this.refresh$.pipe(
       switchMap(() =>
         this.userService.getUsers({ pageSize: 1000, sortBy: 'id', sortDir: 'DESC' }).pipe(
-          catchError(err => {
-            console.error('[AdminUsers] Failed to load users:', err);
+          catchError(() => {
             this.toastService.show('Greška pri učitavanju korisnika', 'error');
             return of([] as UserResponseDto[]);
           })
@@ -106,39 +104,38 @@ export class AdminUsersComponent implements OnInit {
     );
 
     this.stats$ = this.users$.pipe(
-      map(users => ({
-        total: users.length,
-        users: users.filter(u => u.role === Role.USER).length,
-        venueOwners: users.filter(u => u.role === Role.VENUE_OWNER).length,
-        admins: users.filter(u => u.role === Role.ADMIN).length
+      map((users) => ({
+        total:       users.length,
+        users:       users.filter((u) => u.role === Role.USER).length,
+        venueOwners: users.filter((u) => u.role === Role.VENUE_OWNER).length,
+        admins:      users.filter((u) => u.role === Role.ADMIN).length,
       })),
       shareReplay({ bufferSize: 1, refCount: true }),
       takeUntilDestroyed(this.destroyRef)
     );
 
     this.vm$ = this.users$.pipe(
-      switchMap(allUsers =>
+      switchMap((allUsers) =>
         this.search$.pipe(
           debounceTime(300),
-          switchMap(search =>
+          switchMap((search) =>
             this.roleFilter$.pipe(
-              switchMap(roleFilter =>
+              switchMap((roleFilter) =>
                 this.pageNo$.pipe(
-                  map(pageNo => {
+                  map((pageNo) => {
                     let filtered = this.applySearch(allUsers, search);
                     filtered = this.applyRoleFilter(filtered, roleFilter);
 
-                    const start = (pageNo - 1) * this.pageSize;
-                    const end = start + this.pageSize;
-                    const slice = filtered.slice(start, end);
+                    const start   = (pageNo - 1) * this.pageSize;
+                    const end     = start + this.pageSize;
                     const hasMore = end < filtered.length;
 
                     return {
-                      items: slice,
-                      loading: false,
+                      items:    filtered.slice(start, end),
+                      loading:  false,
                       hasMore,
                       errorMsg: '',
-                      pageNo
+                      pageNo,
                     };
                   })
                 )
@@ -155,16 +152,17 @@ export class AdminUsersComponent implements OnInit {
   private applySearch(users: UserResponseDto[], search: string): UserResponseDto[] {
     if (!search.trim()) return users;
     const query = search.toLowerCase();
-    return users.filter(u =>
-      u.name?.toLowerCase().includes(query) ||
-      u.email?.toLowerCase().includes(query) ||
-      u.phone?.toLowerCase().includes(query)
+    return users.filter(
+      (u) =>
+        u.name?.toLowerCase().includes(query) ||
+        u.email?.toLowerCase().includes(query) ||
+        u.phone?.toLowerCase().includes(query)
     );
   }
 
   private applyRoleFilter(users: UserResponseDto[], roleFilter: RoleFilter): UserResponseDto[] {
     if (roleFilter === 'ALL') return users;
-    return users.filter(u => u.role === roleFilter);
+    return users.filter((u) => u.role === roleFilter);
   }
 
   onSearchChange(): void {
@@ -188,61 +186,53 @@ export class AdminUsersComponent implements OnInit {
 
   getRoleLabel(role: Role): string {
     const labels: Record<Role, string> = {
-      [Role.USER]: 'Korisnik',
+      [Role.USER]:        'Korisnik',
       [Role.VENUE_OWNER]: 'Vlasnik',
-      [Role.ADMIN]: 'Admin'
+      [Role.ADMIN]:       'Admin',
     };
     return labels[role];
   }
 
   formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('bs-BA', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
+    return new Date(dateString).toLocaleDateString('bs-BA', {
+      day: '2-digit', month: '2-digit', year: 'numeric',
     });
+  }
+
+  editUser(user: UserResponseDto): void {
+    this.modalService.open(UserModalComponent, { data: { mode: 'edit', user } });
   }
 
   viewUser(user: UserResponseDto): void {
-    this.editUser(user);
-  }
-
-
-  editUser(user: UserResponseDto): void {
-    this.modalService.open(UserModalComponent, {
-      data: { mode: 'edit', user }
-    });
-  }
+  this.modalService.open(UserModalComponent, { data: { mode: 'view', user } });
+}
 
   deleteUser(user: UserResponseDto): void {
     const modalRef = this.modalService.open(ConfirmModalComponent, {
       data: {
-        title: 'Obriši Korisnika',
-        message: `Da li ste sigurni da želite obrisati korisnika "${user.name}"?\n\nOva akcija se ne može poništiti.`,
+        title:       'Obriši Korisnika',
+        message:     `Da li ste sigurni da želite obrisati korisnika "${user.name}"?\n\nOva akcija se ne može poništiti.`,
         confirmText: 'Obriši',
-        cancelText: 'Otkaži',
-        variant: 'danger'
-      }
+        cancelText:  'Otkaži',
+        variant:     'danger',
+      },
     });
 
     (modalRef.instance as ConfirmModalComponent).confirmed
       .pipe(take(1))
-      .subscribe(confirmed => {
-        if (confirmed) {
-          this.userService.deleteUser(user.id)
-            .pipe(take(1))
-            .subscribe({
-              next: () => {
-                this.refresh$.next();
-                this.toastService.show('Korisnik uspješno obrisan', 'success');
-              },
-              error: err => {
-                console.error('[AdminUsers] Failed to delete user:', err);
-                this.toastService.show('Greška pri brisanju korisnika', 'error');
-              }
-            });
-        }
+      .subscribe((confirmed) => {
+        if (!confirmed) return;
+        this.userService.deleteUser(user.id)
+          .pipe(take(1))
+          .subscribe({
+            next: () => {
+              this.refresh$.next();
+              this.toastService.show('Korisnik uspješno obrisan', 'success');
+            },
+            error: () => {
+              this.toastService.show('Greška pri brisanju korisnika', 'error');
+            },
+          });
       });
   }
 }

@@ -10,6 +10,8 @@ public record VenueTableTypeResponse(
         String tableTypeName,
         String tableTypeDescription,
         int quantity,
+        int minCapacity,
+        int maxCapacity,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

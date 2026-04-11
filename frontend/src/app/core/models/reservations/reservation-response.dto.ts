@@ -1,4 +1,5 @@
 
+import { VenueCategory } from '../venues/venue-category.enum';
 import { ReservationStatus } from './reservation-status.enum';
 
 export interface ReservationResponseDto {
@@ -12,6 +13,7 @@ export interface ReservationResponseDto {
   reservationTime: string;
   numberOfPeople: number;
   tableTypeId?: any;
+  venueType?: VenueCategory;
   status: ReservationStatus;
   specialRequests?: string;
   rejectReason?: string;
