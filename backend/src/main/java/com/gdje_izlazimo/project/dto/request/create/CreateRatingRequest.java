@@ -3,6 +3,7 @@ package com.gdje_izlazimo.project.dto.request.create;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
@@ -11,10 +12,13 @@ public record CreateRatingRequest(
         UUID reservationId,
         @NotNull(message = "User ID is required")
         UUID userId,
+        @NotNull(message = "Venue ID is required")
+        UUID venueId,
         @NotNull(message = "Rating is required")
         @Min(value = 1, message = "Rating must be at least 1")
         @Max(value = 5, message = "Rating must be at most 5")
         Integer rating,
+        @Size(max = 500)
         String comment
 ) {
 }

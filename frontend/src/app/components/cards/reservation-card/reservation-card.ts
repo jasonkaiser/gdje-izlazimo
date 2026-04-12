@@ -1,4 +1,7 @@
-import { Component, input, output, computed, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component, input, output, computed,
+  signal, HostListener, ChangeDetectionStrategy
+} from '@angular/core';
 import { ButtonComponent } from '../../buttons/button-component/button-component';
 import { ReservationStatus } from '../../../core/models/reservations/reservation-status.enum';
 import { ReservationResponseDto } from '../../../core/models/reservations/reservation-response.dto';
@@ -19,26 +22,20 @@ type StatusStyle = {
 })
 export class ReservationCard {
 
-  readonly reservation = input.required<ReservationResponseDto | null>();
-
-  readonly cancel          = output<string>();
-  readonly viewDetails     = output<string>();
+  readonly reservation      = input.required<ReservationResponseDto | null>();
+  readonly cancel           = output<string>();
+  readonly viewDetails      = output<string>();
   readonly viewRejectReason = output<string>();
+  readonly openRating       = output<ReservationResponseDto>();
 
-  menuOpen = false;
+  menuOpen     = false;
+  alreadyRated = signal(false);
 
   @HostListener('document:click')
-  onDocumentClick(): void {
-    this.menuOpen = false;
-  }
+  onDocumentClick(): void { this.menuOpen = false; }
 
-  toggleMenu(): void {
-    this.menuOpen = !this.menuOpen;
-  }
-
-  closeMenu(): void {
-    this.menuOpen = false;
-  }
+  toggleMenu(): void { this.menuOpen = !this.menuOpen; }
+  closeMenu(): void  { this.menuOpen = false; }
 
   onCancel(): void {
     const id = this.reservation()?.id;
@@ -54,6 +51,22 @@ export class ReservationCard {
     const id = this.reservation()?.id;
     if (id) this.viewRejectReason.emit(id);
   }
+
+  openRatingModal(): void {
+    const r = this.reservation();
+    if (!r) return;
+    this.openRating.emit(r);
+    this.closeMenu();
+  }
+  
+  readonly forceAlreadyRated = input<boolean>(false);
+    get canRate(): boolean {
+      const r = this.reservation();
+      if (!r) return false;
+      if (r.status !== ReservationStatus.ACCEPTED) return false;
+      if (this.alreadyRated() || this.forceAlreadyRated()) return false;
+      return new Date(r.reservationDate) < new Date();
+    }
 
   private readonly statusStyles: Record<ReservationStatus, StatusStyle> = {
     PENDING: {
@@ -80,6 +93,11 @@ export class ReservationCard {
 
   readonly style = computed(() => {
     const status = this.reservation()?.status;
-    return status ? this.statusStyles[status] : this.statusStyles[ReservationStatus.PENDING];
+    return status
+      ? this.statusStyles[status]
+      : this.statusStyles[ReservationStatus.PENDING];
   });
+
+
+
 }

@@ -18,8 +18,8 @@ import { ReservationResponseDto } from '../../core/models/reservations/reservati
 import { ReservationStatus } from '../../core/models/reservations/reservation-status.enum';
 import { Role } from '../../core/models/users/user-role.enum';
 
-type EditState  = { name: string; phone: string };
-type SaveState  = 'idle' | 'saving' | 'success' | 'error';
+type EditState = { name: string; phone: string };
+type SaveState = 'idle' | 'saving' | 'success' | 'error';
 
 interface ReservationStats {
   total: number; upcoming: number; past: number;
@@ -27,8 +27,7 @@ interface ReservationStats {
 }
 
 interface VenueTypeStat {
-  type: string; label: string; count: number;
-  percentage: number;
+  type: string; label: string; count: number; percentage: number;
 }
 
 export interface FavoriteVenueVm {
@@ -68,6 +67,12 @@ export class Profile implements OnInit {
   readonly saveError = signal('');
 
   readonly removingFavoriteId = signal<string | null>(null);
+
+  isUploadingImage  = false;
+  isDeletingImage   = false;
+  imageUploadError  = '';
+  selectedFile      = signal<File | null>(null);
+  selectedFilePreview = signal<string | null>(null);
 
   readonly roleLabel = computed(() => {
     const role = this.user()?.role;
@@ -140,10 +145,10 @@ export class Profile implements OnInit {
   );
 
   private readonly statusStyles: Record<string, StatusStyle> = {
-    PENDING:   { label: 'Na čekanju', badge: 'border-amber-500/25 bg-amber-500/[0.08] text-amber-400/80'   },
+    PENDING:   { label: 'Na čekanju', badge: 'border-amber-500/25 bg-amber-500/[0.08] text-amber-400/80'       },
     ACCEPTED:  { label: 'Prihvaćena', badge: 'border-emerald-500/25 bg-emerald-500/[0.08] text-emerald-400/80' },
-    REJECTED:  { label: 'Odbijena',   badge: 'border-rose-500/25 bg-rose-500/[0.08] text-rose-400/80'     },
-    CANCELLED: { label: 'Otkazana',   badge: 'border-white/10 bg-white/[0.03] text-white/30'              },
+    REJECTED:  { label: 'Odbijena',   badge: 'border-rose-500/25 bg-rose-500/[0.08] text-rose-400/80'         },
+    CANCELLED: { label: 'Otkazana',   badge: 'border-white/10 bg-white/[0.03] text-white/30'                  },
   };
 
   getStatusStyle(status: string): StatusStyle {
@@ -204,13 +209,84 @@ export class Profile implements OnInit {
 
         this.loading.set(false);
       }),
-      catchError((err) => {
+      catchError(() => {
         this.errorMsg.set('Greška pri učitavanju profila.');
         this.loading.set(false);
         return of(null);
       }),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file  = input.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      this.imageUploadError = 'Dozvoljeni su samo fajlovi slika.';
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      this.imageUploadError = 'Maksimalna veličina fajla je 5MB.';
+      return;
+    }
+
+    this.imageUploadError = '';
+    this.selectedFile.set(file);
+
+    const reader = new FileReader();
+    reader.onload = (e) => this.selectedFilePreview.set(e.target?.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  uploadProfileImage(): void {
+    const file   = this.selectedFile();
+    const userId = this.authService.getUserId();
+    if (!file || !userId) return;
+
+    this.isUploadingImage = true;
+    this.imageUploadError = '';
+
+    this.userService.uploadProfileImage(userId, file)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updated) => {
+          this.user.set(updated);
+          this.selectedFile.set(null);
+          this.selectedFilePreview.set(null);
+          this.isUploadingImage = false;
+        },
+        error: () => {
+          this.imageUploadError = 'Upload nije uspio. Pokušaj ponovo.';
+          this.isUploadingImage = false;
+        },
+      });
+  }
+
+  deleteProfileImage(): void {
+    const userId = this.authService.getUserId();
+    if (!userId) return;
+
+    this.isDeletingImage = true;
+
+    this.userService.deleteProfileImage(userId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (updated) => {
+          this.user.set(updated);
+          this.isDeletingImage = false;
+        },
+        error: () => {
+          this.isDeletingImage = false;
+        },
+      });
+  }
+
+  clearSelectedFile(): void {
+    this.selectedFile.set(null);
+    this.selectedFilePreview.set(null);
+    this.imageUploadError = '';
   }
 
   removeFavorite(venueId: string, event: Event): void {
@@ -251,13 +327,16 @@ export class Profile implements OnInit {
     this.saveState.set('saving');
     this.saveError.set('');
 
-    this.userService.updateUser({ name: name.trim(), phone: phone.trim(), role: u.role } satisfies UpdateUserRequest, u.id).pipe(
+    this.userService.updateUser(
+      { name: name.trim(), phone: phone.trim(), role: u.role } satisfies UpdateUserRequest,
+      u.id
+    ).pipe(
       tap((updated) => {
         this.user.set(updated);
         this.saveState.set('success');
         setTimeout(() => { this.editing.set(false); this.saveState.set('idle'); }, 1200);
       }),
-      catchError((err) => {
+      catchError(() => {
         this.saveError.set('Greška pri čuvanju. Pokušaj ponovo.');
         this.saveState.set('error');
         return of(null);

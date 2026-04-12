@@ -11,6 +11,7 @@ public record UserResponse(
         String email,
         String phone,
         Role role,
+        String profileImageUrl,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {}

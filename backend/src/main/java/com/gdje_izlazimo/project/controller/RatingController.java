@@ -3,6 +3,8 @@ package com.gdje_izlazimo.project.controller;
 import com.gdje_izlazimo.project.dto.request.create.CreateRatingRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateRatingRequest;
 import com.gdje_izlazimo.project.dto.response.RatingResponse;
+import com.gdje_izlazimo.project.dto.response.VenueRatingStatsResponse;
+import com.gdje_izlazimo.project.repository.RatingRepository;
 import com.gdje_izlazimo.project.service.RatingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,10 +30,12 @@ import java.util.UUID;
 public class RatingController {
 
     private final RatingService ratingService;
+    private final RatingRepository ratingRepository;
 
     @Autowired
-    public RatingController(RatingService ratingService) {
+    public RatingController(RatingService ratingService, RatingRepository ratingRepository) {
         this.ratingService = ratingService;
+        this.ratingRepository = ratingRepository;
     }
 
     @Operation(summary = "Get all ratings", description = "Returns a paginated list of all ratings. Requires role: user, venue_owner, or admin")
@@ -60,6 +64,24 @@ public class RatingController {
     public ResponseEntity<RatingResponse> findRatingById(
             @Parameter(description = "Rating UUID") @PathVariable UUID id) {
         return ResponseEntity.ok(ratingService.findRatingById(id));
+    }
+
+    @GetMapping("/venue/{venueId}")
+    public ResponseEntity<List<RatingResponse>> findByVenue(@PathVariable UUID venueId) {
+        return ResponseEntity.ok(ratingService.findByVenueId(venueId));
+    }
+
+    @GetMapping("/venue/{venueId}/stats")
+    public ResponseEntity<VenueRatingStatsResponse> getVenueStats(@PathVariable UUID venueId) {
+        return ResponseEntity.ok(ratingService.getVenueRatingStats(venueId));
+    }
+
+    @GetMapping("/exists/{reservationId}")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
+    public ResponseEntity<Boolean> existsByReservation(@PathVariable UUID reservationId) {
+        return ResponseEntity.ok(
+                ratingRepository.existsByReservation_Id(reservationId)
+        );
     }
 
     @Operation(summary = "Create a rating", description = "Creates a new venue rating. Requires role: user, venue_owner, or admin")

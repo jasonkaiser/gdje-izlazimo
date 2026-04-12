@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -91,6 +92,21 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found"),
             @ApiResponse(responseCode = "403", description = "Access denied")
     })
+
+    @PostMapping("/{id}/profile-image")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
+    public ResponseEntity<UserResponse> uploadProfileImage(
+            @PathVariable UUID id,
+            @RequestParam("file") MultipartFile file) {
+        return ResponseEntity.ok(userService.uploadProfileImage(id, file));
+    }
+
+    @DeleteMapping("/{id}/profile-image")
+    @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
+    public ResponseEntity<UserResponse> deleteProfileImage(@PathVariable UUID id) {
+        return ResponseEntity.ok(userService.deleteProfileImage(id));
+    }
+
     @PreAuthorize("hasRole('admin')")
     @PatchMapping("/{id}/role")
     public ResponseEntity<UserResponse> updateUserRole(

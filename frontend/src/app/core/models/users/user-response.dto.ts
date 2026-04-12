@@ -2,12 +2,12 @@ import { Role } from "./user-role.enum";
 
 
 export interface UserResponseDto {
-  id: string;          
+  id: string;
   name: string;
   email: string;
   phone: string;
   role: Role;
-  createdAt: string;   
-  updatedAt: string;   
-
+  profileImageUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
 }

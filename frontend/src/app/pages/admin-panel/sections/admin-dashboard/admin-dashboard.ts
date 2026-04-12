@@ -210,6 +210,7 @@ export class AdminDashboardComponent implements OnInit {
       VENUE:       'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
       RESERVATION: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
       TABLE_TYPE:  'M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z',
+      RATING:      'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z',
       SYSTEM:      'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
     };
     return icons[entityType] ?? icons['SYSTEM'];
@@ -221,6 +222,7 @@ export class AdminDashboardComponent implements OnInit {
       VENUE:       { badge: 'bg-violet-500/10 border-violet-500/20', icon: 'text-violet-400' },
       RESERVATION: { badge: 'bg-amber-500/10 border-amber-500/20', icon: 'text-amber-400' },
       TABLE_TYPE:  { badge: 'bg-teal-500/10 border-teal-500/20',   icon: 'text-teal-400' },
+      RATING:      { badge: 'bg-yellow-500/10 border-yellow-500/20', icon: 'text-yellow-400' },
       SYSTEM:      { badge: 'bg-white/5 border-white/10',           icon: 'text-white/40' },
     };
     return themes[entityType] ?? themes['SYSTEM'];

@@ -6,10 +6,12 @@ import java.util.UUID;
 public record RatingResponse(
         UUID id,
         UUID reservationId,
+        UUID venueId,
         UUID userId,
+        String userName,
+        String profileImageUrl,
         int rating,
         String comment,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
-) {
-}
+) {}

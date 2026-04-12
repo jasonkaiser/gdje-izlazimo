@@ -1,4 +1,4 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DatePipe, DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -23,6 +23,11 @@ import { CreateReservationRequest } from '../../core/models/reservations/create-
 import { ReservationService } from '../../core/api/reservation-service';
 import { UserFavoriteVenueService } from '../../core/api/user-favorite-venue';
 import { ReservationSuccessModal } from '../../components/modals/reservation-success-modal/reservation-success-modal';
+import { RatingService } from '../../core/api/rating-service';
+import { RatingResponseDto } from '../../core/models/ratings/rating-response.dto';
+import { VenueRatingStatsDto } from '../../core/models/ratings/venue-rating-response.dto';
+import { VenueMapComponent } from '../../components/other/venue-map/venue-map';
+
 
 type TableTypeVm = {
   id: string;
@@ -47,6 +52,21 @@ type Vm = {
   loading: boolean;
   errorMsg: string;
   isFavorite: boolean;
+  averageRating: number;
+  totalRatings: number;
+  ratings: RatingVm[];
+  ratingsLoading: boolean;
+  latitude: number;
+  longitude: number;
+};
+
+type RatingVm = {
+  id: string;
+  userName: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  profileImageUrl: string | null;
 };
 
 const EMPTY_VM: Omit<Vm, 'venueId' | 'loading' | 'errorMsg'> = {
@@ -61,12 +81,18 @@ const EMPTY_VM: Omit<Vm, 'venueId' | 'loading' | 'errorMsg'> = {
   tableTypesLoading: false,
   totalCapacity: 0,
   isFavorite: false,
+  averageRating: 0,
+  totalRatings: 0,
+  ratings: [],
+  ratingsLoading: false,
+  latitude: 0,
+  longitude: 0,
 };
 
 @Component({
   selector: 'app-venue-details',
   standalone: true,
-  imports: [InViewDirective, AsyncPipe, ReservationModal, ReservationSuccessModal],
+  imports: [InViewDirective, AsyncPipe, ReservationModal, ReservationSuccessModal, DecimalPipe, DatePipe, VenueMapComponent],
   templateUrl: './venue-details.html',
   styleUrls: ['./venue-details.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -82,6 +108,8 @@ export class VenueDetails {
   readonly authService = inject(AuthService);
   private readonly reservationService = inject(ReservationService);
   private readonly favoriteService = inject(UserFavoriteVenueService);
+  private readonly ratingService = inject(RatingService);
+
 
   sliderIndex = 0;
   openId: string | null = null;
@@ -158,9 +186,15 @@ export class VenueDetails {
             tableTypes: this.venueTableTypeService.getByVenueId(venueId).pipe(
               catchError(() => of([] as VenueTableTypeResponseDto[]))
             ),
+            ratings: this.ratingService.getByVenueId(venueId).pipe(
+              catchError(() => of([] as RatingResponseDto[]))
+            ),
+            stats: this.ratingService.getVenueStats(venueId).pipe(
+              catchError(() => of({ averageRating: 0, totalRatings: 0 } as VenueRatingStatsDto))
+            ),
             favorites: favorites$,
           }).pipe(
-            map(({ operatingHours, tableTypes, favorites }) => {
+            map(({ operatingHours, tableTypes, favorites, stats, ratings }) => {
               const mappedTableTypes = tableTypes.map((vtt) => ({
                 id: vtt.id,
                 tableTypeId: vtt.tableTypeId,
@@ -169,6 +203,17 @@ export class VenueDetails {
                 capacityLabel: `${vtt.minCapacity}–${vtt.maxCapacity} Osoba`,
               } satisfies TableTypeVm));
 
+            const mappedRatings: RatingVm[] = ratings
+              .slice(0, 10)
+              .map(r => ({
+                id:              r.id,
+                userName:        r.userName,
+                rating:          r.rating,
+                comment:         r.comment,
+                createdAt:       r.createdAt,
+                profileImageUrl: r.profileImageUrl ?? null,
+              }));
+
               if (!this.openId && mappedTableTypes.length > 0) {
                 this.openId = mappedTableTypes[0].id;
               }
@@ -176,6 +221,7 @@ export class VenueDetails {
               const sortedImages = [...(venue.images ?? [])].sort((a, b) =>
                 a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1
               );
+
 
               const totalCapacity = tableTypes.reduce(
                 (sum, vtt) => sum + vtt.quantity * vtt.maxCapacity, 0
@@ -199,6 +245,12 @@ export class VenueDetails {
                 totalCapacity,
                 loading: false,
                 errorMsg: '',
+                averageRating:  stats.averageRating,
+                totalRatings:   stats.totalRatings,
+                ratings:        mappedRatings,
+                ratingsLoading: false,
+                latitude: venue.latitude ?? 0,
+                longitude: venue.longitude ?? 0,
                 isFavorite: (favorites as Array<{ id: string }>).some((v) => v.id === venueId),
               } satisfies Vm;
             })

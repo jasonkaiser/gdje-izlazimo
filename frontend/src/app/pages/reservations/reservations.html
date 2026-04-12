@@ -110,9 +110,11 @@
           <div class="animate-fade-in-up" [style.animation-delay]="i * 50 + 'ms'">
             <app-reservation-card
               [reservation]="r"
+              [forceAlreadyRated]="isRated(r.id)"
               (cancel)="cancelReservation($event)"
               (viewDetails)="viewReservationDetails($event)"
               (viewRejectReason)="viewRejectReason($event)"
+              (openRating)="openRatingModal($event)"
             />
           </div>
         }
@@ -167,4 +169,14 @@
       }
     }
   }
+
+  @if (ratingModalShown && selectedReservation) {
+    <app-rating-modal
+      [venueName]="selectedReservation.venueName"
+      [isSubmitting]="isSubmittingRating"
+      (close)="closeRatingModal()"
+      (submit)="submitRating($event)"
+    />
+  }
+
 </section>

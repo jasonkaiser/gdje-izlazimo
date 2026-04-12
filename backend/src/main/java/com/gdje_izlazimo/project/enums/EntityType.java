@@ -5,5 +5,6 @@ public enum EntityType {
     VENUE,
     RESERVATION,
     TABLE_TYPE,
-    SYSTEM
+    SYSTEM,
+    RATING
 }

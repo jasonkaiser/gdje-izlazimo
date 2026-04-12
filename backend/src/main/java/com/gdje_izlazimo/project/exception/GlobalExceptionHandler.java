@@ -65,6 +65,17 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(RatingNotAllowedException.class)
+    public ResponseEntity<ApiError> handleRatingNotAllowed(RatingNotAllowedException ex){
+
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        return ResponseEntity
+                .status(status)
+                .body(new ApiError(status.value(), ex.getMessage(),"RATING_NOT_ALLOWED"));
+
+    }
+
     // Reservation Handlers
 
     @ExceptionHandler(ReservationNotFoundException.class)

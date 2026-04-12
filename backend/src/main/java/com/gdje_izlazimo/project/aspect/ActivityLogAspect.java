@@ -1,10 +1,12 @@
 package com.gdje_izlazimo.project.aspect;
 
+import com.gdje_izlazimo.project.dto.response.RatingResponse;
 import com.gdje_izlazimo.project.entity.Reservation;
 import com.gdje_izlazimo.project.enums.ActionType;
 import com.gdje_izlazimo.project.enums.ActivityStatus;
 import com.gdje_izlazimo.project.enums.EntityType;
 import com.gdje_izlazimo.project.enums.Status;
+import com.gdje_izlazimo.project.repository.RatingRepository;
 import com.gdje_izlazimo.project.repository.ReservationRepository;
 import com.gdje_izlazimo.project.service.ActivityLogService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,8 @@ public class ActivityLogAspect {
 
     private final ActivityLogService activityLogService;
     private final ReservationRepository reservationRepository;
+    private final RatingRepository ratingRepository;
+
 
     @AfterReturning(
             pointcut = "execution(* com.gdje_izlazimo.project.service.UserService.create*(..))",
@@ -263,6 +267,78 @@ public class ActivityLogAspect {
             );
         } catch (Exception e) {
             log.error("Failed to log table type delete", e);
+        }
+
+        return result;
+    }
+
+    @AfterReturning(
+            pointcut = "execution(* com.gdje_izlazimo.project.service.RatingService.createRating(..))",
+            returning = "result"
+    )
+    public void logRatingCreation(Object result) {
+        try {
+            RatingResponse r = (RatingResponse) result;
+            activityLogService.logActivity(
+                    EntityType.RATING,
+                    r.id().toString(),
+                    r.userName(),
+                    ActionType.CREATED,
+                    String.format("Korisnik \"%s\" je ostavio ocjenu %d/5", r.userName(), r.rating()),
+                    ActivityStatus.SUCCESS,
+                    getCurrentUsername()
+            );
+        } catch (Exception e) {
+            log.error("Failed to log rating creation", e);
+        }
+    }
+
+    @AfterReturning(
+            pointcut = "execution(* com.gdje_izlazimo.project.service.RatingService.updateRating(..))",
+            returning = "result"
+    )
+    public void logRatingUpdate(Object result) {
+        try {
+            RatingResponse r = (RatingResponse) result;
+            activityLogService.logActivity(
+                    EntityType.RATING,
+                    r.id().toString(),
+                    r.userName(),
+                    ActionType.UPDATED,
+                    String.format("Korisnik \"%s\" je izmijenio ocjenu na %d/5", r.userName(), r.rating()),
+                    ActivityStatus.INFO,
+                    getCurrentUsername()
+            );
+        } catch (Exception e) {
+            log.error("Failed to log rating update", e);
+        }
+    }
+
+    @Around("execution(* com.gdje_izlazimo.project.service.RatingService.deleteRating(..))")
+    public Object logRatingDelete(ProceedingJoinPoint pjp) throws Throwable {
+        UUID ratingId = extractUuidArg(pjp.getArgs());
+
+        String userName = "Unknown";
+        if (ratingId != null) {
+            userName = ratingRepository.findByIdWithVenue(ratingId)
+                    .map(r -> r.getUser() != null ? r.getUser().getName() : "Unknown")
+                    .orElse("Unknown");
+        }
+
+        Object result = pjp.proceed();
+
+        try {
+            activityLogService.logActivity(
+                    EntityType.RATING,
+                    ratingId != null ? ratingId.toString() : "unknown",
+                    userName,
+                    ActionType.DELETED,
+                    String.format("Ocjena korisnika \"%s\" je obrisana", userName),
+                    ActivityStatus.DANGER,
+                    getCurrentUsername()
+            );
+        } catch (Exception e) {
+            log.error("Failed to log rating delete", e);
         }
 
         return result;

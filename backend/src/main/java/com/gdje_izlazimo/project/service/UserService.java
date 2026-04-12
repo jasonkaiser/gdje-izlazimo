@@ -11,7 +11,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,11 +23,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final KeycloakAdminService keycloakAdminService;
     private final UserMapper userMapper;
+    private final ImageKitService imageKitService;
 
-    public UserService(UserRepository userRepository, KeycloakAdminService keycloakAdminService, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, KeycloakAdminService keycloakAdminService, UserMapper userMapper, ImageKitService imageKitService) {
         this.userRepository = userRepository;
         this.keycloakAdminService = keycloakAdminService;
         this.userMapper = userMapper;
+        this.imageKitService = imageKitService;
     }
 
     @Transactional
@@ -125,6 +129,37 @@ public class UserService {
         );
 
         return userMapper.toResponse(existingUser);
+    }
+
+    @Transactional
+    public UserResponse uploadProfileImage(UUID id, MultipartFile file) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (user.getProfileImageFileId() != null) {
+            imageKitService.deleteImage(user.getProfileImageFileId());
+        }
+
+        String[] uploadResult = imageKitService.uploadImage(file, "users/" + id);
+
+        user.setProfileImageUrl(uploadResult[0]);
+        user.setProfileImageFileId(uploadResult[1]);
+
+        return userMapper.toResponse(userRepository.save(user));
+    }
+
+    @Transactional
+    public UserResponse deleteProfileImage(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        if (user.getProfileImageFileId() != null) {
+            imageKitService.deleteImage(user.getProfileImageFileId());
+            user.setProfileImageUrl(null);
+            user.setProfileImageFileId(null);
+        }
+
+        return userMapper.toResponse(userRepository.save(user));
     }
 
     @Transactional

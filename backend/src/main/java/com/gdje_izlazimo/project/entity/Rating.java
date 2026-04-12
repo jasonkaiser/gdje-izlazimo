@@ -13,7 +13,19 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ratings")
+@Table(name = "ratings",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uq_rating_reservation",
+                        columnNames = "reservation_id"
+                )
+        },
+        indexes = {
+                @Index(name = "idx_rating_venue_id",   columnList = "venue_id"),
+                @Index(name = "idx_rating_user_id",    columnList = "user_id"),
+                @Index(name = "idx_rating_created_at", columnList = "created_at DESC")
+        }
+)
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,11 +40,15 @@ public class Rating {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id", nullable = false, updatable = false)
-    private Reservation reservationId;
+    private Reservation reservation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "venue_id", nullable = false, updatable = false)
+    private Venue venue;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, updatable = false)
-    private User userId;
+    private User user;
 
     @Column(name = "rating", nullable = false)
     private int rating;
