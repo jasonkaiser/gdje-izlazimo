@@ -1,6 +1,7 @@
 package com.gdje_izlazimo.project.dto.response;
 
 import com.gdje_izlazimo.project.enums.VenueCategory;
+import com.gdje_izlazimo.project.enums.VenueKind;
 import com.gdje_izlazimo.project.enums.WorkingDays;
 import org.springframework.cglib.core.Local;
 
@@ -16,6 +17,7 @@ public record VenueResponse(
         String addressName,
         boolean isActive,
         VenueCategory venueType,
+        VenueKind venueKind,
         String phone,
         double latitude,
         double longitude,

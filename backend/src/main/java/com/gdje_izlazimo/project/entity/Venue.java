@@ -2,6 +2,7 @@ package com.gdje_izlazimo.project.entity;
 
 
 import com.gdje_izlazimo.project.enums.VenueCategory;
+import com.gdje_izlazimo.project.enums.VenueKind;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,9 @@ import java.util.UUID;
 @Table(name = "venues", indexes = {
         @Index(name = "idx_venue_type", columnList = "venue_type"),
         @Index(name = "idx_venue_is_active", columnList = "is_active"),
-        @Index(name = "idx_venue_name", columnList = "name")
+        @Index(name = "idx_venue_name", columnList = "name"),
+        @Index(name = "idx_venue_kind", columnList = "venue_kind"),
+
 })
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
@@ -41,7 +44,7 @@ public class Venue {
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "venue_owner_id", nullable = false, updatable = false)
+    @JoinColumn(name = "venue_owner_id", nullable = true, updatable = false)
     private User venueOwner;
 
     @Column(name = "address_name", nullable = false)
@@ -53,6 +56,10 @@ public class Venue {
     @Column(name = "venue_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private VenueCategory venueType;
+
+    @Column(name = "venue_kind", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private VenueKind venueKind;
 
     @Column(name = "phone", nullable = false)
     private String phone;

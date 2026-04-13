@@ -58,6 +58,7 @@ type Vm = {
   ratingsLoading: boolean;
   latitude: number;
   longitude: number;
+  isPartner: boolean;
 };
 
 type RatingVm = {
@@ -87,6 +88,8 @@ const EMPTY_VM: Omit<Vm, 'venueId' | 'loading' | 'errorMsg'> = {
   ratingsLoading: false,
   latitude: 0,
   longitude: 0,
+  isPartner: false,
+
 };
 
 @Component({
@@ -110,6 +113,7 @@ export class VenueDetails {
   private readonly favoriteService = inject(UserFavoriteVenueService);
   private readonly ratingService = inject(RatingService);
 
+  private lastVm: Vm | null = null;
 
   sliderIndex = 0;
   openId: string | null = null;
@@ -252,6 +256,7 @@ export class VenueDetails {
                 latitude: venue.latitude ?? 0,
                 longitude: venue.longitude ?? 0,
                 isFavorite: (favorites as Array<{ id: string }>).some((v) => v.id === venueId),
+                isPartner: venue.venueKind === 'PARTNER',
               } satisfies Vm;
             })
           );
@@ -267,6 +272,7 @@ export class VenueDetails {
         startWith(loadingVm)
       );
     }),
+    tap(vm => { if (!vm.loading) this.lastVm = vm; }),
     takeUntilDestroyed(this.destroyRef),
     shareReplay({ bufferSize: 1, refCount: true })
   );
@@ -342,7 +348,9 @@ export class VenueDetails {
     this.descriptionModalShown = true;
   }
 
-  toggleReservation(): void {
+  toggleReservation(vm?: Vm): void {
+    const v = vm ?? this.lastVm;
+    if (!v?.isPartner) return;
     if (!this.authService.authenticated()) {
       this.authService.login();
     } else {

@@ -46,6 +46,15 @@
       />
     </div>
 
+    <div class="w-full sm:w-auto sm:min-w-[160px]">
+      <app-dropdown
+        placeholder="Svi tipovi"
+        [options]="venueKindFilterOptions"
+        [(ngModel)]="venueKindFilter"
+        (ngModelChange)="onFilterChange()"
+      />
+    </div>
+
     <!-- Add Button -->
     <button
       (click)="openCreateVenueModal()"

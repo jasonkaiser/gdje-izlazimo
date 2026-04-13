@@ -42,6 +42,7 @@ export class VenueService {
     searchVenues(options : {
       query?: string;
       venueType?: VenueCategory;
+      venueKind?: string;
       pageNo?: number;
       pageSize?: number;
       sortBy?: string;
@@ -52,6 +53,8 @@ export class VenueService {
 
       if(options.query) params = params.set('query', options.query);
       if(options.venueType) params = params.set('venueType', options.venueType);
+      if(options.venueKind) { params = params.set('venueKind', options.venueKind);
+}
 
       params = params.set('pageNo', String(options.pageNo ?? 1));
       params = params.set('pageSize', String(options.pageSize ?? 6));

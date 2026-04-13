@@ -6,6 +6,7 @@ import com.gdje_izlazimo.project.entity.UserFavoriteVenue;
 import com.gdje_izlazimo.project.entity.Venue;
 import com.gdje_izlazimo.project.enums.Role;
 import com.gdje_izlazimo.project.enums.VenueCategory;
+import com.gdje_izlazimo.project.enums.VenueKind;
 import com.gdje_izlazimo.project.exception.custom.FavoriteAlreadyExistsException;
 import com.gdje_izlazimo.project.exception.custom.FavoriteNotFoundException;
 import com.gdje_izlazimo.project.exception.custom.UserNotFoundException;
@@ -76,7 +77,7 @@ class UserFavoriteVenueServiceTest {
         venueResponse = new VenueResponse(
                 venueId, "Club Atmosphere", "Description",
                 "Ferhadija 12, Sarajevo", true,
-                VenueCategory.CLUB, "+38733000000",
+                VenueCategory.CLUB, VenueKind.PARTNER, "+38733000000",
                 43.8476, 18.3564,
                 LocalDateTime.now(), LocalDateTime.now(),
                 List.of()

@@ -1,6 +1,9 @@
 import { VenueCategory } from "./venue-category.enum";
 
-
+export enum VenueKind {
+  LISTED = 'LISTED',
+  PARTNER = 'PARTNER',
+}
 export interface VenueImageDto {
   id: string;
   imageUrl: string;
@@ -16,6 +19,7 @@ export interface VenueResponseDto {
   addressName: string;
   isActive: boolean;
   venueType: VenueCategory;
+  venueKind: VenueKind;
   phone: string;
   latitude: number;
   longitude: number;

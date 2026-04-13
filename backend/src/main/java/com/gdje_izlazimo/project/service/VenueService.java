@@ -5,6 +5,7 @@ import com.gdje_izlazimo.project.dto.request.update.UpdateVenueRequest;
 import com.gdje_izlazimo.project.dto.response.VenueResponse;
 import com.gdje_izlazimo.project.entity.Venue;
 import com.gdje_izlazimo.project.enums.VenueCategory;
+import com.gdje_izlazimo.project.enums.VenueKind;
 import com.gdje_izlazimo.project.exception.custom.VenueAlreadyExistsException;
 import com.gdje_izlazimo.project.exception.custom.VenueNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueMapper;
@@ -32,7 +33,7 @@ public class VenueService {
 
     @Transactional(readOnly = true)
     public List<VenueResponse> findAllVenues(Pageable pageable) {
-        return fetchPage(null, null, pageable);
+        return fetchPage(null, null, null, pageable);
     }
 
     @Cacheable(value = "venueById", key = "#id")
@@ -45,7 +46,12 @@ public class VenueService {
 
     @Transactional(readOnly = true)
     public List<VenueResponse> findByVenueType(Pageable pageable, VenueCategory venueType) {
-        return fetchPage(null, venueType, pageable);
+        return fetchPage(null, venueType, null, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public List<VenueResponse> findByVenueKind(Pageable pageable, VenueKind venueKind) {
+        return fetchPage(null, null, venueKind, pageable);
     }
 
     @Transactional(readOnly = true)
@@ -56,9 +62,9 @@ public class VenueService {
     }
 
     @Transactional(readOnly = true)
-    public List<VenueResponse> searchVenues(String query, VenueCategory category, Pageable pageable) {
+    public List<VenueResponse> searchVenues(String query, VenueCategory category, VenueKind venueKind, Pageable pageable) {
         String normalizedQuery = (query == null || query.isBlank()) ? null : query;
-        return fetchPage(normalizedQuery, category, pageable);
+        return fetchPage(normalizedQuery, category, venueKind, pageable);
     }
 
     @Transactional
@@ -91,9 +97,14 @@ public class VenueService {
         venueRepository.deleteById(id);
     }
 
+    public void assertVenueAcceptsReservations(Venue venue) {
+        if (venue.getVenueKind() != VenueKind.PARTNER) {
+            throw new IllegalStateException("This venue does not accept reservations");
+        }
+    }
 
-    private List<VenueResponse> fetchPage(String query, VenueCategory category, Pageable pageable) {
-        Page<UUID> idPage = venueRepository.findIdsBySearchCriteria(query, category, pageable);
+    private List<VenueResponse> fetchPage(String query, VenueCategory category, VenueKind venueKind, Pageable pageable) {
+        Page<UUID> idPage = venueRepository.findIdsBySearchCriteria(query, category, venueKind, pageable);
 
         if (idPage.isEmpty()) return List.of();
 

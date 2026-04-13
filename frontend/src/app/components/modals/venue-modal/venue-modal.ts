@@ -23,6 +23,7 @@ import { VenueImageResponseDto } from '../../../core/models/venue-images/venue-i
 import { TableTypeService } from '../../../core/api/table-type-service';
 import { VenueTableTypeService } from '../../../core/api/venue-table-type-service';
 import { TableTypeResponseDto } from '../../../core/models/table-types/table-type-response.dto';
+import { VenueKind } from '../../../core/models/venues/venue-response.dto';
 
 interface VenueModalData {
   mode: 'create' | 'edit';
@@ -135,6 +136,12 @@ export class VenueModalComponent implements OnInit {
     { value: VenueCategory.RESTAURANT, label: 'Restoran' },
   ];
 
+  readonly venueKindOptions = [
+    { value: VenueKind.LISTED, label: 'Listed' },
+    { value: VenueKind.PARTNER, label: 'Partner' },
+  ];
+
+
   readonly dayOptions = [
     { value: DayOfWeek.MONDAY,    label: 'Ponedjeljak' },
     { value: DayOfWeek.TUESDAY,   label: 'Utorak' },
@@ -159,6 +166,7 @@ export class VenueModalComponent implements OnInit {
     addressName:  '',
     phone:        '',
     venueType:    VenueCategory.CLUB,
+    venueKind:    'PARTNER' as VenueKind,
     isActive:     true,
     latitude:     43.8563,
     longitude:    18.4131,
@@ -173,12 +181,19 @@ export class VenueModalComponent implements OnInit {
     return this.mode === 'create' && this.isAdmin;
   }
 
-  get canSaveDetails(): boolean {
-    return !!this.formData.name.trim() &&
-           !!this.formData.addressName.trim() &&
-           !!this.formData.phone.trim() &&
-           (this.mode === 'edit' || !!this.formData.venueOwnerId);
+ get canSaveDetails(): boolean {
+  const base = !!(
+    this.formData.name?.trim() &&
+    this.formData.addressName?.trim() &&
+    this.formData.phone?.trim() &&
+    this.formData.venueType &&
+    this.formData.venueKind
+  );
+  if (this.mode === 'create') {
+    return base && !!(this.formData.latitude && this.formData.longitude);
   }
+  return base;
+}
 
   ngOnInit(): void {
     this.mode = this.data.mode;
@@ -190,7 +205,8 @@ export class VenueModalComponent implements OnInit {
         description:  this.data.venue.description || '',
         addressName:  this.data.venue.addressName,
         phone:        this.data.venue.phone,
-        venueType:    this.data.venue.venueType,
+        venueType:    this.data.venue.venueType, 
+        venueKind:    this.data.venue.venueKind,
         isActive:     this.data.venue.isActive,
         latitude:     this.data.venue.latitude,
         longitude:    this.data.venue.longitude,
@@ -634,9 +650,6 @@ export class VenueModalComponent implements OnInit {
     if (!phoneRegex.test(this.formData.phone)) {
       this.toastService.show('Neispravan format telefona', 'error'); return;
     }
-    if (this.mode === 'create' && !this.formData.venueOwnerId) {
-      this.toastService.show('Vlasnik lokala je obavezan', 'error'); return;
-    }
 
     this.isSubmitting = true;
     this.cdr.markForCheck();
@@ -655,10 +668,11 @@ export class VenueModalComponent implements OnInit {
       addressName:  this.formData.addressName.trim(),
       phone:        this.formData.phone.trim(),
       venueType:    this.formData.venueType,
+      venueKind:    this.formData.venueKind,
       isActive:     this.formData.isActive,
       latitude:     this.formData.latitude,
       longitude:    this.formData.longitude,
-      venueOwnerId: this.formData.venueOwnerId
+      venueOwnerId: this.formData.venueOwnerId || undefined
     };
 
     this.venueService.createVenue(request)
@@ -704,7 +718,8 @@ export class VenueModalComponent implements OnInit {
       addressName: this.formData.addressName.trim(),
       venueType:   this.formData.venueType,
       phone:       this.formData.phone.trim(),
-      isActive:    this.formData.isActive
+      isActive:    this.formData.isActive,
+      venueKind:   this.formData.venueKind,
     };
 
     this.venueService.updateVenue(request, this.venueId)

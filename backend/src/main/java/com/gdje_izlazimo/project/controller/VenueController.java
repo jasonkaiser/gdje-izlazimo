@@ -4,6 +4,7 @@ import com.gdje_izlazimo.project.dto.request.create.CreateVenueRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateVenueRequest;
 import com.gdje_izlazimo.project.dto.response.VenueResponse;
 import com.gdje_izlazimo.project.enums.VenueCategory;
+import com.gdje_izlazimo.project.enums.VenueKind;
 import com.gdje_izlazimo.project.service.VenueService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -38,7 +39,7 @@ public class VenueController {
         this.venueService = venueService;
     }
 
-    @Operation(summary = "Get all venues", description = "Returns a paginated list of all venues, optionally filtered by category. Public endpoint.")
+    @Operation(summary = "Get all venues", description = "Returns a paginated list of all venues, optionally filtered by category and/or venue kind. Public endpoint.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Venues retrieved successfully")
     })
@@ -48,16 +49,12 @@ public class VenueController {
             @Parameter(description = "Page number (1-based)") @RequestParam(defaultValue = "1") int pageNo,
             @Parameter(description = "Number of items per page") @RequestParam(defaultValue = "6") int pageSize,
             @Parameter(description = "Filter by venue category") @RequestParam(required = false) VenueCategory venueType,
+            @Parameter(description = "Filter by venue kind (PARTNER or LISTED)") @RequestParam(required = false) VenueKind venueKind,
             @Parameter(description = "Field to sort by") @RequestParam(defaultValue = "id") String sortBy,
             @Parameter(description = "Sort direction: ASC or DESC") @RequestParam(defaultValue = "ASC") String sortDir) {
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.Direction.fromString(sortDir), sortBy);
-
-        if (venueType != null) {
-            return ResponseEntity.ok(venueService.findByVenueType(pageable, venueType));
-        }
-
-        return ResponseEntity.ok(venueService.findAllVenues(pageable));
+        return ResponseEntity.ok(venueService.searchVenues(null, venueType, venueKind, pageable));
     }
 
     @Operation(summary = "Get venue by ID", description = "Returns a single venue by its UUID. Public endpoint.")
@@ -82,11 +79,10 @@ public class VenueController {
     @GetMapping("/my-venue")
     public ResponseEntity<VenueResponse> getMyVenue(@AuthenticationPrincipal Jwt jwt) {
         UUID ownerId = UUID.fromString(jwt.getSubject());
-        VenueResponse venue = venueService.getVenueByOwnerId(ownerId);
-        return ResponseEntity.ok(venue);
+        return ResponseEntity.ok(venueService.getVenueByOwnerId(ownerId));
     }
 
-    @Operation(summary = "Search venues", description = "Search venues by name query and/or category with pagination. Public endpoint.")
+    @Operation(summary = "Search venues", description = "Search venues by name query and/or category and/or venue kind with pagination. Public endpoint.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Search results returned successfully")
     })
@@ -95,13 +91,14 @@ public class VenueController {
     public ResponseEntity<List<VenueResponse>> searchVenues(
             @Parameter(description = "Search query (name)") @RequestParam(required = false) String query,
             @Parameter(description = "Filter by venue category") @RequestParam(required = false) VenueCategory venueType,
+            @Parameter(description = "Filter by venue kind (PARTNER or LISTED)") @RequestParam(required = false) VenueKind venueKind,
             @Parameter(description = "Page number (1-based)") @RequestParam(defaultValue = "1") int pageNo,
             @Parameter(description = "Number of items per page") @RequestParam(defaultValue = "6") int pageSize,
             @Parameter(description = "Field to sort by") @RequestParam(defaultValue = "name") String sortBy,
             @Parameter(description = "Sort direction: ASC or DESC") @RequestParam(defaultValue = "ASC") String sortDir) {
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.Direction.fromString(sortDir), sortBy);
-        return ResponseEntity.ok(venueService.searchVenues(query, venueType, pageable));
+        return ResponseEntity.ok(venueService.searchVenues(query, venueType, venueKind, pageable));
     }
 
     @Operation(summary = "Create a venue", description = "Creates a new venue. Requires role: admin")

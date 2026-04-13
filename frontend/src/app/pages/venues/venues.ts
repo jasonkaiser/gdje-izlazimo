@@ -9,7 +9,7 @@ import { SearchBarComponent } from '../../components/other/search-bar/search-bar
 import { VenueCard } from '../../components/cards/venue-card/venue-card';
 import { VenueService } from '../../core/api/venue-service';
 import { VenueCategory } from '../../core/models/venues/venue-category.enum';
-import { VenueResponseDto } from '../../core/models/venues/venue-response.dto';
+import { VenueKind, VenueResponseDto } from '../../core/models/venues/venue-response.dto';
 
 type SortValue = 'name_asc' | 'name_desc';
 
@@ -33,6 +33,7 @@ type ViewModel = {
 type Params = {
   query: string;
   venueType: VenueCategory | null;
+  venueKind: VenueKind | null; 
   sortDir: 'ASC' | 'DESC';
   pageNo: number;
   pageSize: number;
@@ -60,11 +61,12 @@ export class VenuesComponent {
     map((p): Params => {
       const query    = (p.get('query') ?? '').trim();
       const venueType = (p.get('venueType') as VenueCategory) ?? null;
+      const venueKind = p.get('venueKind') as VenueKind ?? null;
       const sort     = (p.get('sort') as SortValue) ?? 'name_asc';
       const pageNo   = Number(p.get('pageNo') ?? '1') || 1;
       const pageSize = Number(p.get('pageSize') ?? '6') || 6;
 
-      return { query, venueType, sortDir: sort === 'name_desc' ? 'DESC' : 'ASC', pageNo, pageSize };
+      return { query, venueType,venueKind, sortDir: sort === 'name_desc' ? 'DESC' : 'ASC', pageNo, pageSize };
     }),
     tap((p) => {
       if (p.pageNo === 1) {
@@ -96,6 +98,7 @@ export class VenuesComponent {
     return this.venueService.searchVenues({
       query:     params.query || undefined,
       venueType: params.venueType ?? undefined,
+      venueKind: params.venueKind ?? undefined,
       sortBy:    'name',
       sortDir:   params.sortDir,
       pageNo,
@@ -127,12 +130,13 @@ export class VenuesComponent {
     };
   }
 
-  onSearch(e: { query: string; venueType: VenueCategory | null; sort: SortValue }): void {
+  onSearch(e: { query: string; venueType: VenueCategory | null; venueKind: any;  sort: SortValue }): void {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
         query:     e.query?.trim() || null,
         venueType: e.venueType || null,
+        venueKind: e.venueKind || null,
         sort:      e.sort || 'name_asc',
         pageNo:    1,
         pageSize:  8,

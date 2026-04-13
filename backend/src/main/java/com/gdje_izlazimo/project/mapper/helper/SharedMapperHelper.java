@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Component
 @RequiredArgsConstructor
 public class SharedMapperHelper {

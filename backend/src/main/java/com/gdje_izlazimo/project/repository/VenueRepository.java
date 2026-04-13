@@ -2,6 +2,7 @@ package com.gdje_izlazimo.project.repository;
 
 import com.gdje_izlazimo.project.entity.Venue;
 import com.gdje_izlazimo.project.enums.VenueCategory;
+import com.gdje_izlazimo.project.enums.VenueKind;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,9 +24,11 @@ public interface VenueRepository extends JpaRepository<Venue, UUID> {
     @Query("SELECT v.id FROM Venue v WHERE " +
             "(CAST(:query AS string) IS NULL OR LOWER(v.name) LIKE LOWER(CONCAT('%', CAST(:query AS string), '%')) OR " +
             "LOWER(v.description) LIKE LOWER(CONCAT('%', CAST(:query AS string), '%'))) AND " +
-            "(CAST(:category AS string) IS NULL OR v.venueType = :category)")
+            "(CAST(:category AS string) IS NULL OR v.venueType = :category) AND " +
+            "(CAST(:venueKind AS string) IS NULL OR v.venueKind = :venueKind)")
     Page<UUID> findIdsBySearchCriteria(@Param("query") String query,
                                        @Param("category") VenueCategory category,
+                                       @Param("venueKind") VenueKind venueKind,
                                        Pageable pageable);
 
     @Query("SELECT DISTINCT v FROM Venue v LEFT JOIN FETCH v.images WHERE v.id IN :ids")
@@ -38,10 +41,10 @@ public interface VenueRepository extends JpaRepository<Venue, UUID> {
     List<VenueTypeBreakdown> getVenueTypeBreakdown();
 
     @Query("SELECT v.id as venueId, v.name as venueName, v.addressName as addressName, " +
-            "v.venueType as venueType, v.active as isActive, COUNT(r.id) as reservationCount " +
+            "v.venueType as venueType, v.venueKind as venueKind, v.active as isActive, COUNT(r.id) as reservationCount " +
             "FROM Venue v " +
             "LEFT JOIN Reservation r ON r.venue.id = v.id " +
-            "GROUP BY v.id, v.name, v.addressName, v.venueType, v.active " +
+            "GROUP BY v.id, v.name, v.addressName, v.venueType, v.venueKind, v.active " +
             "ORDER BY COUNT(r.id) DESC")
     List<TopVenueProjection> getTopVenuesByReservations();
 
@@ -55,6 +58,7 @@ public interface VenueRepository extends JpaRepository<Venue, UUID> {
         String getVenueName();
         String getAddressName();
         VenueCategory getVenueType();
+        VenueKind getVenueKind();
         Boolean getActive();
         Long getReservationCount();
     }

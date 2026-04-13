@@ -343,6 +343,7 @@ export class VenuePanelComponent implements OnInit {
       description: venue.description,
       isActive:    !venue.isActive,
       addressName: venue.addressName,
+      venueKind:   venue.venueKind,
     };
 
     this.venueService.updateVenue(updateRequest, venue.id)

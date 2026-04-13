@@ -1,5 +1,6 @@
 <section class="relative overflow-hidden min-h-screen">
 
+  <!-- ── BACKGROUND GLOWS ─────────────────────────────────────────────── -->
   <div class="pointer-events-none fixed inset-0 z-5 overflow-hidden">
     <div class="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-30"
       style="background: radial-gradient(circle, rgba(124,58,237,0.35) 0%, rgba(109,40,217,0.12) 20%, transparent 70%);
@@ -16,6 +17,7 @@
   <div class="relative z-10">
     @if (vm$ | async; as vm) {
 
+      <!-- ── LOADING ───────────────────────────────────────────────────── -->
       @if (vm.loading) {
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 pt-20 space-y-6">
           <div class="text-center space-y-4">
@@ -23,14 +25,15 @@
             <div class="h-5 w-20 rounded-xl bg-white/[0.04] border border-white/[0.05] animate-pulse mx-auto"></div>
           </div>
           <div class="h-[260px] sm:h-[400px] lg:h-[520px] rounded-[28px] bg-white/[0.03] border border-white/[0.05] animate-pulse"></div>
-          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            @for (i of [1,2,3,4,5]; track i) {
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            @for (i of [1,2,3,4]; track i) {
               <div class="h-20 rounded-2xl bg-white/[0.03] border border-white/[0.05] animate-pulse"></div>
             }
           </div>
         </div>
       }
 
+      <!-- ── ERROR ─────────────────────────────────────────────────────── -->
       @if (!vm.loading && vm.errorMsg) {
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 pt-28 flex justify-center">
           <div class="inline-flex flex-col items-center gap-5 rounded-3xl border border-red-500/15 bg-red-500/[0.04] backdrop-blur-sm px-10 py-8 max-w-sm w-full text-center">
@@ -52,18 +55,30 @@
 
       @if (!vm.loading && !vm.errorMsg) {
 
+        <!-- ══════════════════════════════════════════════════════════════
+             TITLE
+        ═══════════════════════════════════════════════════════════════ -->
         <div
           inView (inViewChange)="onTitleInView($event)"
           class="pt-20 sm:pt-28 pb-8 text-center transition-all duration-700 ease-out"
           [style.opacity]="titleShown ? '1' : '0'"
           [style.transform]="titleShown ? 'translateY(0)' : 'translateY(24px)'"
         >
-          <div class="flex justify-center mb-6">
+          <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
             <span class="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-500/[0.07] backdrop-blur-sm
                          px-4 py-1.5 font-dm text-[10px] tracking-[0.2em] uppercase text-violet-300/70">
               <span class="h-1.5 w-1.5 rounded-full bg-violet-400 animate-pulse"></span>
               {{ vm.category }}
             </span>
+            @if (!vm.isPartner) {
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.02] backdrop-blur-sm
+                           px-3 py-1.5 font-dm text-[10px] tracking-[0.15em] uppercase text-white/25">
+                <svg class="h-2.5 w-2.5 text-white/20 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/>
+                </svg>
+                Bez rezervacija
+              </span>
+            }
           </div>
 
           <h1 class="font-sora font-regular text-5xl sm:text-7xl lg:text-[96px] tracking-[-0.03em] leading-[0.95]
@@ -103,6 +118,9 @@
           </div>
         </div>
 
+        <!-- ══════════════════════════════════════════════════════════════
+             IMAGE SLIDER
+        ═══════════════════════════════════════════════════════════════ -->
         <div
           inView (inViewChange)="onSliderInView($event)"
           class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 transition-all duration-700 ease-out delay-100"
@@ -198,10 +216,15 @@
           </div>
         </div>
 
-        <!-- ── STAT CARDS ─────────────────────────────────────────────────── -->
+        <!-- ══════════════════════════════════════════════════════════════
+             STAT CARDS
+             NOTE: Rating card hidden for LISTED venues (no reservations = no ratings)
+        ═══════════════════════════════════════════════════════════════ -->
         <div class="mx-auto max-w-[1660px] px-4 sm:px-8 lg:px-16 mt-5">
-          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+          <div class="grid gap-2.5"
+               [class]="vm.isPartner ? 'grid-cols-2 sm:grid-cols-5' : 'grid-cols-2 sm:grid-cols-4'">
 
+            <!-- Table types -->
             <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
                         group hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all duration-300 cursor-default">
               <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-violet-500/10 blur-2xl -translate-y-6 translate-x-6 group-hover:bg-violet-500/20 transition-colors duration-300"></div>
@@ -209,6 +232,7 @@
               <p class="font-sora text-[32px] font-bold text-white leading-none">{{ vm.tableTypes.length }}</p>
             </div>
 
+            <!-- Status -->
             <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
                         group hover:border-emerald-500/25 hover:bg-emerald-500/[0.04] transition-all duration-300 cursor-default">
               <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-emerald-500/8 blur-2xl -translate-y-6 translate-x-6 group-hover:bg-emerald-500/18 transition-colors duration-300"></div>
@@ -219,6 +243,7 @@
               </div>
             </div>
 
+            <!-- Capacity -->
             <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
                         group hover:border-amber-500/25 hover:bg-amber-500/[0.04] transition-all duration-300 cursor-default">
               <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-amber-500/8 blur-2xl -translate-y-6 translate-x-6 group-hover:bg-amber-500/18 transition-colors duration-300"></div>
@@ -228,38 +253,54 @@
               </p>
             </div>
 
+            <!-- Rezervacije -->
             <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
-                        group hover:border-blue-500/25 hover:bg-blue-500/[0.04] transition-all duration-300 cursor-default">
-              <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-blue-500/8 blur-2xl -translate-y-6 translate-x-6 group-hover:bg-blue-500/18 transition-colors duration-300"></div>
-              <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/25 mb-2">Rezervacije</p>
+                        group transition-all duration-300 cursor-default"
+                 [class.hover:border-violet-500\/25]="vm.isPartner"
+                 [class.hover:bg-violet-500\/\[0\.04\]]="vm.isPartner"
+                 [class.hover:border-white\/\[0\.10\]]="!vm.isPartner">
+              <div class="absolute top-0 right-0 h-20 w-20 rounded-full blur-2xl -translate-y-6 translate-x-6 transition-colors duration-300"
+                   [style.background]="vm.isPartner ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.03)'"></div>
+              <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/25 mb-2">Online Rezervacije</p>
               <div class="flex items-center gap-2 mt-1.5">
-                <span class="h-2 w-2 rounded-full bg-blue-400 flex-shrink-0 shadow-[0_0_8px_rgba(96,165,250,0.5)]"></span>
-                <span class="font-dm text-[14px] font-medium text-blue-300">Dostupno</span>
+                @if (vm.isPartner) {
+                  <span class="h-2 w-2 rounded-full bg-violet-400 flex-shrink-0 shadow-[0_0_8px_rgba(167,139,250,0.5)]"></span>
+                  <span class="font-dm text-[14px] font-medium text-violet-300">Dostupno</span>
+                } @else {
+                  <span class="h-2 w-2 rounded-full bg-white/20 flex-shrink-0"></span>
+                  <span class="font-dm text-[14px] font-medium text-white/30">Nedostupno</span>
+                }
               </div>
             </div>
 
-            <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
-                        group hover:border-yellow-500/25 hover:bg-yellow-500/[0.04] transition-all duration-300 cursor-default">
-              <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-yellow-500/8 blur-2xl -translate-y-6 translate-x-6 group-hover:bg-yellow-500/18 transition-colors duration-300"></div>
-              <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/25 mb-2">Ocjena</p>
-              @if (vm.totalRatings > 0) {
-                <div class="flex items-end gap-1.5">
-                  <p class="font-sora text-[32px] font-bold text-white leading-none">{{ vm.averageRating | number:'1.1-1' }}</p>
-                  <span class="font-dm text-[13px] text-white/25 mb-1">/ 5</span>
-                </div>
-                <p class="font-dm text-[10px] text-white/20 mt-1">{{ vm.totalRatings }} recenzija</p>
-              } @else {
-                <p class="font-dm text-[13px] text-white/25 mt-1.5">Nema ocjena</p>
-              }
-            </div>
+            <!-- Rating — PARTNER only -->
+            @if (vm.isPartner) {
+              <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
+                          group hover:border-yellow-500/25 hover:bg-yellow-500/[0.04] transition-all duration-300 cursor-default">
+                <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-yellow-500/8 blur-2xl -translate-y-6 translate-x-6 group-hover:bg-yellow-500/18 transition-colors duration-300"></div>
+                <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/25 mb-2">Ocjena</p>
+                @if (vm.totalRatings > 0) {
+                  <div class="flex items-end gap-1.5">
+                    <p class="font-sora text-[32px] font-bold text-white leading-none">{{ vm.averageRating | number:'1.1-1' }}</p>
+                    <span class="font-dm text-[13px] text-white/25 mb-1">/ 5</span>
+                  </div>
+                  <p class="font-dm text-[10px] text-white/20 mt-1">{{ vm.totalRatings }} recenzija</p>
+                } @else {
+                  <p class="font-dm text-[13px] text-white/25 mt-1.5">Nema ocjena</p>
+                }
+              </div>
+            }
 
           </div>
         </div>
 
-        <!-- ── MAIN CONTENT GRID ──────────────────────────────────────────── -->
+        <!-- ══════════════════════════════════════════════════════════════
+             MAIN CONTENT GRID
+        ═══════════════════════════════════════════════════════════════ -->
         <div class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 sm:mt-10 max-w-[1660px]">
           <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-6 lg:gap-7 items-start">
 
+            <!-- ── LEFT COLUMN ──────────────────────────────────────── -->
             <div
               inView (inViewChange)="onReserveInView($event)"
               class="space-y-5 transition-all duration-700 ease-out delay-100"
@@ -267,34 +308,83 @@
               [style.transform]="reserveShown ? 'translateX(0)' : 'translateX(-20px)'"
             >
 
-              <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-7">
+              <!-- ── CTA CARD ──────────────────────────────────────── -->
+              <div class="relative overflow-hidden rounded-3xl border bg-white/[0.02] p-7"
+                   [style]="vm.isPartner
+                     ? 'border-color: rgba(255,255,255,0.07);'
+                     : 'border-color: rgba(124,58,237,0.20); box-shadow: 0 0 48px rgba(124,58,237,0.08), inset 0 0 32px rgba(124,58,237,0.04);'">
+
+                <!-- top shimmer line — violet for LISTED too -->
                 <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
                   style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.5), transparent);"></div>
                 <div class="absolute -top-16 -right-16 w-48 h-48 rounded-full"
                   style="background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%);"></div>
 
-                <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-2.5">Rezerviraj Stol</p>
-                <h2 class="font-sora font-semibold text-[26px] sm:text-[30px] leading-[1.05] tracking-[-0.02em] mb-6 hero-title">
-                  Osiguraj svoje<br/>mjesto večeras
-                </h2>
+                @if (vm.isPartner) {
+                  <!-- ── PARTNER: reservation CTA ─────────────────── -->
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-2.5">Rezerviraj Stol</p>
+                  <h2 class="font-sora font-semibold text-[26px] sm:text-[30px] leading-[1.05] tracking-[-0.02em] mb-6 hero-title">
+                    Osiguraj svoje<br/>mjesto večeras
+                  </h2>
 
-                <button type="button" (click)="toggleReservation()"
-                  class="group relative w-full inline-flex items-center justify-center gap-2.5
-                         px-6 py-4 rounded-2xl overflow-hidden
-                         font-dm font-semibold text-[14px] text-white
-                         transition-all duration-300
-                         hover:scale-[1.015] active:scale-[0.98]"
-                  style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
-                         box-shadow: 0 4px 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);"
-                >
-                  <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
-                  </svg>
-                  <span class="relative z-10">Rezerviši Sad</span>
-                  <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);"></div>
-                </button>
+                  <button type="button" (click)="toggleReservation(vm)"
+                    class="group relative w-full inline-flex items-center justify-center gap-2.5
+                           px-6 py-4 rounded-2xl overflow-hidden
+                           font-dm font-semibold text-[14px] text-white
+                           transition-all duration-300
+                           hover:scale-[1.015] active:scale-[0.98]"
+                    style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
+                           box-shadow: 0 4px 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);"
+                  >
+                    <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
+                    </svg>
+                    <span class="relative z-10">Rezerviši Sad</span>
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);"></div>
+                  </button>
 
+                } @else {
+                  <!-- ── LISTED: premium contact CTA ──────────────── -->
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-2.5">Kontakt</p>
+                  <h2 class="font-sora font-semibold text-[26px] sm:text-[30px] leading-[1.05] tracking-[-0.02em] mb-2 hero-title">
+                    Zainteresovan<br/>za ovaj lokal?
+                  </h2>
+                  <p class="font-dm text-[13px] text-white/30 leading-relaxed mb-6">
+                    Pozovite direktno i saznajte sve što vas zanima.
+                  </p>
+
+                  <!-- ── "Pozovi nas" — same violet gradient design as PARTNER button ── -->
+                  <a [href]="'tel:' + vm.phone"
+                    class="group relative w-full inline-flex items-center justify-center gap-2.5
+                           px-6 py-4 rounded-2xl overflow-hidden
+                           font-dm font-semibold text-[14px] text-white
+                           transition-all duration-300
+                           hover:scale-[1.015] active:scale-[0.98]"
+                    style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
+                           box-shadow: 0 4px 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);"
+                  >
+                    <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8Z"/>
+                    </svg>
+                    <span class="relative z-10">Pozovite Nas</span>
+                    <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);"></div>
+                  </a>
+
+                  <!-- No reservations notice -->
+                  <div class="mt-4 flex items-start gap-3 px-4 py-3.5 rounded-xl"
+                    style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+                    <svg class="h-4 w-4 text-white/20 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/>
+                    </svg>
+                    <p class="font-dm text-[11px] text-white/25 leading-relaxed">
+                      Online rezervacije za ovaj lokal preko nase platforme trenutno nisu dostupne. Kontaktirajte lokal direktno putem telefona ili instagrama za brzu rezervaciju.
+                    </p>
+                  </div>
+                }
+
+                <!-- ── Info rows (address / hours / phone) ──────────── -->
                 <div class="mt-6 pt-6 border-t border-white/[0.05] space-y-3">
                   @if (vm.address) {
                     <div class="flex items-center gap-3 group/row cursor-default">
@@ -319,6 +409,7 @@
                       <span class="font-dm text-[13px] text-white/45 group-hover/row:text-white/70 transition-colors">{{ vm.workingHours }}</span>
                     </div>
                   }
+                  <!-- Phone shown in info rows for PARTNER; for LISTED show it here too as secondary ref -->
                   @if (vm.phone) {
                     <div class="flex items-center gap-3 group/row cursor-default">
                       <div class="flex-shrink-0 h-8 w-8 rounded-xl border border-white/[0.06] bg-white/[0.03]
@@ -333,43 +424,47 @@
                 </div>
               </div>
 
-         
-
-              <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7">
-                <div class="absolute top-0 left-0 right-0 h-px"
-                  style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);"></div>
-                <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-6">Kako Funkcioniše</p>
-                <div class="flex flex-col gap-0">
-                  @for (step of [
-                    { n: '1', title: 'Odaberi sto', desc: 'Pregledaj dostupne vrste stolova i pronađi koji ti odgovara.' },
-                    { n: '2', title: 'Unesi detalje', desc: 'Datum, vrijeme i broj osoba — sve u jednom brzom koraku.' },
-                    { n: '3', title: 'Potvrda stiže', desc: 'Lokal potvrđuje rezervaciju — ti dobijaš obavijest odmah.' }
-                  ]; track step.n) {
-                    <div class="flex gap-4 relative">
-                      <div class="flex flex-col items-center flex-shrink-0">
-                        <div class="h-8 w-8 rounded-full flex items-center justify-center text-[12px] font-sora font-bold text-violet-300
-                                    relative z-10"
-                          style="border: 1px solid rgba(124,58,237,0.35); background: rgba(124,58,237,0.12); box-shadow: 0 0 16px rgba(124,58,237,0.2);">
-                          {{ step.n }}
+              <!-- ── "Kako funkcioniše" — PARTNER only ────────────── -->
+              @if (vm.isPartner) {
+                <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7">
+                  <div class="absolute top-0 left-0 right-0 h-px"
+                    style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);"></div>
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-6">Kako Funkcioniše</p>
+                  <div class="flex flex-col gap-0">
+                    @for (step of [
+                      { n: '1', title: 'Odaberi sto', desc: 'Pregledaj dostupne vrste stolova i pronađi koji ti odgovara.' },
+                      { n: '2', title: 'Unesi detalje', desc: 'Datum, vrijeme i broj osoba — sve u jednom brzom koraku.' },
+                      { n: '3', title: 'Potvrda stiže', desc: 'Lokal potvrđuje rezervaciju — ti dobijaš obavijest odmah.' }
+                    ]; track step.n) {
+                      <div class="flex gap-4 relative">
+                        <div class="flex flex-col items-center flex-shrink-0">
+                          <div class="h-8 w-8 rounded-full flex items-center justify-center text-[12px] font-sora font-bold text-violet-300
+                                      relative z-10"
+                            style="border: 1px solid rgba(124,58,237,0.35); background: rgba(124,58,237,0.12); box-shadow: 0 0 16px rgba(124,58,237,0.2);">
+                            {{ step.n }}
+                          </div>
+                          @if (step.n !== '3') {
+                            <div class="w-px flex-1 mt-1 mb-1"
+                                 style="background: linear-gradient(to bottom, rgba(124,58,237,0.28), rgba(124,58,237,0.04));"></div>
+                          }
                         </div>
-                        @if (step.n !== '3') {
-                          <div class="w-px flex-1 mt-1 mb-1"
-                               style="background: linear-gradient(to bottom, rgba(124,58,237,0.28), rgba(124,58,237,0.04));"></div>
-                        }
+                        <div class="pb-6" [class.pb-0]="step.n === '3'">
+                          <p class="font-dm text-[13px] font-semibold text-white/80 leading-none mb-1.5">{{ step.title }}</p>
+                          <p class="font-dm text-[12px] text-white/32 leading-relaxed">{{ step.desc }}</p>
+                        </div>
                       </div>
-                      <div class="pb-6" [class.pb-0]="step.n === '3'">
-                        <p class="font-dm text-[13px] font-semibold text-white/80 leading-none mb-1.5">{{ step.title }}</p>
-                        <p class="font-dm text-[12px] text-white/32 leading-relaxed">{{ step.desc }}</p>
-                      </div>
-                    </div>
-                  }
+                    }
+                  </div>
                 </div>
-              </div>
+              }
 
             </div>
+            <!-- ── END LEFT COLUMN ──────────────────────────────────── -->
 
+            <!-- ── RIGHT COLUMN ─────────────────────────────────────── -->
             <div class="space-y-5">
 
+              <!-- Table types accordion -->
               <div
                 inView (inViewChange)="onAboutInView($event)"
                 class="transition-all duration-700 ease-out"
@@ -443,15 +538,17 @@
                             <div class="h-px w-full mb-4" style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.25), transparent);"></div>
                             <p class="font-dm text-[13px] text-white/42 leading-relaxed">{{ tt.description }}</p>
                             <div class="mt-4">
-                              <button type="button" (click)="$event.stopPropagation(); toggleReservation()"
-                                class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 font-dm text-[11px] font-medium text-violet-300
-                                       transition-all duration-200 hover:scale-[1.02]"
-                                style="border: 1px solid rgba(124,58,237,0.35); background: rgba(124,58,237,0.12);">
-                                <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                                </svg>
-                                Rezerviši ovaj sto
-                              </button>
+                              @if (vm.isPartner) {
+                                <button type="button" (click)="$event.stopPropagation(); toggleReservation()"
+                                  class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 font-dm text-[11px] font-medium text-violet-300
+                                         transition-all duration-200 hover:scale-[1.02]"
+                                  style="border: 1px solid rgba(124,58,237,0.35); background: rgba(124,58,237,0.12);">
+                                  <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                  </svg>
+                                  Rezerviši ovaj sto
+                                </button>
+                              }
                             </div>
                           </div>
                         </div>
@@ -461,73 +558,158 @@
                 </div>
               </div>
 
-              <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7">
-                <div class="absolute top-0 right-0 h-40 w-40 rounded-full -translate-y-10 translate-x-10"
-                  style="background: radial-gradient(circle, rgba(124,58,237,0.10) 0%, transparent 70%);"></div>
-                <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-3">O Lokalu</p>
-                <p class="font-dm text-[14px] font-light leading-[1.8] text-white/45 italic">
-                  {{ shortText(vm.description, 180) }}
-                </p>
-                @if (vm.description && vm.description.length > 180) {
-                  <button type="button" (click)="openDescriptionModal(vm.description)"
-                    class="mt-4 inline-flex items-center gap-1.5 font-dm text-[12px] tracking-[0.04em] text-violet-400/80 hover:text-violet-300 transition-colors duration-200">
-                    Prikaži više
-                    <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M9 6l6 6-6 6"/>
-                    </svg>
-                  </button>
-                }
-              </div>
+              <!-- O Lokalu for LISTED moved to full-width section below the grid -->
 
-              <div
-                inView (inViewChange)="onTablesInView($event)"
-                class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7 transition-all duration-700 ease-out delay-200"
-                [style.opacity]="tablesShown ? '1' : '0'"
-                [style.transform]="tablesShown ? 'translateX(0)' : 'translateX(20px)'"
-              >
-                <div class="absolute bottom-0 right-0 w-[300px] h-[200px] translate-x-16 translate-y-16"
-                  style="background: radial-gradient(ellipse, rgba(0,212,90,0.10) 0%, transparent 70%);"></div>
-                <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-6">Zašto Gdje Izlazimo?</p>
-                <ul class="relative z-10 space-y-0">
-                  @for (item of [
-                    { title: 'Potvrda rezervacije u par klikova', sub: 'Bez čekanja, bez poziva.' },
-                    { title: 'Brzo i jednostavno', sub: 'Cijeli proces traje manje od minute.' },
-                    { title: 'Bez poziva i nepotrebnog čekanja', sub: 'Sve riješiš online, odmah.' },
-                    { title: 'Sigurno mjesto za tvoju ekipu', sub: 'Garantovano rezervisano.' }
-                  ]; track item.title; let last = $last) {
-                    <li class="flex items-start gap-4 py-4" [class.border-b]="!last"
-                        [style.borderColor]="!last ? 'rgba(255,255,255,0.04)' : 'transparent'">
-                      <span class="flex-shrink-0 mt-0.5 h-5 w-5 rounded-full flex items-center justify-center"
-                            style="background: rgba(0,212,90,0.10); box-shadow: 0 0 12px rgba(0,212,90,0.15); border: 1px solid rgba(0,212,90,0.22);">
-                        <svg class="h-2.5 w-2.5" viewBox="0 0 14 14" fill="none">
-                          <path d="M2 7.5L5.5 11 12 4" stroke="#00D45A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                      </span>
-                      <div>
-                        <p class="font-dm text-[13px] font-semibold text-white/80 leading-none mb-1.5">{{ item.title }}</p>
-                        <p class="font-dm text-[12px] text-white/32">{{ item.sub }}</p>
-                      </div>
-                    </li>
+              <!-- O Lokalu description — PARTNER only -->
+              @if (vm.isPartner) {
+                <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7">
+                  <div class="absolute top-0 right-0 h-40 w-40 rounded-full -translate-y-10 translate-x-10"
+                    style="background: radial-gradient(circle, rgba(124,58,237,0.10) 0%, transparent 70%);"></div>
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-3">O Lokalu</p>
+                  <p class="font-dm text-[14px] font-light leading-[1.8] text-white/45 italic">
+                    {{ shortText(vm.description, 180) }}
+                  </p>
+                  @if (vm.description && vm.description.length > 180) {
+                    <button type="button" (click)="openDescriptionModal(vm.description)"
+                      class="mt-4 inline-flex items-center gap-1.5 font-dm text-[12px] tracking-[0.04em] text-violet-400/80 hover:text-violet-300 transition-colors duration-200">
+                      Prikaži više
+                      <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 6l6 6-6 6"/>
+                      </svg>
+                    </button>
                   }
-                </ul>
-              </div>
+                </div>
+              }
+
+              <!-- "Zašto Gdje Izlazimo" — PARTNER only -->
+              @if (vm.isPartner) {
+                <div
+                  inView (inViewChange)="onTablesInView($event)"
+                  class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7 transition-all duration-700 ease-out delay-200"
+                  [style.opacity]="tablesShown ? '1' : '0'"
+                  [style.transform]="tablesShown ? 'translateX(0)' : 'translateX(20px)'"
+                >
+                  <div class="absolute bottom-0 right-0 w-[300px] h-[200px] translate-x-16 translate-y-16"
+                    style="background: radial-gradient(ellipse, rgba(0,212,90,0.10) 0%, transparent 70%);"></div>
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-6">Zašto Gdje Izlazimo?</p>
+                  <ul class="relative z-10 space-y-0">
+                    @for (item of [
+                      { title: 'Potvrda rezervacije u par klikova', sub: 'Bez čekanja, bez poziva.' },
+                      { title: 'Brzo i jednostavno', sub: 'Cijeli proces traje manje od minute.' },
+                      { title: 'Bez poziva i nepotrebnog čekanja', sub: 'Sve riješiš online, odmah.' },
+                      { title: 'Sigurno mjesto za tvoju ekipu', sub: 'Garantovano rezervisano.' }
+                    ]; track item.title; let last = $last) {
+                      <li class="flex items-start gap-4 py-4" [class.border-b]="!last"
+                          [style.borderColor]="!last ? 'rgba(255,255,255,0.04)' : 'transparent'">
+                        <span class="flex-shrink-0 mt-0.5 h-5 w-5 rounded-full flex items-center justify-center"
+                              style="background: rgba(0,212,90,0.10); box-shadow: 0 0 12px rgba(0,212,90,0.15); border: 1px solid rgba(0,212,90,0.22);">
+                          <svg class="h-2.5 w-2.5" viewBox="0 0 14 14" fill="none">
+                            <path d="M2 7.5L5.5 11 12 4" stroke="#00D45A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </span>
+                        <div>
+                          <p class="font-dm text-[13px] font-semibold text-white/80 leading-none mb-1.5">{{ item.title }}</p>
+                          <p class="font-dm text-[12px] text-white/32">{{ item.sub }}</p>
+                        </div>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
 
             </div>
+            <!-- ── END RIGHT COLUMN ─────────────────────────────────── -->
+
           </div>
         </div>
-        
+
+        <!-- ══════════════════════════════════════════════════════════════
+             O LOKALU — LISTED only, full-width borderless section
+        ═══════════════════════════════════════════════════════════════ -->
+        @if (!vm.isPartner) {
+          <div
+            inView (inViewChange)="onTablesInView($event)"
+            class="mx-auto px-4 sm:px-8 lg:px-16 mt-10 mb-2 max-w-[1660px] transition-all duration-700 ease-out"
+            [style.opacity]="tablesShown ? '1' : '0'"
+            [style.transform]="tablesShown ? 'translateY(0)' : 'translateY(20px)'"
+          >
+            <!-- full-width top divider -->
+            <div class="h-px w-full mb-10"
+              style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);"></div>
+
+            <!-- section header row -->
+            <div class="flex items-center gap-4 mb-8">
+              <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25">O Lokalu</p>
+              <div class="flex-1 h-px" style="background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent);"></div>
+            </div>
+
+            <!-- 3 feature tiles — equal columns, full width -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
+              @for (item of [
+                { icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z', title: 'Lako pronaći', sub: 'Precizna lokacija i adresa dostupni odmah.' },
+                { icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', title: 'Radno vrijeme', sub: 'Provjerite kada je lokal otvoren prije posjete.' },
+                { icon: 'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z', title: 'Direktan kontakt', sub: 'Pozovite lokal za sve informacije.' }
+              ]; track item.title) {
+                <div class="flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-200
+                            hover:border-violet-500/15 hover:bg-violet-500/[0.025]"
+                     style="border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.015);">
+                  <span class="flex-shrink-0 h-9 w-9 rounded-xl flex items-center justify-center"
+                        style="background: rgba(124,58,237,0.10); border: 1px solid rgba(124,58,237,0.20);">
+                    <svg class="h-4 w-4 text-violet-400/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                      <path [attr.d]="item.icon"/>
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="font-dm text-[13px] font-semibold text-white/65 leading-none mb-1">{{ item.title }}</p>
+                    <p class="font-dm text-[12px] text-white/30 leading-snug">{{ item.sub }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <!-- description block with its own label -->
+            <div class="flex items-center gap-4 mb-5">
+              <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/20">Opis lokala</p>
+              <div class="flex-1 h-px" style="background: linear-gradient(90deg, rgba(255,255,255,0.04), transparent);"></div>
+            </div>
+
+            <p class="font-dm text-[14px] font-light leading-[1.9] text-white/45 italic max-w-[860px]">
+              {{ shortText(vm.description, 400) }}
+            </p>
+            @if (vm.description && vm.description.length > 400) {
+              <button type="button" (click)="openDescriptionModal(vm.description)"
+                class="mt-5 inline-flex items-center gap-1.5 font-dm text-[12px] tracking-[0.04em] text-violet-400/80 hover:text-violet-300 transition-colors duration-200">
+                Prikaži više
+                <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 6l6 6-6 6"/>
+                </svg>
+              </button>
+            }
+
+            <!-- bottom divider before map -->
+            <div class="h-px w-full mt-10"
+              style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);"></div>
+          </div>
+        }
+
+        <!-- ══════════════════════════════════════════════════════════════
+             MAP
+        ═══════════════════════════════════════════════════════════════ -->
         @if (vm.latitude && vm.longitude) {
-        <div class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 max-w-[1660px]">
-          <app-venue-map
-            [lat]="vm.latitude"
-            [lng]="vm.longitude"
-            [venueName]="vm.venueName"
-            [address]="vm.address"
-          />
-       </div>
-}
-        <!-- ── RATINGS SECTION ────────────────────────────────────────────── -->
-        @if (vm.ratings.length > 0) {
+          <div class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 max-w-[1660px]">
+            <app-venue-map
+              [lat]="vm.latitude"
+              [lng]="vm.longitude"
+              [venueName]="vm.venueName"
+              [address]="vm.address"
+            />
+          </div>
+        }
+
+        <!-- ══════════════════════════════════════════════════════════════
+             RATINGS — PARTNER only (LISTED venues have no reservations → no ratings)
+        ═══════════════════════════════════════════════════════════════ -->
+        @if (vm.isPartner && vm.ratings.length > 0) {
           <div class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 max-w-[1660px]">
             <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-8">
               <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px"
@@ -548,7 +730,7 @@
                       }
                     </div>
                     <span class="font-sora font-bold text-[20px] text-white">{{ vm.averageRating | number:'1.1-1' }}</span>
-                    <span class="font-dm text-[12px] text-white/30">{{ vm.totalRatings }} {{ vm.totalRatings === 1 ? 'recenzija' : 'recenzija' }}</span>
+                    <span class="font-dm text-[12px] text-white/30">{{ vm.totalRatings }} recenzija</span>
                   </div>
                 </div>
               </div>
@@ -590,42 +772,50 @@
                   </div>
                 }
               </div>
-
             </div>
           </div>
         }
 
-     
-
-        <!-- ── FIXED RESERVE BUTTON ───────────────────────────────────────── -->
-        <div class="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
-          <div class="hidden lg:block absolute bottom-8 right-8 pointer-events-auto">
-            <button type="button" (click)="toggleReservation()"
-              class="group relative inline-flex items-center gap-2.5 px-7 py-4 rounded-2xl overflow-hidden
-                     font-dm font-semibold text-[14px] text-white
-                     transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
-              style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
-                     box-shadow: 0 8px 32px rgba(124,58,237,0.45), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);"
-            >
-              <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
-              </svg>
-              <span class="relative z-10">Rezerviši Sad</span>
-              <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);"></div>
-            </button>
+        <!-- ══════════════════════════════════════════════════════════════
+             FIXED CALL BUTTON — LISTED ONLY (mobile only, matches PARTNER style)
+        ═══════════════════════════════════════════════════════════════ -->
+        @if (!vm.isPartner && vm.phone) {
+          <div class="fixed bottom-0 left-0 right-0 z-50 pointer-events-none lg:hidden">
+            <div class="pointer-events-auto">
+              <div class="border-t border-white/[0.05] px-4 py-3 backdrop-blur-2xl"
+                style="background: rgba(8,7,15,0.88); box-shadow: 0 -16px 40px rgba(0,0,0,0.5);">
+                <a [href]="'tel:' + vm.phone"
+                  class="group relative w-full inline-flex items-center justify-center gap-2.5
+                         px-6 py-4 rounded-2xl overflow-hidden
+                         font-dm font-semibold text-[15px] text-white
+                         transition-all duration-300 active:scale-[0.98]"
+                  style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+                         box-shadow: 0 4px 20px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);"
+                >
+                  <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8Z"/>
+                  </svg>
+                  <span class="relative z-10">Pozovite Nas</span>
+                  <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);"></div>
+                </a>
+              </div>
+            </div>
           </div>
+        }
 
-          <div class="lg:hidden pointer-events-auto">
-            <div class="border-t border-white/[0.05] px-4 py-3 backdrop-blur-2xl"
-              style="background: rgba(8,7,15,0.88); box-shadow: 0 -16px 40px rgba(0,0,0,0.5);">
+        <!-- ══════════════════════════════════════════════════════════════
+             FIXED RESERVE BUTTON — PARTNER ONLY
+        ═══════════════════════════════════════════════════════════════ -->
+        @if (vm.isPartner) {
+          <div class="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
+            <div class="hidden lg:block absolute bottom-8 right-8 pointer-events-auto">
               <button type="button" (click)="toggleReservation()"
-                class="group relative w-full inline-flex items-center justify-center gap-2.5
-                       px-6 py-4 rounded-2xl overflow-hidden
-                       font-dm font-semibold text-[15px] text-white
-                       transition-all duration-300 active:scale-[0.98]"
+                class="group relative inline-flex items-center gap-2.5 px-7 py-4 rounded-2xl overflow-hidden
+                       font-dm font-semibold text-[14px] text-white
+                       transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
                 style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
-                       box-shadow: 0 4px 20px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);"
+                       box-shadow: 0 8px 32px rgba(124,58,237,0.45), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);"
               >
                 <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
@@ -635,11 +825,34 @@
                   style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);"></div>
               </button>
             </div>
-          </div>
-        </div>
 
-        <!-- ── MODALS ─────────────────────────────────────────────────────── -->
-        @if (reservationModalShown) {
+            <div class="lg:hidden pointer-events-auto">
+              <div class="border-t border-white/[0.05] px-4 py-3 backdrop-blur-2xl"
+                style="background: rgba(8,7,15,0.88); box-shadow: 0 -16px 40px rgba(0,0,0,0.5);">
+                <button type="button" (click)="toggleReservation()"
+                  class="group relative w-full inline-flex items-center justify-center gap-2.5
+                         px-6 py-4 rounded-2xl overflow-hidden
+                         font-dm font-semibold text-[15px] text-white
+                         transition-all duration-300 active:scale-[0.98]"
+                  style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+                         box-shadow: 0 4px 20px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);"
+                >
+                  <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
+                  </svg>
+                  <span class="relative z-10">Rezerviši Sad</span>
+                  <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);"></div>
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ══════════════════════════════════════════════════════════════
+             MODALS
+        ═══════════════════════════════════════════════════════════════ -->
+        @if (reservationModalShown && vm.isPartner) {
           <app-reservation-modal
             (close)="reservationModalShown = false"
             [venueName]="vm.venueName"
@@ -706,6 +919,7 @@
         }
 
       }
+
     }
   </div>
 

@@ -1,4 +1,5 @@
 import { VenueCategory } from "./venue-category.enum";
+import { VenueKind } from "./venue-response.dto";
 
 
 export interface UpdateVenueRequest{
@@ -6,6 +7,7 @@ export interface UpdateVenueRequest{
     description?: string;
     isActive: boolean;
     venueType: VenueCategory;
+    venueKind: VenueKind,
     phone: string;
     addressName: string;
 

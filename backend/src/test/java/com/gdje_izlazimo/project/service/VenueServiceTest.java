@@ -6,6 +6,7 @@ import com.gdje_izlazimo.project.entity.User;
 import com.gdje_izlazimo.project.entity.Venue;
 import com.gdje_izlazimo.project.enums.Role;
 import com.gdje_izlazimo.project.enums.VenueCategory;
+import com.gdje_izlazimo.project.enums.VenueKind;
 import com.gdje_izlazimo.project.exception.custom.VenueAlreadyExistsException;
 import com.gdje_izlazimo.project.exception.custom.VenueNotFoundException;
 import com.gdje_izlazimo.project.mapper.VenueMapper;
@@ -62,6 +63,7 @@ class VenueServiceTest {
         venue.setDescription("Popular nightclub in the city center");
         venue.setAddressName("Ferhadija 12, Sarajevo");
         venue.setVenueType(VenueCategory.CLUB);
+        venue.setVenueKind(VenueKind.PARTNER);
         venue.setActive(true);
         venue.setPhone("+38733000000");
         venue.setLatitude(43.8476);
@@ -75,6 +77,7 @@ class VenueServiceTest {
                 "Ferhadija 12, Sarajevo",
                 true,
                 VenueCategory.CLUB,
+                VenueKind.PARTNER,
                 "+38733000000",
                 43.8476,
                 18.3564,
@@ -83,8 +86,6 @@ class VenueServiceTest {
                 List.of()
         );
     }
-
-
 
     @Test
     void shouldReturnVenueById() {
@@ -97,6 +98,7 @@ class VenueServiceTest {
         assertThat(result.id()).isEqualTo(venueId);
         assertThat(result.name()).isEqualTo("Club Atmosphere");
         assertThat(result.venueType()).isEqualTo(VenueCategory.CLUB);
+        assertThat(result.venueKind()).isEqualTo(VenueKind.PARTNER);
     }
 
     @Test
@@ -114,7 +116,7 @@ class VenueServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<UUID> idPage = new PageImpl<>(List.of(venueId));
 
-        when(venueRepository.findIdsBySearchCriteria(null, null, pageable)).thenReturn(idPage);
+        when(venueRepository.findIdsBySearchCriteria(null, null, null, pageable)).thenReturn(idPage);
         when(venueRepository.findByIdsWithImages(List.of(venueId))).thenReturn(List.of(venue));
         when(venueMapper.toResponse(venue)).thenReturn(venueResponse);
 
@@ -127,7 +129,7 @@ class VenueServiceTest {
     @Test
     void shouldReturnEmptyListWhenNoVenuesFound() {
         Pageable pageable = PageRequest.of(0, 10);
-        when(venueRepository.findIdsBySearchCriteria(null, null, pageable))
+        when(venueRepository.findIdsBySearchCriteria(null, null, null, pageable))
                 .thenReturn(Page.empty());
 
         List<VenueResponse> result = venueService.findAllVenues(pageable);
@@ -135,33 +137,47 @@ class VenueServiceTest {
         assertThat(result).isEmpty();
     }
 
-
     @Test
     void shouldReturnFilteredVenuesByNameAndCategory() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<UUID> idPage = new PageImpl<>(List.of(venueId));
 
-        when(venueRepository.findIdsBySearchCriteria("Atmosphere", VenueCategory.CLUB, pageable))
+        when(venueRepository.findIdsBySearchCriteria("Atmosphere", VenueCategory.CLUB, null, pageable))
                 .thenReturn(idPage);
         when(venueRepository.findByIdsWithImages(List.of(venueId))).thenReturn(List.of(venue));
         when(venueMapper.toResponse(venue)).thenReturn(venueResponse);
 
-        List<VenueResponse> result = venueService.searchVenues("Atmosphere", VenueCategory.CLUB, pageable);
+        List<VenueResponse> result = venueService.searchVenues("Atmosphere", VenueCategory.CLUB, null, pageable);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).venueType()).isEqualTo(VenueCategory.CLUB);
     }
 
     @Test
+    void shouldReturnFilteredVenuesByKind() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<UUID> idPage = new PageImpl<>(List.of(venueId));
+
+        when(venueRepository.findIdsBySearchCriteria(null, null, VenueKind.LISTED, pageable))
+                .thenReturn(idPage);
+        when(venueRepository.findByIdsWithImages(List.of(venueId))).thenReturn(List.of(venue));
+        when(venueMapper.toResponse(venue)).thenReturn(venueResponse);
+
+        List<VenueResponse> result = venueService.searchVenues(null, null, VenueKind.LISTED, pageable);
+
+        assertThat(result).hasSize(1);
+    }
+
+    @Test
     void shouldTreatBlankQueryAsNull() {
         Pageable pageable = PageRequest.of(0, 10);
-        when(venueRepository.findIdsBySearchCriteria(null, null, pageable))
+        when(venueRepository.findIdsBySearchCriteria(null, null, null, pageable))
                 .thenReturn(Page.empty());
 
-        List<VenueResponse> result = venueService.searchVenues("   ", null, pageable);
+        List<VenueResponse> result = venueService.searchVenues("   ", null, null, pageable);
 
         assertThat(result).isEmpty();
-        verify(venueRepository).findIdsBySearchCriteria(null, null, pageable);
+        verify(venueRepository).findIdsBySearchCriteria(null, null, null, pageable);
     }
 
     @Test
@@ -185,7 +201,6 @@ class VenueServiceTest {
                 .hasMessageContaining("Venue not found for owner");
     }
 
-
     @Test
     void shouldCreateVenueSuccessfully() {
         CreateVenueRequest dto = new CreateVenueRequest(
@@ -194,6 +209,7 @@ class VenueServiceTest {
                 "Ferhadija 12, Sarajevo",
                 true,
                 VenueCategory.CLUB,
+                VenueKind.PARTNER,
                 "+38733000000",
                 43.8476,
                 18.3564,
@@ -209,6 +225,7 @@ class VenueServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.name()).isEqualTo("Club Atmosphere");
+        assertThat(result.venueKind()).isEqualTo(VenueKind.PARTNER);
         verify(venueRepository, times(1)).save(venue);
     }
 
@@ -220,6 +237,7 @@ class VenueServiceTest {
                 "Ferhadija 12, Sarajevo",
                 true,
                 VenueCategory.CLUB,
+                VenueKind.PARTNER,
                 "+38733000000",
                 43.8476,
                 18.3564,
@@ -233,6 +251,23 @@ class VenueServiceTest {
                 .hasMessageContaining("already exists");
     }
 
+    @Test
+    void shouldThrowWhenCreatingReservationForListedVenue() {
+        venue.setVenueKind(VenueKind.LISTED);
+
+        assertThatThrownBy(() -> venueService.assertVenueAcceptsReservations(venue))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("does not accept reservations");
+    }
+
+    @Test
+    void shouldNotThrowWhenCreatingReservationForPartnerVenue() {
+        venue.setVenueKind(VenueKind.PARTNER);
+
+        org.junit.jupiter.api.Assertions.assertDoesNotThrow(
+                () -> venueService.assertVenueAcceptsReservations(venue)
+        );
+    }
 
     @Test
     void shouldDeleteVenueSuccessfully() {

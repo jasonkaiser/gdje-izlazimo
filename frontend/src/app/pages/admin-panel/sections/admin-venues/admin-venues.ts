@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import {
   switchMap,
   map,
@@ -30,6 +30,7 @@ import { VenueModalComponent } from '../../../../components/modals/venue-modal/v
 import { AppDropdown } from '../../../../components/other/dropdown/dropdown';
 
 type StatusFilter = 'ALL' | 'ACTIVE' | 'INACTIVE';
+type VenueKindFilter = 'ALL' | 'PARTNER' | 'LISTED';
 type CategoryFilter = 'ALL' | VenueCategory;
 
 interface VenueStats {
@@ -64,12 +65,19 @@ export class AdminVenuesComponent implements OnInit {
   searchQuery     = '';
   statusFilter: StatusFilter   = 'ALL';
   categoryFilter: CategoryFilter = 'ALL';
+  venueKindFilter: VenueKindFilter = 'ALL';
   readonly pageSize = 10;
 
   readonly statusFilterOptions = [
     { value: 'ALL' as const,      label: 'Svi statusi' },
     { value: 'ACTIVE' as const,   label: 'Aktivni' },
     { value: 'INACTIVE' as const, label: 'Neaktivni' },
+  ];
+
+  readonly venueKindFilterOptions = [
+    { value: 'ALL' as const,        label: 'Svi tipovi' },
+    { value: 'PARTNER' as const,    label: 'Partner' },
+    { value: 'LISTED' as const,     label: 'Listed' },
   ];
 
   readonly categoryFilterOptions = [
@@ -85,12 +93,13 @@ export class AdminVenuesComponent implements OnInit {
   private readonly categoryFilter$ = new BehaviorSubject<CategoryFilter>('ALL');
   private readonly pageNo$         = new BehaviorSubject<number>(1);
   private readonly refresh$        = new BehaviorSubject<void>(undefined);
+  private readonly venueKindFilter$ = new BehaviorSubject<VenueKindFilter>('ALL');
+
 
   venues$!: Observable<VenueResponseDto[]>;
   stats$!:  Observable<VenueStats>;
   vm$!:     Observable<ViewModel>;
 
-  // Single listener via @HostListener — no manual window.addEventListener needed
   @HostListener('window:venue-updated')
   onVenueUpdated(): void {
     this.refresh$.next();
@@ -124,41 +133,24 @@ export class AdminVenuesComponent implements OnInit {
       takeUntilDestroyed(this.destroyRef)
     );
 
-    this.vm$ = this.venues$.pipe(
-      switchMap((allVenues) =>
-        this.search$.pipe(
-          debounceTime(300),
-          switchMap((search) =>
-            this.statusFilter$.pipe(
-              switchMap((statusFilter) =>
-                this.categoryFilter$.pipe(
-                  switchMap((categoryFilter) =>
-                    this.pageNo$.pipe(
-                      map((pageNo) => {
-                        let filtered = this.applySearch(allVenues, search);
-                        filtered = this.applyStatusFilter(filtered, statusFilter);
-                        filtered = this.applyCategoryFilter(filtered, categoryFilter);
+    this.vm$ = combineLatest([
+      this.venues$,
+      this.search$.pipe(debounceTime(300)),
+      this.statusFilter$,
+      this.categoryFilter$,
+      this.venueKindFilter$,
+      this.pageNo$,
+    ]).pipe(
+      map(([allVenues, search, statusFilter, categoryFilter, venueKindFilter, pageNo]) => {
+        let filtered = this.applySearch(allVenues, search);
+        filtered = this.applyStatusFilter(filtered, statusFilter);
+        filtered = this.applyCategoryFilter(filtered, categoryFilter);
+        filtered = this.applyVenueKindFilter(filtered, venueKindFilter);
 
-                        const start   = (pageNo - 1) * this.pageSize;
-                        const end     = start + this.pageSize;
-                        const hasMore = end < filtered.length;
-
-                        return {
-                          items:    filtered.slice(start, end),
-                          loading:  false,
-                          hasMore,
-                          errorMsg: '',
-                          pageNo,
-                        };
-                      })
-                    )
-                  )
-                )
-              )
-            )
-          )
-        )
-      ),
+        const start   = (pageNo - 1) * this.pageSize;
+        const end     = start + this.pageSize;
+        return { items: filtered.slice(start, end), loading: false, hasMore: end < filtered.length, errorMsg: '', pageNo };
+      }),
       shareReplay({ bufferSize: 1, refCount: true }),
       takeUntilDestroyed(this.destroyRef)
     );
@@ -185,6 +177,11 @@ export class AdminVenuesComponent implements OnInit {
     return venues.filter((v) => v.venueType === filter);
   }
 
+  private applyVenueKindFilter(venues: VenueResponseDto[], filter: VenueKindFilter): VenueResponseDto[] {
+    if (filter === 'ALL') return venues;
+    return venues.filter((v) => v.venueKind === filter);
+  }
+
   onSearchChange(): void {
     this.search$.next(this.searchQuery);
     this.pageNo$.next(1);
@@ -193,6 +190,7 @@ export class AdminVenuesComponent implements OnInit {
   onFilterChange(): void {
     this.statusFilter$.next(this.statusFilter);
     this.categoryFilter$.next(this.categoryFilter);
+    this.venueKindFilter$.next(this.venueKindFilter);
     this.pageNo$.next(1);
   }
 
@@ -242,6 +240,7 @@ export class AdminVenuesComponent implements OnInit {
       description: venue.description,
       isActive:    newStatus,
       addressName: venue.addressName,
+      venueKind:   venue.venueKind,
     };
 
     this.venueService.updateVenue(updateRequest, venue.id)

@@ -108,8 +108,12 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Tip Lokala *</label>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Kategorija Lokala *</label>
               <app-dropdown [options]="venueTypeOptions" placeholder="Izaberi tip..." [(ngModel)]="formData.venueType" name="venueType"/>
+            </div>
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Tip Lokala *</label>
+              <app-dropdown [options]="venueKindOptions" placeholder="Izaberi tip..." [(ngModel)]="formData.venueKind" name="venueKind"/>
             </div>
             <div>
               <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Status</label>
@@ -148,7 +152,7 @@
 
           @if (mode === 'create') {
             <div>
-              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Vlasnik Lokala *</label>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Vlasnik Lokala</label>
               @if (isLoadingOwners) {
                 <div class="modal-input flex items-center gap-3">
                   <svg class="animate-spin h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24">
