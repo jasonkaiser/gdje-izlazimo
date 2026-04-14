@@ -131,7 +131,7 @@ Authentication and authorization are handled via Keycloak using JWT tokens.
 ## 📊 MVP Success Metrics
 
 The MVP is considered successful if it achieves:
-- 50+ active users
+- 80+ active users
 - 10+ registered venues
 - 100+ processed reservations
 
@@ -141,8 +141,6 @@ The MVP is considered successful if it achieves:
 
 - Online payments
 - Venue promotions and featured listings
-- Ratings and reviews
-- Favorites system
 - Real-time availability
 - Push notifications
 - QR-based check-in
