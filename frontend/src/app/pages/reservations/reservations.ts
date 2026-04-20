@@ -91,7 +91,7 @@ export class Reservations implements OnInit {
 
         return combineLatest(
           rateable.map((r) =>
-            this.ratingService.hasRated(r.id).pipe(
+            this.ratingService.hasRated(r.id, r.userId).pipe(
               map((rated) => ({ id: r.id, rated })),
               catchError(() => of({ id: r.id, rated: false }))
             )
@@ -152,7 +152,6 @@ export class Reservations implements OnInit {
     this.cdr.markForCheck();
 
     this.ratingService.createRating({
-      reservationId: r.id,
       venueId:       r.venueId,
       userId,
       rating:        payload.rating,

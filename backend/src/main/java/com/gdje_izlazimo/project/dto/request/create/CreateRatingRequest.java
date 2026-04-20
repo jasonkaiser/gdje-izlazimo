@@ -8,8 +8,6 @@ import jakarta.validation.constraints.Size;
 import java.util.UUID;
 
 public record CreateRatingRequest(
-        @NotNull(message = "Reservation ID is required")
-        UUID reservationId,
         @NotNull(message = "User ID is required")
         UUID userId,
         @NotNull(message = "Venue ID is required")
@@ -20,5 +18,4 @@ public record CreateRatingRequest(
         Integer rating,
         @Size(max = 500)
         String comment
-) {
-}
+) {}

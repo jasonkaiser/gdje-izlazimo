@@ -13,27 +13,24 @@ import java.util.UUID;
 
 public interface RatingRepository extends JpaRepository<Rating, UUID> {
 
-    boolean existsByReservation_IdAndUser_Id(UUID reservationId, UUID userId);
+    boolean existsByVenue_IdAndUser_Id(UUID venueId, UUID userId);
 
     @Query("SELECT r FROM Rating r " +
             "JOIN FETCH r.user " +
             "JOIN FETCH r.venue " +
-            "JOIN FETCH r.reservation " +
             "WHERE r.venue.id = :venueId")
     List<Rating> findByVenueIdWithDetails(@Param("venueId") UUID venueId);
 
-    @Query(value = "SELECT r FROM Rating r " +
-            "JOIN FETCH r.user " +
-            "JOIN FETCH r.venue " +
-            "JOIN FETCH r.reservation",
+    @Query("SELECT r FROM Rating r JOIN FETCH r.venue JOIN FETCH r.user WHERE r.id = :id")
+    Optional<Rating> findByIdWithVenue(@Param("id") UUID id);
+
+    @Query(value = "SELECT r FROM Rating r JOIN FETCH r.user JOIN FETCH r.venue",
             countQuery = "SELECT COUNT(r) FROM Rating r")
     Page<Rating> findAllWithDetails(Pageable pageable);
 
-    @Query("SELECT r FROM Rating r JOIN FETCH r.venue WHERE r.id = :id")
-    Optional<Rating> findByIdWithVenue(@Param("id") UUID id);
-
     @Query("SELECT AVG(r.rating) FROM Rating r WHERE r.venue.id = :venueId")
     Double findAverageRatingByVenueId(@Param("venueId") UUID venueId);
-    boolean existsByReservation_Id(UUID reservationId);
+
     long countByVenue_Id(UUID venueId);
+
 }

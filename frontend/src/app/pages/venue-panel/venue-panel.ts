@@ -1,7 +1,7 @@
 import {
   Component, ChangeDetectionStrategy, OnInit, inject, DestroyRef
 } from '@angular/core';
-import { CommonModule, AsyncPipe } from '@angular/common';
+import { CommonModule, AsyncPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   BehaviorSubject, Observable, combineLatest, of, EMPTY
@@ -13,15 +13,19 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ReservationResponseDto } from '../../core/models/reservations/reservation-response.dto';
 import { VenueResponseDto } from '../../core/models/venues/venue-response.dto';
+import { EventResponseDto } from '../../core/models/events/event-response.dto';
 import { ReservationDetailsModalComponent } from '../../components/modals/reservation-details-modal/reservation-details-modal';
 import { ModalService } from '../../core/services/modal';
 import { VenueService } from '../../core/api/venue-service';
 import { VenueReservationCardComponent } from '../../components/cards/venue-reservation-card/venue-reservation-card';
 import { ReservationService } from '../../core/api/reservation-service';
+import { EventService } from '../../core/api/event-service';
 import { RejectReasonModalComponent } from '../../components/modals/reject-reason-modal/reject-reason-modal';
 import { UpdateVenueRequest } from '../../core/models/venues/update-venue.request';
 import { AppDropdown } from '../../components/other/dropdown/dropdown';
 import { VenueModalComponent } from '../../components/modals/venue-modal/venue-modal';
+import { EventModalComponent } from '../../components/modals/event-modal/event-modal';
+import { ToastService } from '../../core/ui/toast';
 
 type VenueTab = 'ALL' | 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED';
 
@@ -43,11 +47,13 @@ type ViewModel = {
 
 type SortOption = 'date-desc' | 'date-asc' | 'time-asc' | 'time-desc' | 'people-desc' | 'people-asc';
 
+type PanelSection = 'reservations' | 'events';
+
 @Component({
   selector: 'app-venue-panel',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, AsyncPipe, VenueReservationCardComponent, FormsModule, AppDropdown],
+  imports: [CommonModule, AsyncPipe, DatePipe, VenueReservationCardComponent, FormsModule, AppDropdown],
   templateUrl: './venue-panel.html',
   styleUrl: './venue-panel.css',
 })
@@ -55,8 +61,12 @@ export class VenuePanelComponent implements OnInit {
 
   private readonly reservationService = inject(ReservationService);
   private readonly venueService       = inject(VenueService);
+  private readonly eventService       = inject(EventService);
   private readonly modalService       = inject(ModalService);
+  private readonly toastService       = inject(ToastService);
   private readonly destroyRef         = inject(DestroyRef);
+
+  activeSection: PanelSection = 'reservations';
 
   activeTab: VenueTab = 'ALL';
   filterOpen          = false;
@@ -83,26 +93,28 @@ export class VenuePanelComponent implements OnInit {
     { value: 'people-asc'  as SortOption, label: 'Broj ljudi ↑ (najmanje)' },
   ];
 
-  private readonly tab$       = new BehaviorSubject<VenueTab>('ALL');
-  private readonly pageNo$    = new BehaviorSubject<number>(1);
-  private readonly refresh$   = new BehaviorSubject<void>(undefined);
-  private readonly search$    = new BehaviorSubject<string>('');
-  private readonly dateRange$ = new BehaviorSubject<{ from: string; to: string }>({ from: '', to: '' });
-  private readonly sort$      = new BehaviorSubject<SortOption>('date-desc');
+  deletingEventId: string | null = null;
 
-  venue$!:              Observable<VenueResponseDto>;
-  tabCounts$!:          Observable<VenueTabCounts>;
-  vm$!:                 Observable<ViewModel>;
-  todayReservations$!:  Observable<ReservationResponseDto[]>;
+  private readonly tab$            = new BehaviorSubject<VenueTab>('ALL');
+  private readonly pageNo$         = new BehaviorSubject<number>(1);
+  private readonly reservationsRefresh$ = new BehaviorSubject<void>(undefined);
+  private readonly eventsRefresh$  = new BehaviorSubject<void>(undefined);
+  private readonly search$         = new BehaviorSubject<string>('');
+  private readonly dateRange$      = new BehaviorSubject<{ from: string; to: string }>({ from: '', to: '' });
+  private readonly sort$           = new BehaviorSubject<SortOption>('date-desc');
+
+  venue$!:             Observable<VenueResponseDto>;
+  tabCounts$!:         Observable<VenueTabCounts>;
+  vm$!:                Observable<ViewModel>;
+  todayReservations$!: Observable<ReservationResponseDto[]>;
+  events$!:            Observable<EventResponseDto[]>;
 
   private reservations$!: Observable<ReservationResponseDto[]>;
 
   ngOnInit(): void {
     this.venue$ = this.venueService.getMyVenue().pipe(
       tap((venue) => { this.venueId = venue.id; }),
-      catchError((err) => {
-        return EMPTY;
-      }),
+      catchError(() => EMPTY),
       takeUntilDestroyed(this.destroyRef),
       shareReplay({ bufferSize: 1, refCount: true })
     );
@@ -110,16 +122,29 @@ export class VenuePanelComponent implements OnInit {
     this.reservations$ = this.venue$.pipe(
       take(1),
       switchMap((venue) =>
-        this.refresh$.pipe(
+        this.reservationsRefresh$.pipe(
           switchMap(() =>
             this.reservationService.getReservationsByVenue(venue.id, {
               pageSize: 1000,
               sortBy: 'reservationDate',
               sortDir: 'DESC',
             }).pipe(
-              catchError((err) => {
-                return of([] as ReservationResponseDto[]);
-              })
+              catchError(() => of([] as ReservationResponseDto[]))
+            )
+          )
+        )
+      ),
+      takeUntilDestroyed(this.destroyRef),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    this.events$ = this.venue$.pipe(
+      take(1),
+      switchMap((venue) =>
+        this.eventsRefresh$.pipe(
+          switchMap(() =>
+            this.eventService.getEventsByVenue(venue.id, { pageSize: 1000, sortBy: 'eventDateTime', sortDir: 'ASC' }).pipe(
+              catchError(() => of([] as EventResponseDto[]))
             )
           )
         )
@@ -159,6 +184,58 @@ export class VenuePanelComponent implements OnInit {
     );
   }
 
+
+  setSection(section: PanelSection): void {
+    this.activeSection = section;
+  }
+
+
+  openCreateEvent(): void {
+    const ref = this.modalService.open(EventModalComponent, {
+      data: { mode: 'create', venueId: this.venueId },
+    });
+    this.listenForEventUpdate();
+  }
+
+  openEditEvent(event: EventResponseDto): void {
+    this.modalService.open(EventModalComponent, {
+      data: { mode: 'edit', event, venueId: this.venueId },
+    });
+    this.listenForEventUpdate();
+  }
+
+  deleteEvent(event: EventResponseDto): void {
+    if (this.deletingEventId) return;
+    this.deletingEventId = event.id;
+
+    this.eventService.deleteEvent(event.id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.toastService.show('Događaj obrisan', 'success');
+          this.deletingEventId = null;
+          this.eventsRefresh$.next();
+        },
+        error: () => {
+          this.toastService.show('Greška pri brisanju događaja', 'error');
+          this.deletingEventId = null;
+        },
+      });
+  }
+
+  isUpcoming(eventDateTime: string): boolean {
+    return new Date(eventDateTime) > new Date();
+  }
+
+  private listenForEventUpdate(): void {
+    const handler = () => {
+      this.eventsRefresh$.next();
+      window.removeEventListener('event-updated', handler);
+    };
+    window.addEventListener('event-updated', handler);
+  }
+
+
   private buildVm(
     tab: VenueTab,
     pageNo: number,
@@ -190,8 +267,8 @@ export class VenuePanelComponent implements OnInit {
 
     filtered = this.sortReservations(filtered, sort);
 
-    const start   = (pageNo - 1) * this.pageSize;
-    const end     = start + this.pageSize;
+    const start = (pageNo - 1) * this.pageSize;
+    const end   = start + this.pageSize;
 
     return {
       items:    filtered.slice(start, end),
@@ -205,13 +282,13 @@ export class VenuePanelComponent implements OnInit {
   private sortReservations(list: ReservationResponseDto[], sort: SortOption): ReservationResponseDto[] {
     const s = [...list];
     switch (sort) {
-      case 'date-desc':    return s.sort((a, b) => (b.reservationDate ?? '').localeCompare(a.reservationDate ?? ''));
-      case 'date-asc':     return s.sort((a, b) => (a.reservationDate ?? '').localeCompare(b.reservationDate ?? ''));
-      case 'time-asc':     return s.sort((a, b) => (a.reservationTime ?? '').localeCompare(b.reservationTime ?? ''));
-      case 'time-desc':    return s.sort((a, b) => (b.reservationTime ?? '').localeCompare(a.reservationTime ?? ''));
-      case 'people-desc':  return s.sort((a, b) => (b.numberOfPeople ?? 0) - (a.numberOfPeople ?? 0));
-      case 'people-asc':   return s.sort((a, b) => (a.numberOfPeople ?? 0) - (b.numberOfPeople ?? 0));
-      default:             return s;
+      case 'date-desc':   return s.sort((a, b) => (b.reservationDate ?? '').localeCompare(a.reservationDate ?? ''));
+      case 'date-asc':    return s.sort((a, b) => (a.reservationDate ?? '').localeCompare(b.reservationDate ?? ''));
+      case 'time-asc':    return s.sort((a, b) => (a.reservationTime ?? '').localeCompare(b.reservationTime ?? ''));
+      case 'time-desc':   return s.sort((a, b) => (b.reservationTime ?? '').localeCompare(a.reservationTime ?? ''));
+      case 'people-desc': return s.sort((a, b) => (b.numberOfPeople ?? 0) - (a.numberOfPeople ?? 0));
+      case 'people-asc':  return s.sort((a, b) => (a.numberOfPeople ?? 0) - (b.numberOfPeople ?? 0));
+      default:            return s;
     }
   }
 
@@ -305,7 +382,7 @@ export class VenuePanelComponent implements OnInit {
       .subscribe({
         next: () => {
           this.pageNo$.next(1);
-          this.refresh$.next();
+          this.reservationsRefresh$.next();
         },
       });
   }
@@ -317,7 +394,7 @@ export class VenuePanelComponent implements OnInit {
       });
       ref.instance.confirmed.pipe(take(1)).subscribe(() => {
         this.pageNo$.next(1);
-        this.refresh$.next();
+        this.reservationsRefresh$.next();
       });
     });
   }
@@ -352,10 +429,10 @@ export class VenuePanelComponent implements OnInit {
         next: () => {
           this.isTogglingActive = false;
           this.toggleSuccessMsg = 'Status ažuriran';
-          this.refresh$.next();
+          this.reservationsRefresh$.next();
           setTimeout(() => { this.toggleSuccessMsg = ''; }, 3000);
         },
-        error: (err) => {
+        error: () => {
           this.isTogglingActive = false;
           this.toggleErrorMsg   = 'Greška pri ažuriranju';
           setTimeout(() => { this.toggleErrorMsg = ''; }, 3000);
@@ -367,7 +444,7 @@ export class VenuePanelComponent implements OnInit {
     this.modalService.open(VenueModalComponent, { data: { mode: 'edit', venue } });
 
     const handler = () => {
-      this.refresh$.next();
+      this.reservationsRefresh$.next();
       window.removeEventListener('venue-updated', handler);
     };
     window.addEventListener('venue-updated', handler);

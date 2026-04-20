@@ -2,9 +2,12 @@
   <!-- Header -->
   <div class="relative flex items-start justify-between gap-6">
     <div class="w-full text-center sm:text-left">
-      <h2 class="font-sora text-5xl font-regular tracking-tight max-sm:justify-self-center gradient-text text-white mb-20">
-        {{ title }}
+      <div class="flex flex-col">
+        <p class="font-light tracking-wide text-white/30 ml-1 uppercase text-[13px]"> {{ subtitle }}</p>
+      <h2 class="font-sora text-5xl font-regular tracking-tight max-sm:justify-self-center hero-title text-white mb-20">
+        {{ title }} 
       </h2>
+      </div>
     </div>
 
     <!-- Desktop controls -->
@@ -88,13 +91,15 @@
             class="shrink-0 [scroll-snap-align:start] transition-opacity duration-300"
             [class.opacity-40]="isPeekDesktopLeftOrRight(i)"
           >
-            <div class="w-[300px] lg:w-[360px]">
+            <div class="w-[300px] lg:w-[460px]">
               <app-venue-card
                 [id]="v.id" 
                 [title]="v.title"
                 [category]="v.category"
                 [location]="v.location"
                 [imageUrl]="v.imageUrl"
+                [averageRating]="v.averageRating"
+                [totalRatings]="v.totalRatings"
               />
             </div>
           </div>

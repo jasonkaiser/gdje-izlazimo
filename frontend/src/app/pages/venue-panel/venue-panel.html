@@ -10,10 +10,11 @@
     </h1>
   </div>
 
+  <!-- ── VENUE CARD ──────────────────────────────────────────────────── -->
   @if (venue$ | async; as venue) {
-    <article 
+    <article
       class="group relative overflow-hidden
-             rounded-3xl 
+             rounded-3xl
              bg-[#090909]
              border border-white/10
              shadow-[0_10px_30px_rgba(0,0,0,0.55)]
@@ -29,56 +30,26 @@
         style="background: linear-gradient(to bottom, rgba(139,92,246,0) 0%, rgba(139,92,246,0.95) 18%, rgba(139,92,246,0.95) 82%, rgba(139,92,246,0) 100%);
                box-shadow: 0 0 30px rgba(139,92,246,0.85);"
       ></span>
-
-      <span
-        class="pointer-events-none absolute left-0 top-0 h-[44px] w-[150px]
-              rounded-tl-3xl border-l-[2px] border-t-[2px] border-purple-500/30
-              opacity-20 transition-opacity duration-300 group-hover:opacity-45
-              [mask-image:radial-gradient(circle_at_top_left,black_25%,transparent_75%)]"
-      ></span>
-
-      <span
-        class="pointer-events-none absolute left-0 bottom-0 h-[44px] w-[150px]
-              rounded-bl-3xl border-l-[2px] border-b-[2px] border-purple-500/30
-              opacity-20 transition-opacity duration-300 group-hover:opacity-45
-              [mask-image:radial-gradient(circle_at_bottom_left,black_25%,transparent_75%)]"
-      ></span>
-
-      <span
-        class="pointer-events-none absolute inset-0 opacity-0
-               bg-[linear-gradient(120deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_35%,rgba(255,255,255,0.04)_70%,rgba(255,255,255,0)_100%)]
-               transition-opacity duration-300 group-hover:opacity-100"
-      ></span>
+      <span class="pointer-events-none absolute left-0 top-0 h-[44px] w-[150px] rounded-tl-3xl border-l-[2px] border-t-[2px] border-purple-500/30 opacity-20 transition-opacity duration-300 group-hover:opacity-45 [mask-image:radial-gradient(circle_at_top_left,black_25%,transparent_75%)]"></span>
+      <span class="pointer-events-none absolute left-0 bottom-0 h-[44px] w-[150px] rounded-bl-3xl border-l-[2px] border-b-[2px] border-purple-500/30 opacity-20 transition-opacity duration-300 group-hover:opacity-45 [mask-image:radial-gradient(circle_at_bottom_left,black_25%,transparent_75%)]"></span>
+      <span class="pointer-events-none absolute inset-0 opacity-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.06)_0%,rgba(255,255,255,0)_35%,rgba(255,255,255,0.04)_70%,rgba(255,255,255,0)_100%)] transition-opacity duration-300 group-hover:opacity-100"></span>
 
       <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-        
         <div class="flex flex-col gap-3">
           <div class="flex items-center gap-3 flex-wrap">
-            <h2 class="font-sora text-[26px] sm:text-[28px] font-semibold text-white/95 leading-tight">
-              {{ venue.name }}
-            </h2>
-            
-            <span
-              class="inline-flex items-center rounded-full px-3 py-1 font-dm text-[11px] tracking-[0.12em] uppercase"
-              style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); color: rgba(167,139,250,1);"
-            >
+            <h2 class="font-sora text-[26px] sm:text-[28px] font-semibold text-white/95 leading-tight">{{ venue.name }}</h2>
+            <span class="inline-flex items-center rounded-full px-3 py-1 font-dm text-[11px] tracking-[0.12em] uppercase"
+              style="background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); color: rgba(167,139,250,1);">
               {{ venue.venueType }}
             </span>
-            
-            <span
-              class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-dm text-[11px] tracking-[0.12em] uppercase"
+            <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-dm text-[11px] tracking-[0.12em] uppercase"
               [style.background]="venue.isActive ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)'"
               [style.border]="venue.isActive ? '1px solid rgba(34,197,94,0.3)' : '1px solid rgba(239,68,68,0.3)'"
-              [style.color]="venue.isActive ? 'rgba(74,222,128,1)' : 'rgba(252,165,165,1)'"
-            >
-              <span
-                class="h-1.5 w-1.5 rounded-full"
-                [style.background]="venue.isActive ? 'rgba(34,197,94,1)' : 'rgba(239,68,68,1)'"
-              ></span>
+              [style.color]="venue.isActive ? 'rgba(74,222,128,1)' : 'rgba(252,165,165,1)'">
+              <span class="h-1.5 w-1.5 rounded-full" [style.background]="venue.isActive ? 'rgba(34,197,94,1)' : 'rgba(239,68,68,1)'"></span>
               {{ venue.isActive ? 'Aktivan' : 'Neaktivan' }}
             </span>
           </div>
-
           <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
             <span class="font-dm text-[13px] text-white/50 flex items-center gap-1.5">
               <svg class="h-3.5 w-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -98,36 +69,24 @@
         </div>
 
         <div class="flex items-center gap-4 flex-shrink-0 flex-wrap">
-
-          <button
-            (click)="editVenue(venue)"
-            class="venue-edit-btn group"
-            title="Uredi lokal"
-          >
-            <svg class="h-4 w-4 transition-transform duration-200 group-hover:scale-110" 
-                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" 
-                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
+          <button (click)="editVenue(venue)" class="venue-edit-btn group" title="Uredi lokal">
+            <svg class="h-4 w-4 transition-transform duration-200 group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931zm0 0L19.5 7.125"/>
             </svg>
             <span class="font-dm text-[12px] tracking-[0.08em] uppercase">Uredi lokal</span>
           </button>
-
           <div class="flex items-center gap-3">
             <span class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/40">Status lokala</span>
             <button
               (click)="toggleVenueActive(venue)"
               [disabled]="isTogglingActive"
-              class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
-                    transition-all duration-200 ease-in-out focus:outline-none
-                    disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
+              class="relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-all duration-200 ease-in-out focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
               [style.background]="venue.isActive ? 'rgba(34,197,94,0.9)' : 'rgba(255,255,255,0.15)'"
               [attr.aria-checked]="venue.isActive"
               role="switch"
             >
-              <span
-                class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
-                [style.transform]="venue.isActive ? 'translateX(20px)' : 'translateX(0px)'"
-              ></span>
+              <span class="pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out"
+                [style.transform]="venue.isActive ? 'translateX(20px)' : 'translateX(0px)'"></span>
             </button>
             @if (toggleSuccessMsg) {
               <span class="font-dm text-[11px] text-green-400 animate-fade-in">{{ toggleSuccessMsg }}</span>
@@ -136,17 +95,15 @@
               <span class="font-dm text-[11px] text-red-400 animate-fade-in">{{ toggleErrorMsg }}</span>
             }
           </div>
-
         </div>
       </div>
     </article>
   }
 
+  <!-- ── STATS ───────────────────────────────────────────────────────── -->
   @if (tabCounts$ | async; as counts) {
     <div class="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 animate-fade-in-delay-2">
-
-      <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 
-                  transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
+      <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
         <div class="flex items-center gap-2 mb-3">
           <div class="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
             <svg class="h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -157,9 +114,7 @@
         </div>
         <span class="font-sora text-[32px] font-semibold text-white/95">{{ counts.ALL }}</span>
       </div>
-
-      <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 
-                  transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
+      <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
         <div class="flex items-center gap-2 mb-3">
           <div class="h-8 w-8 rounded-lg bg-yellow-500/10 flex items-center justify-center group-hover:bg-yellow-500/15 transition-colors">
             <svg class="h-4 w-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -170,9 +125,7 @@
         </div>
         <span class="font-sora text-[32px] font-semibold" style="color: rgba(255,174,0,0.95)">{{ counts.PENDING }}</span>
       </div>
-
-      <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 
-                  transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
+      <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
         <div class="flex items-center gap-2 mb-3">
           <div class="h-8 w-8 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/15 transition-colors">
             <svg class="h-4 w-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -185,9 +138,7 @@
           <span class="font-sora text-[32px] font-semibold" style="color: rgba(96,165,250,0.95)">{{ todayList.length }}</span>
         }
       </div>
-
-      <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 
-                  transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
+      <div class="group relative overflow-hidden rounded-2xl bg-white/[0.03] border border-white/[0.08] px-5 py-5 transition-all duration-300 hover:bg-white/[0.05] hover:border-white/[0.12] hover:-translate-y-0.5">
         <div class="flex items-center gap-2 mb-3">
           <div class="h-8 w-8 rounded-lg bg-gray-500/10 flex items-center justify-center group-hover:bg-gray-500/15 transition-colors">
             <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
@@ -198,394 +149,436 @@
         </div>
         <span class="font-sora text-[32px] font-semibold" style="color: rgba(148,163,184,0.95)">{{ counts.CANCELLED }}</span>
       </div>
-
     </div>
   }
 
+  <!-- ── TODAY BANNER ────────────────────────────────────────────────── -->
   @if (todayReservations$ | async; as todayReservations) {
     @if (todayReservations.length > 0) {
-      <div
-        class="mt-6 animate-fade-in-delay-2 relative overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-0.5"
-        style="background: rgba(59,130,246,0.06); border-color: rgba(59,130,246,0.2);"
-      >
+      <div class="mt-6 animate-fade-in-delay-2 relative overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-0.5"
+        style="background: rgba(59,130,246,0.06); border-color: rgba(59,130,246,0.2);">
 
+        <!-- mobile -->
         <div class="flex flex-col gap-0 sm:hidden">
-
           <div class="flex items-center justify-between px-5 pt-5 pb-4">
             <div class="flex items-center gap-3">
-              <div
-                class="flex items-center justify-center h-9 w-9 rounded-xl flex-shrink-0"
-                style="background: rgba(59,130,246,0.15);"
-              >
+              <div class="flex items-center justify-center h-9 w-9 rounded-xl flex-shrink-0" style="background: rgba(59,130,246,0.15);">
                 <svg class="h-4 w-4" style="color: rgba(96,165,250,1);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
                 </svg>
               </div>
-              <span class="font-dm text-[11px] tracking-[0.14em] uppercase" style="color: rgba(96,165,250,0.8);">
-                Današnje rezervacije
-              </span>
+              <span class="font-dm text-[11px] tracking-[0.14em] uppercase" style="color: rgba(96,165,250,0.8);">Današnje rezervacije</span>
             </div>
-
             <div class="flex flex-col items-end gap-0.5">
-              <span class="font-sora text-[28px] font-semibold leading-none" style="color: rgba(96,165,250,0.95);">
-                {{ todayReservations.length }}
-              </span>
-              <span class="font-dm text-[10px] tracking-[0.10em] uppercase text-white/35 leading-none">
-                {{ todayReservations.length === 1 ? 'rezervacija' : 'rezervacije' }}
-              </span>
+              <span class="font-sora text-[28px] font-semibold leading-none" style="color: rgba(96,165,250,0.95);">{{ todayReservations.length }}</span>
+              <span class="font-dm text-[10px] tracking-[0.10em] uppercase text-white/35 leading-none">{{ todayReservations.length === 1 ? 'rezervacija' : 'rezervacije' }}</span>
             </div>
           </div>
-
           <div class="h-px mx-5" style="background: rgba(59,130,246,0.12);"></div>
-
           <div class="flex flex-wrap gap-2 px-5 py-4">
             @for (r of todayReservations.slice(0, 5); track r.id) {
-              <span
-                class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-dm"
-                style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: rgba(147,197,253,1);"
-              >
+              <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-dm"
+                style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: rgba(147,197,253,1);">
                 {{ r.reservationTime }} • {{ r.numberOfPeople }} os.
               </span>
             }
             @if (todayReservations.length > 5) {
-              <span class="inline-flex items-center rounded-full px-3 py-1.5 text-[12px] font-dm text-white/40">
-                +{{ todayReservations.length - 5 }} više
-              </span>
+              <span class="inline-flex items-center rounded-full px-3 py-1.5 text-[12px] font-dm text-white/40">+{{ todayReservations.length - 5 }} više</span>
             }
           </div>
-
           <div class="h-px mx-5" style="background: rgba(59,130,246,0.12);"></div>
-
           <div class="px-5 py-4">
-            <button
-              (click)="viewTodayReservations()"
-              class="w-full rounded-xl py-2.5 font-dm text-[12px] tracking-[0.10em] uppercase transition-all
-                     hover:bg-blue-500/10 active:scale-95"
-              style="border: 1px solid rgba(59,130,246,0.3); color: rgba(96,165,250,0.9);"
-            >
-              Prikaži sve
-            </button>
+            <button (click)="viewTodayReservations()" class="w-full rounded-xl py-2.5 font-dm text-[12px] tracking-[0.10em] uppercase transition-all hover:bg-blue-500/10 active:scale-95"
+              style="border: 1px solid rgba(59,130,246,0.3); color: rgba(96,165,250,0.9);">Prikaži sve</button>
           </div>
-
         </div>
 
+        <!-- desktop -->
         <div class="hidden sm:flex items-center gap-4 px-6 py-5">
-
-          <div
-            class="flex items-center justify-center h-10 w-10 rounded-xl flex-shrink-0"
-            style="background: rgba(59,130,246,0.15);"
-          >
+          <div class="flex items-center justify-center h-10 w-10 rounded-xl flex-shrink-0" style="background: rgba(59,130,246,0.15);">
             <svg class="h-5 w-5" style="color: rgba(96,165,250,1);" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
             </svg>
           </div>
-
           <div class="flex flex-col gap-2 flex-1 min-w-0">
-            <span class="font-dm text-[11px] tracking-[0.14em] uppercase" style="color: rgba(96,165,250,0.8);">
-              Današnje rezervacije
-            </span>
+            <span class="font-dm text-[11px] tracking-[0.14em] uppercase" style="color: rgba(96,165,250,0.8);">Današnje rezervacije</span>
             <div class="flex flex-wrap gap-2">
               @for (r of todayReservations.slice(0, 5); track r.id) {
-                <span
-                  class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-dm"
-                  style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: rgba(147,197,253,1);"
-                >
+                <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-dm"
+                  style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: rgba(147,197,253,1);">
                   {{ r.reservationTime }} • {{ r.numberOfPeople }} os.
                 </span>
               }
               @if (todayReservations.length > 5) {
-                <span class="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-dm text-white/40">
-                  +{{ todayReservations.length - 5 }} više
-                </span>
+                <span class="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-dm text-white/40">+{{ todayReservations.length - 5 }} više</span>
               }
             </div>
           </div>
-
           <div class="flex flex-col items-end justify-center gap-2 flex-shrink-0 self-center">
-            <span class="font-sora text-[26px] font-semibold leading-none" style="color: rgba(96,165,250,0.95);">
-              {{ todayReservations.length }}
-            </span>
-            <span class="font-dm text-[10px] tracking-[0.12em] uppercase text-white/35 leading-none">
-              {{ todayReservations.length === 1 ? 'rezervacija' : 'rezervacije' }}
-            </span>
-            <button
-              (click)="viewTodayReservations()"
-              class="mt-1 rounded-full border px-4 py-1.5 font-dm text-[11px] tracking-[0.10em] uppercase transition-all
-                     hover:bg-blue-500/10 hover:-translate-y-0.5"
-              style="border-color: rgba(59,130,246,0.3); color: rgba(96,165,250,0.9);"
-            >
-              Prikaži
-            </button>
+            <span class="font-sora text-[26px] font-semibold leading-none" style="color: rgba(96,165,250,0.95);">{{ todayReservations.length }}</span>
+            <span class="font-dm text-[10px] tracking-[0.12em] uppercase text-white/35 leading-none">{{ todayReservations.length === 1 ? 'rezervacija' : 'rezervacije' }}</span>
+            <button (click)="viewTodayReservations()" class="mt-1 rounded-full border px-4 py-1.5 font-dm text-[11px] tracking-[0.10em] uppercase transition-all hover:bg-blue-500/10 hover:-translate-y-0.5"
+              style="border-color: rgba(59,130,246,0.3); color: rgba(96,165,250,0.9);">Prikaži</button>
           </div>
-
         </div>
-
       </div>
     }
   }
 
-  <div class="mt-10 animate-fade-in-delay-3">
-    
-    <div class="flex flex-col sm:flex-row gap-3">
-      
-      <div class="flex-1 relative">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-          <svg class="h-4 w-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
-          </svg>
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION SWITCHER — Rezervacije / Događaji
+  ════════════════════════════════════════════════════════════════════ -->
+  <div class="mt-10 flex items-center gap-2 animate-fade-in-delay-3">
+    <button
+      (click)="setSection('reservations')"
+      class="flex items-center gap-2 h-10 px-5 rounded-full border font-dm text-[12px] tracking-[0.10em] uppercase transition-all duration-200"
+      [class.bg-white/10]="activeSection === 'reservations'"
+      [class.border-white/25]="activeSection === 'reservations'"
+      [class.text-white]="activeSection === 'reservations'"
+      [class.bg-black/30]="activeSection !== 'reservations'"
+      [class.border-white/10]="activeSection !== 'reservations'"
+      [class.text-white/35]="activeSection !== 'reservations'"
+    >
+      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+      </svg>
+      Rezervacije
+    </button>
+    <button
+      (click)="setSection('events')"
+      class="flex items-center gap-2 h-10 px-5 rounded-full border font-dm text-[12px] tracking-[0.10em] uppercase transition-all duration-200"
+      [class.bg-white/10]="activeSection === 'events'"
+      [class.border-white/25]="activeSection === 'events'"
+      [class.text-white]="activeSection === 'events'"
+      [class.bg-black/30]="activeSection !== 'events'"
+      [class.border-white/10]="activeSection !== 'events'"
+      [class.text-white/35]="activeSection !== 'events'"
+    >
+      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+      </svg>
+      Događaji
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION: RESERVATIONS
+  ════════════════════════════════════════════════════════════════════ -->
+  @if (activeSection === 'reservations') {
+
+    <!-- search + filters -->
+    <div class="mt-6 animate-fade-in-delay-3">
+      <div class="flex flex-col sm:flex-row gap-3">
+        <div class="flex-1 relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+            <svg class="h-4 w-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+            </svg>
+          </div>
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Pretraži po telefonu, broju ljudi, zahtjevima..."
+            class="w-full h-12 pl-11 pr-4 rounded-2xl border border-white/10 bg-white/[0.03]
+                   font-dm text-[13px] text-white placeholder-white/30
+                   transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"
+          />
+          @if (searchQuery) {
+            <button (click)="clearSearch()" class="absolute inset-y-0 right-0 flex items-center pr-3 text-white/40 hover:text-white/70 transition-colors">
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          }
         </div>
-        <input
-          type="text"
-          [(ngModel)]="searchQuery"
-          (ngModelChange)="onSearchChange()"
-          placeholder="Pretraži po telefonu, broju ljudi, zahtjevima..."
-          class="w-full h-12 pl-11 pr-4
-                 rounded-2xl border border-white/10 bg-white/[0.03]
-                 font-dm text-[13px] text-white placeholder-white/30
-                 transition-all duration-200
-                 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05]
-                 hover:border-white/15"
-        />
-        @if (searchQuery) {
-          <button
-            (click)="clearSearch()"
-            class="absolute inset-y-0 right-0 flex items-center pr-3 text-white/40 hover:text-white/70 transition-colors"
-          >
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+
+        <button
+          (click)="toggleFilter()"
+          class="h-12 px-5 rounded-2xl border border-white/10 bg-white/[0.03] font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 transition-all duration-200 hover:bg-white/[0.05] hover:border-white/15 flex items-center gap-2 justify-center whitespace-nowrap"
+          [class.border-purple-500/30]="filterOpen"
+          [class.bg-purple-500/5]="filterOpen"
+          [class.text-purple-300]="filterOpen"
+        >
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/>
+          </svg>
+          Filteri
+          @if (dateFrom || dateTo || sortBy !== 'date-desc') {
+            <span class="ml-1 h-1.5 w-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+          }
+        </button>
+
+        @if (searchQuery || dateFrom || dateTo || sortBy !== 'date-desc') {
+          <button (click)="clearAllFilters()" class="h-12 px-5 rounded-2xl border border-red-500/20 bg-red-500/5 font-dm text-[12px] tracking-[0.08em] uppercase text-red-400/80 transition-all duration-200 hover:bg-red-500/10 hover:border-red-500/30 flex items-center gap-2">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
             </svg>
+            Obriši
           </button>
         }
       </div>
 
-      <button
-        (click)="toggleFilter()"
-        class="h-12 px-5 rounded-2xl border border-white/10 bg-white/[0.03]
-               font-dm text-[12px] tracking-[0.08em] uppercase text-white/60
-               transition-all duration-200 hover:bg-white/[0.05] hover:border-white/15
-               flex items-center gap-2 justify-center whitespace-nowrap"
-        [class.border-purple-500/30]="filterOpen"
-        [class.bg-purple-500/5]="filterOpen"
-        [class.text-purple-300]="filterOpen"
-      >
-        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z"/>
-        </svg>
-        Filteri
-        @if (dateFrom || dateTo || sortBy !== 'date-desc') {
-          <span class="ml-1 h-1.5 w-1.5 rounded-full bg-purple-400 animate-pulse"></span>
-        }
-      </button>
-
-      @if (searchQuery || dateFrom || dateTo || sortBy !== 'date-desc') {
-        <button
-          (click)="clearAllFilters()"
-          class="h-12 px-5 rounded-2xl border border-red-500/20 bg-red-500/5
-                 font-dm text-[12px] tracking-[0.08em] uppercase text-red-400/80
-                 transition-all duration-200 hover:bg-red-500/10 hover:border-red-500/30
-                 flex items-center gap-2"
-        >
-          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-          Obriši
-        </button>
+      @if (filterOpen) {
+        <div class="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm animate-slide-down shadow-xl">
+          <div class="p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="flex flex-col gap-2">
+                <label class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 pl-1">Od datuma</label>
+                <div class="custom-date-input-wrapper">
+                  <input type="date" [(ngModel)]="dateFrom" (ngModelChange)="onDateFilterChange()"
+                    class="custom-date-input w-full h-11 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[13px] text-white transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"/>
+                </div>
+              </div>
+              <div class="flex flex-col gap-2">
+                <label class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 pl-1">Do datuma</label>
+                <div class="custom-date-input-wrapper">
+                  <input type="date" [(ngModel)]="dateTo" (ngModelChange)="onDateFilterChange()"
+                    class="custom-date-input w-full h-11 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[13px] text-white transition-all duration-200 focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"/>
+                </div>
+              </div>
+              <div class="dropdown-wrapper-special">
+                <app-dropdown label="SORTIRAJ PO" [options]="sortOptions" [(ngModel)]="sortBy" (ngModelChange)="onSortChange()" placeholder="Odaberi sortiranje"/>
+              </div>
+            </div>
+          </div>
+        </div>
       }
     </div>
 
-    @if (filterOpen) {
-      <div class="mt-3 rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm animate-slide-down shadow-xl">
-        <div class="p-6">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            
-            <div class="flex flex-col gap-2">
-              <label class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 pl-1">Od datuma</label>
-              <div class="custom-date-input-wrapper">
-                <input
-                  type="date"
-                  [(ngModel)]="dateFrom"
-                  (ngModelChange)="onDateFilterChange()"
-                  class="custom-date-input w-full h-11 px-4 rounded-xl border border-white/10 bg-white/[0.03]
-                         font-dm text-[13px] text-white transition-all duration-200
-                         focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"
-                />
-              </div>
+    <!-- reservation tabs -->
+    @if (tabCounts$ | async; as counts) {
+      <div class="mt-3 sm:mt-6">
+        <!-- mobile tab toggle -->
+        <div class="sm:hidden mb-6">
+          <button (click)="toggleMobileTab()" class="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3.5 transition-all duration-200 hover:bg-white/[0.05]">
+            <span class="font-dm text-[13px] tracking-[0.10em] uppercase text-white/75">{{ tabLabel(activeTab) }} ({{ counts[activeTab] }})</span>
+            <svg class="h-4 w-4 text-white/40 transition-transform duration-200" [class.rotate-180]="mobileTabOpen" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          @if (mobileTabOpen) {
+            <div class="animate-slide-down mt-2 rounded-2xl border border-white/10 bg-[#0A0A0A] overflow-hidden shadow-xl">
+              @for (tab of allTabs; track tab) {
+                <button (click)="setTab(tab)" class="flex w-full items-center justify-between px-5 py-3.5 font-dm text-[13px] tracking-[0.10em] uppercase transition-all"
+                  [class.bg-white/5]="activeTab === tab"
+                  [style.color]="activeTab === tab ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.5)'">
+                  <span>{{ tabLabel(tab) }}</span>
+                  <span class="font-sora text-[12px]" [style.color]="activeTab === tab ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.3)'">{{ counts[tab] }}</span>
+                </button>
+              }
             </div>
-
-            <div class="flex flex-col gap-2">
-              <label class="font-dm text-[11px] tracking-[0.12em] uppercase text-white/50 pl-1">Do datuma</label>
-              <div class="custom-date-input-wrapper">
-                <input
-                  type="date"
-                  [(ngModel)]="dateTo"
-                  (ngModelChange)="onDateFilterChange()"
-                  class="custom-date-input w-full h-11 px-4 rounded-xl border border-white/10 bg-white/[0.03]
-                         font-dm text-[13px] text-white transition-all duration-200
-                         focus:outline-none focus:border-purple-500/40 focus:bg-white/[0.05] hover:border-white/15"
-                />
-              </div>
-            </div>
-
-            <div class="dropdown-wrapper-special">
-              <app-dropdown
-                label="SORTIRAJ PO"
-                [options]="sortOptions"
-                [(ngModel)]="sortBy"
-                (ngModelChange)="onSortChange()"
-                placeholder="Odaberi sortiranje"
-              />
-            </div>
-
-          </div>
+          }
+        </div>
+        <!-- desktop tabs -->
+        <div class="hidden sm:flex items-center gap-3 sm:gap-4">
+          @for (tab of allTabs; track tab) {
+            <button (click)="setTab(tab)"
+              class="h-9 px-5 rounded-full font-dm text-[12px] tracking-[0.12em] uppercase border transition-all duration-200 hover:border-white/20 hover:text-white/90 hover:bg-white/[0.06]"
+              [class.!bg-white/10]="activeTab === tab"
+              [class.!border-white/25]="activeTab === tab"
+              [class.!text-white]="activeTab === tab"
+              [class.bg-black/30]="activeTab !== tab"
+              [class.border-white/10]="activeTab !== tab"
+              [class.text-white/30]="activeTab !== tab">
+              {{ tabLabel(tab) }} <span [class.text-white/40]="activeTab !== tab" class="opacity-70">({{ counts[tab] }})</span>
+            </button>
+          }
         </div>
       </div>
     }
 
-  </div>
-
-  @if (tabCounts$ | async; as counts) {
-    <div class="mt-3 sm:mt-6">
-
-      <div class="sm:hidden mb-6">
-        <button
-          (click)="toggleMobileTab()"
-          class="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3.5
-                 transition-all duration-200 hover:bg-white/[0.05]"
-        >
-          <span class="font-dm text-[13px] tracking-[0.10em] uppercase text-white/75">
-            {{ tabLabel(activeTab) }} ({{ counts[activeTab] }})
-          </span>
-          <svg
-            class="h-4 w-4 text-white/40 transition-transform duration-200"
-            [class.rotate-180]="mobileTabOpen"
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+    <!-- reservation grid -->
+    @if (vm$ | async; as vm) {
+      @if (vm.loading) {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6 justify-items-center">
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="w-full max-w-[400px] h-[280px] rounded-3xl border border-white/10 bg-white/[0.02] animate-pulse"></div>
+          }
+        </div>
+      } @else if (vm.errorMsg) {
+        <div class="mt-6 rounded-2xl border border-red-500/20 bg-red-500/5 px-6 py-8 text-center">
+          <svg class="mx-auto mb-3 h-10 w-10 text-red-400/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
           </svg>
-        </button>
+          <span class="font-dm text-[14px] text-red-400/90">{{ vm.errorMsg }}</span>
+        </div>
+      } @else if (vm.items.length === 0) {
+        <div class="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] px-6 py-16 text-center">
+          <svg class="mx-auto mb-4 h-12 w-12 text-white/15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          </svg>
+          <p class="font-sora text-[20px] text-white/45 mb-1.5">Nema rezervacija</p>
+          <p class="font-dm text-[14px] text-white/30">
+            @if (searchQuery || dateFrom || dateTo) { Nema rezultata za zadane filtere. }
+            @else { Nema rezervacija u ovoj kategoriji. }
+          </p>
+        </div>
+      } @else {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-20 justify-items-center">
+          @for (r of vm.items; track r.id; let i = $index) {
+            <app-venue-reservation-card
+              [reservation]="r"
+              [style.animation-delay]="i * 50 + 'ms'"
+              class="animate-fade-in-up block w-full max-w-[400px]"
+              (accept)="acceptReservation($event)"
+              (reject)="rejectReservation($event)"
+              (viewDetails)="viewDetails($event)"
+            />
+          }
+        </div>
+      }
 
-        @if (mobileTabOpen) {
-          <div class="animate-slide-down mt-2 rounded-2xl border border-white/10 bg-[#0A0A0A] overflow-hidden shadow-xl">
-            @for (tab of allTabs; track tab) {
-              <button
-                (click)="setTab(tab)"
-                class="flex w-full items-center justify-between px-5 py-3.5 font-dm text-[13px] tracking-[0.10em] uppercase transition-all"
-                [class.bg-white/5]="activeTab === tab"
-                [style.color]="activeTab === tab ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.5)'"
-              >
-                <span>{{ tabLabel(tab) }}</span>
-                <span class="font-sora text-[12px]"
-                  [style.color]="activeTab === tab ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.3)'"
-                >{{ counts[tab] }}</span>
-              </button>
+      @if (!vm.loading && !vm.errorMsg && (vm.pageNo > 1 || vm.hasMore)) {
+        <div class="mt-12 flex items-center justify-center gap-4">
+          <button (click)="prevPage()" [disabled]="vm.pageNo <= 1"
+            class="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 font-dm text-[12px] tracking-[0.12em] uppercase text-white/60 transition-all duration-200 hover:bg-white/[0.08] hover:text-white hover:border-white/15 hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Prethodna
+          </button>
+          <span class="font-dm text-[13px] tracking-[0.12em] uppercase text-white/40 px-4">Stranica {{ vm.pageNo }}</span>
+          <button (click)="nextPage()" [disabled]="!vm.hasMore"
+            class="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 font-dm text-[12px] tracking-[0.12em] uppercase text-white/60 transition-all duration-200 hover:bg-white/[0.08] hover:text-white hover:border-white/15 hover:-translate-y-0.5 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+            Sljedeća
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      }
+    }
+
+  }
+
+  <!-- ════════════════════════════════════════════════════════════════════
+       SECTION: EVENTS
+  ════════════════════════════════════════════════════════════════════ -->
+  @if (activeSection === 'events') {
+    <div class="mt-6 animate-fade-in">
+
+      <!-- header row -->
+      <div class="flex items-center justify-between mb-6">
+        <p class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/50">
+          Upravljanje događajima
+        </p>
+        <button
+          (click)="openCreateEvent()"
+          class="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 font-dm text-[12px] tracking-[0.08em] uppercase
+                 bg-purple-600/90 hover:bg-purple-600 text-white border border-purple-500/50
+                 transition-all duration-200 hover:shadow-[0_0_20px_rgba(139,92,246,0.35)] hover:-translate-y-0.5"
+        >
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+          </svg>
+          Novi događaj
+        </button>
+      </div>
+
+      <!-- events list -->
+      @if (events$ | async; as events) {
+        @if (events.length === 0) {
+          <div class="flex flex-col items-center justify-center py-16 rounded-2xl border border-dashed border-white/10">
+            <svg class="h-12 w-12 text-white/15 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+            </svg>
+            <p class="font-sora text-[20px] text-white/45 mb-1.5">Nema događaja</p>
+            <p class="font-dm text-[14px] text-white/30">Kreiraj prvi događaj za tvoj lokal.</p>
+          </div>
+        } @else {
+          <div class="flex flex-col gap-4">
+            @for (event of events; track event.id) {
+              <div class="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]
+                          transition-all duration-300 hover:border-white/[0.14] hover:bg-white/[0.05] hover:-translate-y-0.5">
+
+                <div class="flex gap-0">
+                  <!-- image strip -->
+                  @if (event.imageUrl) {
+                    <div class="w-24 sm:w-36 flex-shrink-0 relative overflow-hidden rounded-l-2xl">
+                      <img [src]="event.imageUrl" [alt]="event.name" class="w-full h-full object-cover"/>
+                      <div class="absolute inset-0 bg-gradient-to-r from-transparent to-black/30"></div>
+                    </div>
+                  }
+
+                  <!-- content -->
+                  <div class="flex-1 px-5 py-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 min-w-0">
+                    <div class="flex flex-col gap-2 min-w-0">
+
+                      <!-- name + status badge -->
+                      <div class="flex items-center gap-3 flex-wrap">
+                        <h3 class="font-sora text-[16px] font-semibold text-white/95 truncate">{{ event.name }}</h3>
+                        @if (isUpcoming(event.eventDateTime)) {
+                          <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-dm text-[10px] tracking-[0.10em] uppercase flex-shrink-0"
+                            style="background: rgba(34,197,94,0.10); border: 1px solid rgba(34,197,94,0.25); color: rgba(74,222,128,0.9);">
+                            <span class="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                            Nadolazeći
+                          </span>
+                        } @else {
+                          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 font-dm text-[10px] tracking-[0.10em] uppercase flex-shrink-0"
+                            style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10); color: rgba(255,255,255,0.35);">
+                            Završen
+                          </span>
+                        }
+                      </div>
+
+                      <!-- meta row -->
+                      <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+                        <span class="font-dm text-[13px] text-white/50 flex items-center gap-1.5">
+                          <svg class="h-3.5 w-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/>
+                          </svg>
+                          {{ event.eventDateTime | date: 'dd.MM.yyyy · HH:mm' }}
+                        </span>
+
+                      </div>
+
+                      @if (event.description) {
+                        <p class="font-dm text-[12px] text-white/35 leading-relaxed line-clamp-2">{{ event.description }}</p>
+                      }
+                    </div>
+
+                    <!-- actions -->
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                      <button
+                        (click)="openEditEvent(event)"
+                        class="h-9 px-4 rounded-xl border border-white/10 bg-white/[0.03] font-dm text-[11px] tracking-[0.08em] uppercase text-white/60
+                               transition-all duration-200 hover:bg-white/[0.07] hover:border-white/20 hover:text-white/90 flex items-center gap-1.5"
+                      >
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931z"/>
+                        </svg>
+                        Uredi
+                      </button>
+                      <button
+                        (click)="deleteEvent(event)"
+                        [disabled]="deletingEventId === event.id"
+                        class="h-9 w-9 rounded-xl border border-red-500/20 bg-red-500/5 flex items-center justify-center text-red-400/70
+                               transition-all duration-200 hover:bg-red-500/15 hover:border-red-500/35 hover:text-red-400 disabled:opacity-40"
+                        title="Obriši događaj"
+                      >
+                        @if (deletingEventId === event.id) {
+                          <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                          </svg>
+                        } @else {
+                          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/>
+                          </svg>
+                        }
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             }
           </div>
         }
-      </div>
-
-      <div class="hidden sm:flex items-center gap-3 sm:gap-4">
-        @for (tab of allTabs; track tab) {
-          <button
-            (click)="setTab(tab)"
-            class="h-9 px-5 rounded-full font-dm text-[12px] tracking-[0.12em] uppercase border transition-all duration-200
-                   hover:border-white/20 hover:text-white/90 hover:bg-white/[0.06]"
-            [class.!bg-white/10]="activeTab === tab"
-            [class.!border-white/25]="activeTab === tab"
-            [class.!text-white]="activeTab === tab"
-            [class.bg-black/30]="activeTab !== tab"
-            [class.border-white/10]="activeTab !== tab"
-            [class.text-white/30]="activeTab !== tab"
-          >
-            {{ tabLabel(tab) }} <span [class.text-white/40]="activeTab !== tab" class="opacity-70">({{ counts[tab] }})</span>
-          </button>
-        }
-      </div>
+      }
 
     </div>
-  }
-
-  @if (vm$ | async; as vm) {
-
-    @if (vm.loading) {
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-6 justify-items-center">
-        @for (i of [1,2,3,4,5,6]; track i) {
-          <div class="w-full max-w-[400px] h-[280px] rounded-3xl border border-white/10 bg-white/[0.02] animate-pulse"></div>
-        }
-      </div>
-    } @else if (vm.errorMsg) {
-      <div class="mt-6 rounded-2xl border border-red-500/20 bg-red-500/5 px-6 py-8 text-center">
-        <svg class="mx-auto mb-3 h-10 w-10 text-red-400/50" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
-        </svg>
-        <span class="font-dm text-[14px] text-red-400/90">{{ vm.errorMsg }}</span>
-      </div>
-    } @else if (vm.items.length === 0) {
-      <div class="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] px-6 py-16 text-center">
-        <svg class="mx-auto mb-4 h-12 w-12 text-white/15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-        </svg>
-        <p class="font-sora text-[20px] text-white/45 mb-1.5">Nema rezervacija</p>
-        <p class="font-dm text-[14px] text-white/30">
-          @if (searchQuery || dateFrom || dateTo) {
-            Nema rezultata za zadane filtere.
-          } @else {
-            Nema rezervacija u ovoj kategoriji.
-          }
-        </p>
-      </div>
-    } @else {
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-20 justify-items-center">
-        @for (r of vm.items; track r.id; let i = $index) {
-          <app-venue-reservation-card
-            [reservation]="r"
-            [style.animation-delay]="i * 50 + 'ms'"
-            class="animate-fade-in-up block w-full max-w-[400px]"
-            (accept)="acceptReservation($event)"
-            (reject)="rejectReservation($event)"
-            (viewDetails)="viewDetails($event)"
-          />
-        }
-      </div>
-    }
-
-    @if (!vm.loading && !vm.errorMsg && (vm.pageNo > 1 || vm.hasMore)) {
-      <div class="mt-12 flex items-center justify-center gap-4">
-        <button
-          (click)="prevPage()"
-          [disabled]="vm.pageNo <= 1"
-          class="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 
-                 font-dm text-[12px] tracking-[0.12em] uppercase text-white/60 
-                 transition-all duration-200
-                 hover:bg-white/[0.08] hover:text-white hover:border-white/15 hover:-translate-y-0.5
-                 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-        >
-          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-          </svg>
-          Prethodna
-        </button>
-
-        <span class="font-dm text-[13px] tracking-[0.12em] uppercase text-white/40 px-4">
-          Stranica {{ vm.pageNo }}
-        </span>
-
-        <button
-          (click)="nextPage()"
-          [disabled]="!vm.hasMore"
-          class="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 
-                 font-dm text-[12px] tracking-[0.12em] uppercase text-white/60 
-                 transition-all duration-200
-                 hover:bg-white/[0.08] hover:text-white hover:border-white/15 hover:-translate-y-0.5
-                 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:translate-y-0"
-        >
-          Sljedeća
-          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-          </svg>
-        </button>
-      </div>
-    }
-
   }
 
 </section>

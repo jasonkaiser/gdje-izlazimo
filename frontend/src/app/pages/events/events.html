@@ -1,0 +1,142 @@
+<!-- HERO + SEARCH -->
+<div class="pointer-events-none inset-0 z-0 overflow-hidden">
+  <div
+    class="
+      absolute left-1/2 -translate-x-1/2
+      top-[-240px] sm:top-[-380px] lg:top-[-620px]
+      w-[680px] h-[680px]
+      sm:w-[820px] sm:h-[820px]
+      lg:w-[862px] lg:h-[910px]
+      opacity-10 sm:opacity-20
+      blur-4xl
+    "
+    style="background: radial-gradient(circle at center, rgba(217,217,217,0.40) 0%, rgba(115,115,115,0) 70%);"
+  ></div>
+</div>
+
+<section class="relative w-full overflow-visible py-16 sm:py-20 mt-15 z-50 px-2">
+  <div class="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 z-50">
+    <div class="text-center">
+      <h1 class="font-sora text-[38px] sm:text-[70px] leading-[1.05] tracking-[0.02em] hero-title text-white">
+        Događaji u
+        <span
+          class="align-baseline font-[Sheftira_Demo] italic font-normal text-[45px] sm:text-[110px] leading-[1.06]
+                 bg-[radial-gradient(50%_50%_at_50%_50%,#F2E5FF_0%,#7C3AED_100%)]
+                 bg-clip-text text-transparent opacity-80"
+          style="-webkit-background-clip:text; -webkit-text-fill-color:transparent;"
+        >
+          Sarajevu
+        </span>
+      </h1>
+
+      <p class="mt-2 font-dm text-sm sm:text-[19px] font-light tracking-[0.08em] italic">
+        <span class="text-white/60 gradient-text">Pronadji</span>
+        <span class="text-white/40"> idealan događaj za večeras</span>
+      </p>
+    </div>
+
+    <div class="mt-10 flex justify-center relative z-50">
+      <div class="flex w-full max-w-[665px] items-center gap-3 relative z-50">
+        <div class="flex-1 mt-11 relative z-50">
+          <app-event-search-bar [live]="true" (search)="onSearch($event)"></app-event-search-bar>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CARDS -->
+<section class="relative w-full pb-14 sm:pb-20 z-10">
+  <div class="relative mx-auto max-w-[1660px] px-8 sm:px-6 lg:px-8">
+    @if (vm$ | async; as vm) {
+
+      <!-- First load skeleton -->
+      @if (vm.loading && vm.items.length === 0) {
+        <div class="mt-8 sm:mt-12 grid grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-7">
+          @for (i of skeleton; track i) {
+            <div class="h-[320px] rounded-3xl border border-white/10 bg-white/5 animate-pulse"></div>
+          }
+        </div>
+      }
+
+      <!-- Error -->
+      @if (!vm.loading && vm.errorMsg) {
+        <div class="mt-8 sm:mt-10 text-center font-dm text-red-300">
+          {{ vm.errorMsg }}
+        </div>
+      }
+
+      <!-- Empty -->
+      @if (!vm.loading && !vm.errorMsg && vm.items.length === 0) {
+        <div class="mt-8 sm:mt-10 text-center font-dm text-white/50">
+          Nema rezultata.
+        </div>
+      }
+
+      <!-- List -->
+      @if (!vm.errorMsg && vm.items.length > 0) {
+        <div class="mt-8 sm:mt-12">
+          <div
+            class="grid grid-cols-1 gap-5
+                   sm:gap-6
+                   md:grid-cols-2 md:gap-6
+                   lg:grid-cols-2 lg:gap-7"
+          >
+            @for (e of vm.items; track e.id) {
+              <app-event-card
+                [id]="e.id"
+                [title]="e.title"
+                [venueName]="e.venueName"
+                [venueAddress]="e.venueAddress"
+                [imageUrl]="e.imageUrl"
+                [eventDateTime]="e.eventDateTime"
+                [trending]="e.trending"
+                class="w-full"
+              ></app-event-card>
+            }
+          </div>
+
+          <!-- Pagination controls -->
+          <div class="mt-10 sm:mt-12 flex justify-center gap-3">
+            <button
+              type="button"
+              (click)="prevPage()"
+              [disabled]="vm.pageNo <= 1 || vm.loading"
+              class="group inline-flex items-center justify-center gap-2 rounded-full
+                     border border-white/10 bg-white/5 px-6 py-3
+                     font-dm text-[12px] tracking-[0.14em] uppercase text-white/70
+                     hover:text-white hover:bg-white/10 transition
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span class="-translate-x-0 group-hover:-translate-x-0.5 transition-transform">←</span>
+              PRETHODNA
+            </button>
+
+            <button
+              type="button"
+              (click)="nextPage()"
+              [disabled]="!vm.hasMore || vm.loadingMore"
+              class="group inline-flex items-center justify-center gap-2 rounded-full
+                     border border-white/10 bg-white/5 px-6 py-3
+                     font-dm text-[12px] tracking-[0.14em] uppercase text-white/70
+                     hover:text-white hover:bg-white/10 transition
+                     disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if (!vm.loadingMore) {
+                SLJEDEĆA
+                <span class="translate-x-0 group-hover:translate-x-0.5 transition-transform">→</span>
+              } @else {
+                UČITAVAM...
+                <span class="inline-block h-4 w-4 rounded-full border border-white/30 border-t-white/80 animate-spin"></span>
+              }
+            </button>
+          </div>
+
+          <div class="mt-4 text-center font-dm text-white/40 text-[12px] tracking-[0.14em] uppercase">
+            Stranica {{ vm.pageNo }}
+          </div>
+        </div>
+      }
+    }
+  </div>
+</section>

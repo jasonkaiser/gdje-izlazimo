@@ -1,5 +1,7 @@
 package com.gdje_izlazimo.project.dto.response;
 
+import com.gdje_izlazimo.project.enums.VenueCategory;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
@@ -7,13 +9,15 @@ import java.util.UUID;
 public record EventResponse(
         UUID id,
         UUID venueId,
-        UUID tableTypeId,
-        LocalTime eventStartTime,
-        LocalDateTime eventDateTime,
+        String venueName,
+        VenueCategory venueType,
+        String venueAddress,
         String name,
+        String description,
+        LocalDateTime eventDateTime,
         String imageUrl,
-        int quantity,
+        long viewCount,
+        boolean trending,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
-) {
-}
+) {}

@@ -5,7 +5,6 @@ import java.util.UUID;
 
 public record RatingResponse(
         UUID id,
-        UUID reservationId,
         UUID venueId,
         UUID userId,
         String userName,

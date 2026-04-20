@@ -1,0 +1,359 @@
+<section class="relative overflow-hidden min-h-screen">
+
+  <!-- ── BACKGROUND GLOWS ─────────────────────────────────────────────── -->
+  <div class="pointer-events-none fixed inset-0 z-5 overflow-hidden">
+    <div class="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-25"
+      style="background: radial-gradient(circle, rgba(124,58,237,0.35) 0%, rgba(109,40,217,0.12) 20%, transparent 70%);
+             filter: blur(60px);"></div>
+    <div class="absolute top-0 right-0 w-[400px] h-[400px] rounded-full opacity-30"
+      style="background: radial-gradient(circle, rgba(255,255,255,0.10) 10%, transparent 65%);
+             filter: blur(50px);"></div>
+  </div>
+  <div class="absolute bottom-40 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] rounded-full opacity-35"
+    style="background: radial-gradient(ellipse, rgba(91,33,182,0.45) 0%, transparent 50%);
+           filter: blur(80px);"></div>
+
+  <div class="relative z-10">
+    @if (vm$ | async; as vm) {
+
+      <!-- ── LOADING ─────────────────────────────────────────────────── -->
+      @if (vm.loading) {
+        <div class="mx-auto max-w-[900px] px-4 sm:px-8 pt-24 space-y-5">
+          <div class="h-5 w-24 rounded-xl bg-white/[0.04] animate-pulse"></div>
+          <div class="h-14 w-3/4 rounded-2xl bg-white/[0.04] animate-pulse"></div>
+          <div class="h-[320px] sm:h-[460px] rounded-3xl bg-white/[0.03] animate-pulse"></div>
+          <div class="grid grid-cols-3 gap-3">
+            @for (i of [1,2,3]; track i) {
+              <div class="h-24 rounded-2xl bg-white/[0.03] animate-pulse"></div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ── ERROR ──────────────────────────────────────────────────── -->
+      @if (!vm.loading && vm.errorMsg) {
+        <div class="mx-auto max-w-[900px] px-4 sm:px-8 pt-32 flex justify-center">
+          <div class="inline-flex flex-col items-center gap-5 rounded-3xl border border-red-500/15
+                      bg-red-500/[0.04] backdrop-blur-sm px-10 py-8 max-w-sm w-full text-center">
+            <div class="h-12 w-12 rounded-2xl border border-red-500/20 bg-red-500/10
+                        flex items-center justify-center">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <p class="font-dm text-[13px] text-red-300/80 leading-relaxed">{{ vm.errorMsg }}</p>
+            <button type="button" (click)="retry()"
+              class="inline-flex items-center gap-2 rounded-full border border-white/[0.08]
+                     bg-white/[0.04] px-5 py-2.5 font-dm text-[11px] tracking-[0.14em]
+                     uppercase text-white/50 hover:text-white/80 hover:bg-white/[0.07]
+                     transition-all duration-200">
+              Pokušaj ponovo
+            </button>
+          </div>
+        </div>
+      }
+
+      @if (!vm.loading && !vm.errorMsg && vm.event) {
+
+        <!-- ── BACK NAV ────────────────────────────────────────────── -->
+        <div class="mx-auto max-w-[900px] px-4 sm:px-8 pt-6 sm:pt-8">
+          <a routerLink="/"
+            class="inline-flex items-center gap-2 font-dm text-[12px] tracking-[0.08em]
+                   text-white/30 hover:text-white/70 transition-colors duration-200 group">
+            <svg class="h-3.5 w-3.5 transition-transform duration-200 group-hover:-translate-x-0.5"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                 stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 12H5M12 5l-7 7 7 7"/>
+            </svg>
+            Nazad
+          </a>
+        </div>
+
+        <!-- ── HERO ───────────────────────────────────────────────── -->
+        <div
+          inView (inViewChange)="onHeroInView($event)"
+          class="mx-auto max-w-[900px] px-4 sm:px-8 pt-6 pb-0
+                 transition-all duration-700 ease-out"
+          [style.opacity]="heroShown ? '1' : '0'"
+          [style.transform]="heroShown ? 'translateY(0)' : 'translateY(24px)'"
+        >
+
+          <!-- Venue breadcrumb pill -->
+          <div class="flex items-center gap-2 mb-5 flex-wrap">
+            <a [routerLink]="['/venues', vm.event.venueId]"
+              class="inline-flex items-center gap-1.5 rounded-full border border-violet-400/20
+                     bg-violet-500/[0.07] backdrop-blur-sm px-3.5 py-1.5
+                     font-dm text-[10px] tracking-[0.18em] uppercase text-violet-300/80
+                     hover:border-violet-400/40 hover:bg-violet-500/[0.12]
+                     transition-all duration-200">
+              <span class="h-1.5 w-1.5 rounded-full bg-violet-400 animate-pulse"></span>
+              {{ vm.event.venueType }}
+            </a>
+            <span class="font-dm text-[11px] text-white/20">·</span>
+            <span class="font-dm text-[11px] text-white/30">{{ vm.event.venueName }}</span>
+          </div>
+
+          <!-- Title -->
+          <h1 class="font-sora font-semibold text-[32px] sm:text-[48px] lg:text-[56px]
+                     tracking-[-0.03em] leading-[1.05] hero-title
+                     bg-gradient-to-br from-white via-white/90 to-white/50
+                     bg-clip-text text-transparent mb-6">
+            {{ vm.event.name }}
+          </h1>
+
+          <!-- Hero image -->
+          <div class="relative overflow-hidden rounded-3xl border border-white/[0.06]
+                      shadow-[0_32px_80px_rgba(0,0,0,0.6)] group">
+            @if (vm.event.imageUrl) {
+              <div class="h-[240px] sm:h-[380px] lg:h-[460px] w-full bg-cover bg-center
+                          transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                [style.backgroundImage]="'linear-gradient(to bottom, rgba(8,7,15,0.0) 35%, rgba(8,7,15,0.92) 100%), url(' + vm.event.imageUrl + ')'">
+              </div>
+            } @else {
+              <div class="h-[240px] sm:h-[380px] lg:h-[460px] w-full flex items-center justify-center"
+                style="background: linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(8,7,15,0.8) 100%);">
+                <svg class="h-16 w-16 text-white/10" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="1">
+                  <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2
+                           1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2
+                           1.343-2 3-2 3 .895 3 2zM9 10l12-3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            }
+
+            <!-- Date badge overlaid on image bottom-left -->
+            <div class="absolute bottom-5 left-5 flex items-center gap-3">
+              <div class="flex flex-col items-center justify-center px-4 py-3 rounded-2xl"
+                style="background: rgba(8,7,15,0.75); backdrop-filter: blur(20px);
+                       border: 1px solid rgba(255,255,255,0.10);
+                       box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+                <span class="font-sora text-[2rem] font-bold text-white leading-none tabular-nums">
+                  {{ vm.day }}
+                </span>
+                <span class="font-dm text-[9px] uppercase tracking-[0.22em] text-violet-400 mt-1 font-medium">
+                  {{ vm.month }}
+                </span>
+                <span class="font-dm text-[9px] uppercase tracking-[0.15em] text-white/30 mt-0.5">
+                  {{ vm.year }}
+                </span>
+              </div>
+              <div class="flex flex-col gap-1"
+                style="background: rgba(8,7,15,0.75); backdrop-filter: blur(20px);
+                       border: 1px solid rgba(255,255,255,0.10);
+                       border-radius: 14px; padding: 10px 14px;
+                       box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+                <span class="font-dm text-[10px] tracking-[0.12em] uppercase text-white/30">
+                  {{ vm.dayName }}
+                </span>
+                <span class="font-sora text-[18px] font-bold text-white leading-none tabular-nums">
+                  {{ vm.time }}h
+                </span>
+              </div>
+            </div>
+
+       
+           
+          </div>
+        </div>
+
+        <!-- ── DETAIL GRID ─────────────────────────────────────────── -->
+        <div
+          inView (inViewChange)="onDetailInView($event)"
+          class="mx-auto max-w-[900px] px-4 sm:px-8 mt-5 pb-32
+                 transition-all duration-700 ease-out delay-100"
+          [style.opacity]="detailShown ? '1' : '0'"
+          [style.transform]="detailShown ? 'translateY(0)' : 'translateY(20px)'"
+        >
+          <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5 items-start">
+
+            <!-- ── LEFT: description + venue info ─────────────────── -->
+            <div class="space-y-4">
+
+              <!-- Description card -->
+              @if (vm.event.description) {
+                <div class="relative overflow-hidden rounded-3xl border border-white/[0.07]
+                            bg-white/[0.02] p-6 sm:p-7">
+                  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
+                    style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.4), transparent);"></div>
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-4">
+                    O Događaju
+                  </p>
+                  <p class="font-dm text-[14px] font-light leading-[1.85] text-white/55 italic">
+                    {{ vm.event.description }}
+                  </p>
+                </div>
+              }
+
+              <!-- Venue info card -->
+              <div class="relative overflow-hidden rounded-3xl border border-white/[0.07]
+                          bg-white/[0.02] p-6 sm:p-7">
+                <div class="absolute -top-20 -right-20 w-48 h-48 rounded-full pointer-events-none"
+                  style="background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);"></div>
+                <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-5">
+                  Lokacija
+                </p>
+                <a [routerLink]="['/venues', vm.event.venueId]"
+                  class="flex items-center gap-3 group/venue mb-5">
+                  <div class="flex-shrink-0 h-10 w-10 rounded-2xl flex items-center justify-center
+                              border border-violet-500/30 bg-violet-500/[0.10]
+                              group-hover/venue:border-violet-400/50 group-hover/venue:bg-violet-500/[0.18]
+                              transition-all duration-200">
+                    <svg class="h-4 w-4 text-violet-400" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="1.8">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                            stroke-linecap="round" stroke-linejoin="round"/>
+                      <polyline points="9 22 9 12 15 12 15 22" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-dm text-[14px] font-semibold text-white/80
+                               group-hover/venue:text-white transition-colors duration-200 truncate">
+                      {{ vm.event.venueName }}
+                    </p>
+                    <p class="font-dm text-[11px] text-violet-400/60
+                               group-hover/venue:text-violet-300/80 transition-colors duration-200 mt-0.5">
+                      Pogledaj lokal →
+                    </p>
+                  </div>
+                </a>
+                <div class="flex items-center gap-3">
+                  <div class="flex-shrink-0 h-8 w-8 rounded-xl flex items-center justify-center
+                              border border-white/[0.06] bg-white/[0.03]">
+                    <svg class="h-3.5 w-3.5 text-white/30" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="1.8">
+                      <path d="M12 22c3.7-3.2 8-7.6 8-12.2A8 8 0 1 0 4 9.8C4 14.4 8.3 18.8 12 22Z"
+                            stroke-linecap="round"/>
+                      <circle cx="12" cy="10" r="2.5"/>
+                    </svg>
+                  </div>
+                  <span class="font-dm text-[13px] text-white/45">
+                    {{ vm.event.venueAddress }}
+                  </span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ── RIGHT: sticky date/time summary card ────────────── -->
+            <div class="lg:sticky lg:top-8">
+              <div class="relative overflow-hidden rounded-3xl p-6 sm:p-7"
+                style="border: 1px solid rgba(124,58,237,0.22);
+                       background: linear-gradient(135deg, rgba(109,40,217,0.14) 0%, rgba(8,7,15,0.85) 100%);
+                       box-shadow: 0 0 48px rgba(124,58,237,0.10), inset 0 0 32px rgba(124,58,237,0.05);">
+
+                <!-- shimmer top -->
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px"
+                  style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.55), transparent);"></div>
+                <div class="absolute -top-16 -right-16 w-40 h-40 rounded-full pointer-events-none"
+                  style="background: radial-gradient(circle, rgba(124,58,237,0.14) 0%, transparent 70%);"></div>
+
+                <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-5">
+                  Detalji Događaja
+                </p>
+
+                <!-- Big date display -->
+                <div class="flex items-end gap-3 mb-6 pb-6"
+                  style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                  <span class="font-sora text-[56px] sm:text-[64px] font-bold text-white
+                               leading-none tabular-nums">
+                    {{ vm.day }}
+                  </span>
+                  <div class="flex flex-col mb-2">
+                    <span class="font-sora text-[22px] font-semibold text-violet-300 leading-none">
+                      {{ vm.month }}
+                    </span>
+                    <span class="font-dm text-[13px] text-white/30 mt-1">{{ vm.year }}</span>
+                  </div>
+                </div>
+
+                <!-- Info rows -->
+                <div class="space-y-3.5">
+
+                  <div class="flex items-center gap-3">
+                    <div class="flex-shrink-0 h-8 w-8 rounded-xl flex items-center justify-center"
+                      style="background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25);">
+                      <svg class="h-3.5 w-3.5 text-violet-400" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" stroke-width="1.8">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-dm text-[10px] tracking-[0.1em] uppercase text-white/25">Početak</p>
+                      <p class="font-sora text-[16px] font-semibold text-white leading-none mt-0.5">
+                        {{ vm.time }}h
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    <div class="flex-shrink-0 h-8 w-8 rounded-xl flex items-center justify-center"
+                      style="background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25);">
+                      <svg class="h-3.5 w-3.5 text-violet-400" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" stroke-width="1.8">
+                        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <p class="font-dm text-[10px] tracking-[0.1em] uppercase text-white/25">Dan</p>
+                      <p class="font-dm text-[14px] font-semibold text-white/80 leading-none mt-0.5">
+                        {{ vm.dayName }}
+                      </p>
+                    </div>
+                  </div>
+
+      
+
+                  <div class="flex items-center gap-3">
+                    <div class="flex-shrink-0 h-8 w-8 rounded-xl flex items-center justify-center"
+                      style="background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25);">
+                      <svg class="h-3.5 w-3.5 text-violet-400" viewBox="0 0 24 24" fill="none"
+                           stroke="currentColor" stroke-width="1.8">
+                        <path d="M12 22c3.7-3.2 8-7.6 8-12.2A8 8 0 1 0 4 9.8C4 14.4 8.3 18.8 12 22Z"
+                              stroke-linecap="round"/>
+                        <circle cx="12" cy="10" r="2.5"/>
+                      </svg>
+                    </div>
+                    <div class="min-w-0">
+                      <p class="font-dm text-[10px] tracking-[0.1em] uppercase text-white/25">Adresa</p>
+                      <p class="font-dm text-[13px] text-white/60 leading-snug mt-0.5 truncate">
+                        {{ vm.event.venueAddress }}
+                      </p>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- CTA -->
+                <a [routerLink]="['/venues', vm.event.venueId]"
+                  class="group relative mt-6 w-full inline-flex items-center justify-center gap-2.5
+                         px-6 py-4 rounded-2xl overflow-hidden
+                         font-dm font-semibold text-[14px] text-white
+                         transition-all duration-300 hover:scale-[1.015] active:scale-[0.98]"
+                  style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
+                         box-shadow: 0 4px 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);">
+                  <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none"
+                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
+                  </svg>
+                  <span class="relative z-10">Rezerviši Sto u Lokalu</span>
+                  <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);"></div>
+                </a>
+
+                <p class="font-dm text-[11px] text-white/20 text-center mt-3 leading-relaxed">
+                  Rezervacije se vrše direktno kroz stranicu lokala
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      }
+    }
+  </div>
+
+</section>

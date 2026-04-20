@@ -2,6 +2,7 @@ package com.gdje_izlazimo.project.mapper;
 
 import com.gdje_izlazimo.project.dto.request.create.CreateVenueRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateVenueRequest;
+import com.gdje_izlazimo.project.dto.response.RatingStatsResponse;
 import com.gdje_izlazimo.project.dto.response.VenueResponse;
 import com.gdje_izlazimo.project.entity.Venue;
 import com.gdje_izlazimo.project.mapper.helper.SharedMapperHelper;
@@ -18,6 +19,10 @@ public interface VenueMapper {
     @Mapping(source = "isActive", target = "active")
     void updateEntity(UpdateVenueRequest dto, @MappingTarget Venue venue);
 
-    @Mapping(target = "images", source = "images")
-    VenueResponse toResponse(Venue venue);
+    VenueResponse toResponse(Venue venue); // used by create/update/getByOwner
+
+    @Mapping(source = "venue.images", target = "images")
+    @Mapping(source = "stats.averageRating", target = "averageRating")
+    @Mapping(source = "stats.totalRatings", target = "totalRatings")
+    VenueResponse toResponse(Venue venue, RatingStatsResponse stats);
 }

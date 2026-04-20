@@ -2,6 +2,7 @@ package com.gdje_izlazimo.project.service;
 
 import com.gdje_izlazimo.project.dto.request.create.CreateVenueRequest;
 import com.gdje_izlazimo.project.dto.request.update.UpdateVenueRequest;
+import com.gdje_izlazimo.project.dto.response.RatingStatsResponse;
 import com.gdje_izlazimo.project.dto.response.VenueResponse;
 import com.gdje_izlazimo.project.entity.Venue;
 import com.gdje_izlazimo.project.enums.VenueCategory;
@@ -18,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class VenueService {
@@ -41,7 +44,12 @@ public class VenueService {
     public VenueResponse findVenueById(UUID id) {
         Venue venue = venueRepository.findByIdWithImages(id)
                 .orElseThrow(() -> new VenueNotFoundException("Venue does not exist"));
-        return venueMapper.toResponse(venue);
+
+        Map<UUID, VenueRepository.RatingStatsProjection> ratingMap = venueRepository
+                .findRatingStatsByVenueIds(List.of(id))
+                .stream().collect(Collectors.toMap(VenueRepository.RatingStatsProjection::getVenueId, r -> r));
+
+        return venueMapper.toResponse(venue, resolveStats(id, ratingMap));
     }
 
     @Transactional(readOnly = true)
@@ -105,17 +113,26 @@ public class VenueService {
 
     private List<VenueResponse> fetchPage(String query, VenueCategory category, VenueKind venueKind, Pageable pageable) {
         Page<UUID> idPage = venueRepository.findIdsBySearchCriteria(query, category, venueKind, pageable);
-
         if (idPage.isEmpty()) return List.of();
 
-        List<Venue> venues = venueRepository.findByIdsWithImages(idPage.getContent());
+        List<UUID> ids = idPage.getContent();
 
-        return idPage.getContent().stream()
-                .map(id -> venues.stream()
-                        .filter(v -> v.getId().equals(id))
-                        .findFirst()
-                        .orElseThrow())
-                .map(venueMapper::toResponse)
+        Map<UUID, Venue> venueMap = venueRepository.findByIdsWithImages(ids)
+                .stream().collect(Collectors.toMap(Venue::getId, v -> v));
+
+        Map<UUID, VenueRepository.RatingStatsProjection> ratingMap = venueRepository
+                .findRatingStatsByVenueIds(ids)
+                .stream().collect(Collectors.toMap(VenueRepository.RatingStatsProjection::getVenueId, r -> r));
+
+        return ids.stream()
+                .map(id -> venueMapper.toResponse(venueMap.get(id), resolveStats(id, ratingMap)))
                 .toList();
+    }
+
+    private RatingStatsResponse resolveStats(UUID id, Map<UUID, VenueRepository.RatingStatsProjection> ratingMap) {
+        VenueRepository.RatingStatsProjection raw = ratingMap.get(id);
+        return (raw != null && raw.getAverageRating() != null)
+                ? new RatingStatsResponse(raw.getAverageRating(), raw.getTotalRatings())
+                : RatingStatsResponse.EMPTY;
     }
 }

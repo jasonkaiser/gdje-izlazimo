@@ -38,31 +38,17 @@ public class RatingController {
         this.ratingRepository = ratingRepository;
     }
 
-    @Operation(summary = "Get all ratings", description = "Returns a paginated list of all ratings. Requires role: user, venue_owner, or admin")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Ratings retrieved successfully"),
-            @ApiResponse(responseCode = "403", description = "Access denied")
-    })
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @GetMapping
     public ResponseEntity<List<RatingResponse>> findAllRatings(
-            @Parameter(description = "Page number (1-based)") @RequestParam(defaultValue = "1") int pageNo,
-            @Parameter(description = "Number of items per page") @RequestParam(defaultValue = "5") int pageSize) {
-
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
-        return ResponseEntity.ok(ratingService.findAllRatings(pageable));
+            @RequestParam(defaultValue = "1") int pageNo,
+            @RequestParam(defaultValue = "5") int pageSize) {
+        return ResponseEntity.ok(ratingService.findAllRatings(PageRequest.of(pageNo - 1, pageSize)));
     }
 
-    @Operation(summary = "Get rating by ID", description = "Returns a single rating by its UUID. Requires role: user, venue_owner, or admin")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Rating found"),
-            @ApiResponse(responseCode = "404", description = "Rating not found"),
-            @ApiResponse(responseCode = "403", description = "Access denied")
-    })
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @GetMapping("/{id}")
-    public ResponseEntity<RatingResponse> findRatingById(
-            @Parameter(description = "Rating UUID") @PathVariable UUID id) {
+    public ResponseEntity<RatingResponse> findRatingById(@PathVariable UUID id) {
         return ResponseEntity.ok(ratingService.findRatingById(id));
     }
 
@@ -76,51 +62,31 @@ public class RatingController {
         return ResponseEntity.ok(ratingService.getVenueRatingStats(venueId));
     }
 
-    @GetMapping("/exists/{reservationId}")
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
-    public ResponseEntity<Boolean> existsByReservation(@PathVariable UUID reservationId) {
-        return ResponseEntity.ok(
-                ratingRepository.existsByReservation_Id(reservationId)
-        );
+    @GetMapping("/exists")
+    public ResponseEntity<Boolean> existsByUserAndVenue(
+            @RequestParam UUID venueId,
+            @RequestParam UUID userId) {
+        return ResponseEntity.ok(ratingRepository.existsByVenue_IdAndUser_Id(venueId, userId));
     }
 
-    @Operation(summary = "Create a rating", description = "Creates a new venue rating. Requires role: user, venue_owner, or admin")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Rating created successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request body"),
-            @ApiResponse(responseCode = "403", description = "Access denied")
-    })
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @PostMapping
     public ResponseEntity<RatingResponse> createRating(@Valid @RequestBody CreateRatingRequest entity) {
         return ResponseEntity.ok(ratingService.createRating(entity));
     }
 
-    @Operation(summary = "Update a rating", description = "Updates an existing rating. Requires role: user, venue_owner, or admin")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Rating updated successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid request body"),
-            @ApiResponse(responseCode = "404", description = "Rating not found"),
-            @ApiResponse(responseCode = "403", description = "Access denied")
-    })
     @PreAuthorize("hasAnyRole('user', 'venue_owner', 'admin')")
     @PutMapping("/{id}")
     public ResponseEntity<RatingResponse> updateRating(
-            @Parameter(description = "Rating UUID") @PathVariable UUID id,
+            @PathVariable UUID id,
             @Valid @RequestBody UpdateRatingRequest request) {
         return ResponseEntity.ok(ratingService.updateRating(request, id));
     }
 
-    @Operation(summary = "Delete a rating", description = "Permanently deletes a rating. Requires role: admin")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Rating deleted"),
-            @ApiResponse(responseCode = "404", description = "Rating not found"),
-            @ApiResponse(responseCode = "403", description = "Access denied")
-    })
     @PreAuthorize("hasRole('admin')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRating(
-            @Parameter(description = "Rating UUID") @PathVariable UUID id) {
+    public ResponseEntity<Void> deleteRating(@PathVariable UUID id) {
         ratingService.deleteRating(id);
         return ResponseEntity.noContent().build();
     }

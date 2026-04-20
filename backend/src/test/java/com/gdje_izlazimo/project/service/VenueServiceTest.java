@@ -1,6 +1,7 @@
 package com.gdje_izlazimo.project.service;
 
 import com.gdje_izlazimo.project.dto.request.create.CreateVenueRequest;
+import com.gdje_izlazimo.project.dto.response.RatingStatsResponse;
 import com.gdje_izlazimo.project.dto.response.VenueResponse;
 import com.gdje_izlazimo.project.entity.User;
 import com.gdje_izlazimo.project.entity.Venue;
@@ -83,23 +84,12 @@ class VenueServiceTest {
                 18.3564,
                 LocalDateTime.now(),
                 LocalDateTime.now(),
-                List.of()
+                List.of(),
+                2.0,
+                4
         );
     }
 
-    @Test
-    void shouldReturnVenueById() {
-        when(venueRepository.findByIdWithImages(venueId)).thenReturn(Optional.of(venue));
-        when(venueMapper.toResponse(venue)).thenReturn(venueResponse);
-
-        VenueResponse result = venueService.findVenueById(venueId);
-
-        assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(venueId);
-        assertThat(result.name()).isEqualTo("Club Atmosphere");
-        assertThat(result.venueType()).isEqualTo(VenueCategory.CLUB);
-        assertThat(result.venueKind()).isEqualTo(VenueKind.PARTNER);
-    }
 
     @Test
     void shouldThrowWhenVenueNotFoundById() {
@@ -111,20 +101,6 @@ class VenueServiceTest {
                 .hasMessageContaining("Venue does not exist");
     }
 
-    @Test
-    void shouldReturnAllVenues() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<UUID> idPage = new PageImpl<>(List.of(venueId));
-
-        when(venueRepository.findIdsBySearchCriteria(null, null, null, pageable)).thenReturn(idPage);
-        when(venueRepository.findByIdsWithImages(List.of(venueId))).thenReturn(List.of(venue));
-        when(venueMapper.toResponse(venue)).thenReturn(venueResponse);
-
-        List<VenueResponse> result = venueService.findAllVenues(pageable);
-
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).name()).isEqualTo("Club Atmosphere");
-    }
 
     @Test
     void shouldReturnEmptyListWhenNoVenuesFound() {
@@ -138,14 +114,45 @@ class VenueServiceTest {
     }
 
     @Test
+    void shouldReturnVenueById() {
+        when(venueRepository.findByIdWithImages(venueId)).thenReturn(Optional.of(venue));
+        when(venueRepository.findRatingStatsByVenueIds(List.of(venueId))).thenReturn(List.of());
+        when(venueMapper.toResponse(venue, RatingStatsResponse.EMPTY)).thenReturn(venueResponse);
+
+        VenueResponse result = venueService.findVenueById(venueId);
+
+        assertThat(result).isNotNull();
+        assertThat(result.id()).isEqualTo(venueId);
+        assertThat(result.name()).isEqualTo("Club Atmosphere");
+        assertThat(result.venueType()).isEqualTo(VenueCategory.CLUB);
+        assertThat(result.venueKind()).isEqualTo(VenueKind.PARTNER);
+    }
+
+    @Test
+    void shouldReturnAllVenues() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<UUID> idPage = new PageImpl<>(List.of(venueId));
+
+        when(venueRepository.findIdsBySearchCriteria(null, null, null, pageable)).thenReturn(idPage);
+        when(venueRepository.findByIdsWithImages(List.of(venueId))).thenReturn(List.of(venue));
+        when(venueRepository.findRatingStatsByVenueIds(List.of(venueId))).thenReturn(List.of());
+        when(venueMapper.toResponse(venue, RatingStatsResponse.EMPTY)).thenReturn(venueResponse);
+
+        List<VenueResponse> result = venueService.findAllVenues(pageable);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).name()).isEqualTo("Club Atmosphere");
+    }
+
+    @Test
     void shouldReturnFilteredVenuesByNameAndCategory() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<UUID> idPage = new PageImpl<>(List.of(venueId));
 
-        when(venueRepository.findIdsBySearchCriteria("Atmosphere", VenueCategory.CLUB, null, pageable))
-                .thenReturn(idPage);
+        when(venueRepository.findIdsBySearchCriteria("Atmosphere", VenueCategory.CLUB, null, pageable)).thenReturn(idPage);
         when(venueRepository.findByIdsWithImages(List.of(venueId))).thenReturn(List.of(venue));
-        when(venueMapper.toResponse(venue)).thenReturn(venueResponse);
+        when(venueRepository.findRatingStatsByVenueIds(List.of(venueId))).thenReturn(List.of());
+        when(venueMapper.toResponse(venue, RatingStatsResponse.EMPTY)).thenReturn(venueResponse);
 
         List<VenueResponse> result = venueService.searchVenues("Atmosphere", VenueCategory.CLUB, null, pageable);
 
@@ -158,10 +165,10 @@ class VenueServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<UUID> idPage = new PageImpl<>(List.of(venueId));
 
-        when(venueRepository.findIdsBySearchCriteria(null, null, VenueKind.LISTED, pageable))
-                .thenReturn(idPage);
+        when(venueRepository.findIdsBySearchCriteria(null, null, VenueKind.LISTED, pageable)).thenReturn(idPage);
         when(venueRepository.findByIdsWithImages(List.of(venueId))).thenReturn(List.of(venue));
-        when(venueMapper.toResponse(venue)).thenReturn(venueResponse);
+        when(venueRepository.findRatingStatsByVenueIds(List.of(venueId))).thenReturn(List.of());
+        when(venueMapper.toResponse(venue, RatingStatsResponse.EMPTY)).thenReturn(venueResponse);
 
         List<VenueResponse> result = venueService.searchVenues(null, null, VenueKind.LISTED, pageable);
 

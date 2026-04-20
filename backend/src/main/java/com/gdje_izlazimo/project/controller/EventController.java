@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.security.PermitAll;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -18,7 +19,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -44,11 +48,44 @@ public class EventController {
     public ResponseEntity<List<EventResponse>> findAllEvents(
             @Parameter(description = "Page number (1-based)") @RequestParam(defaultValue = "1") int pageNo,
             @Parameter(description = "Number of items per page") @RequestParam(defaultValue = "7") int pageSize,
-            @Parameter(description = "Field to sort by") @RequestParam(defaultValue = "id") String sortBy,
+            @Parameter(description = "Field to sort by") @RequestParam(defaultValue = "eventDateTime") String sortBy,
             @Parameter(description = "Sort direction: ASC or DESC") @RequestParam(defaultValue = "ASC") String sortDir) {
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.Direction.fromString(sortDir), sortBy);
         return ResponseEntity.ok(eventService.findAllEvents(pageable));
+    }
+
+    @Operation(summary = "Record View", description = "Record event views")
+    @PostMapping("/{id}/view")
+    @PermitAll
+    public ResponseEntity<EventResponse> recordView(
+            @PathVariable UUID id,
+            HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null) ip = request.getRemoteAddr();
+        return ResponseEntity.ok(eventService.recordViewAndFind(id, ip));
+    }
+
+    @Operation(summary = "Trending events", description = "Get trending events")
+    @GetMapping("/trending")
+    @PermitAll
+    public ResponseEntity<List<EventResponse>> getTrending() {
+        return ResponseEntity.ok(eventService.findTrendingEvents());
+    }
+
+
+    @Operation(summary = "Search events", description = "Search events by query with pagination. Public endpoint.")
+    @PermitAll
+    @GetMapping("/search")
+    public ResponseEntity<List<EventResponse>> searchEvents(
+            @RequestParam(required = false) String query,
+            @RequestParam(defaultValue = "1") int pageNo,
+            @RequestParam(defaultValue = "8") int pageSize,
+            @RequestParam(defaultValue = "eventDateTime") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir) {
+
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.Direction.fromString(sortDir), sortBy);
+        return ResponseEntity.ok(eventService.searchEvents(query, pageable));
     }
 
     @Operation(summary = "Get event by ID", description = "Returns a single event by its UUID. Public endpoint.")
@@ -63,7 +100,25 @@ public class EventController {
         return ResponseEntity.ok(eventService.findEventById(id));
     }
 
-    @Operation(summary = "Create an event", description = "Creates a new event for a venue. Requires role: venue_owner or admin")
+    @Operation(summary = "Get events by venue", description = "Returns paginated events for a specific venue. Public endpoint.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Events retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Venue not found")
+    })
+    @PermitAll
+    @GetMapping("/venue/{venueId}")
+    public ResponseEntity<List<EventResponse>> findEventsByVenue(
+            @Parameter(description = "Venue UUID") @PathVariable UUID venueId,
+            @Parameter(description = "Page number (1-based)") @RequestParam(defaultValue = "1") int pageNo,
+            @Parameter(description = "Number of items per page") @RequestParam(defaultValue = "10") int pageSize,
+            @Parameter(description = "Field to sort by") @RequestParam(defaultValue = "eventDateTime") String sortBy,
+            @Parameter(description = "Sort direction: ASC or DESC") @RequestParam(defaultValue = "ASC") String sortDir) {
+
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.Direction.fromString(sortDir), sortBy);
+        return ResponseEntity.ok(eventService.findEventsByVenueId(venueId, pageable));
+    }
+
+    @Operation(summary = "Create an event", description = "Creates a new event for a venue. venue_owner may only create for their own venue.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Event created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request body"),
@@ -72,11 +127,35 @@ public class EventController {
     @SecurityRequirement(name = "bearerAuth")
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PostMapping
-    public ResponseEntity<EventResponse> createEvent(@Valid @RequestBody CreateEventRequest entity) {
-        return ResponseEntity.ok(eventService.createEvent(entity));
+    public ResponseEntity<EventResponse> createEvent(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody CreateEventRequest entity) {
+        List<String> roles = jwt.getClaimAsStringList("roles");
+        return ResponseEntity.ok(eventService.createEvent(entity, jwt.getSubject(), roles));
     }
 
-    @Operation(summary = "Update an event", description = "Updates an existing event. Requires role: venue_owner or admin")
+    @PostMapping("/{id}/image")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<EventResponse> uploadEventImage(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID id,
+            @RequestParam("file") MultipartFile file) {
+        List<String> roles = jwt.getClaimAsStringList("roles");
+        return ResponseEntity.ok(eventService.uploadEventImage(id, file, jwt.getSubject(), roles));
+    }
+
+    @DeleteMapping("/{id}/image")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<EventResponse> deleteEventImage(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID id) {
+        List<String> roles = jwt.getClaimAsStringList("roles");
+        return ResponseEntity.ok(eventService.deleteEventImage(id, jwt.getSubject(), roles));
+    }
+
+    @Operation(summary = "Update an event", description = "Updates an existing event. venue_owner may only update their own venue's events.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Event updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request body"),
@@ -87,12 +166,14 @@ public class EventController {
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @PutMapping("/{id}")
     public ResponseEntity<EventResponse> updateEvent(
+            @AuthenticationPrincipal Jwt jwt,
             @Parameter(description = "Event UUID") @PathVariable UUID id,
             @Valid @RequestBody UpdateEventRequest request) {
-        return ResponseEntity.ok(eventService.updateEvent(request, id));
+        List<String> roles = jwt.getClaimAsStringList("roles");
+        return ResponseEntity.ok(eventService.updateEvent(request, id, jwt.getSubject(), roles));
     }
 
-    @Operation(summary = "Delete an event", description = "Permanently deletes an event. Requires role: venue_owner or admin")
+    @Operation(summary = "Delete an event", description = "Permanently deletes an event. venue_owner may only delete their own venue's events.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Event deleted"),
             @ApiResponse(responseCode = "404", description = "Event not found"),
@@ -102,8 +183,10 @@ public class EventController {
     @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(
+            @AuthenticationPrincipal Jwt jwt,
             @Parameter(description = "Event UUID") @PathVariable UUID id) {
-        eventService.deleteEvent(id);
+        List<String> roles = jwt.getClaimAsStringList("roles");
+        eventService.deleteEvent(id, jwt.getSubject(), roles);
         return ResponseEntity.noContent().build();
     }
 }

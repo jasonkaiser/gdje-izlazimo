@@ -1,11 +1,14 @@
 package com.gdje_izlazimo.project.aspect;
 
+import com.gdje_izlazimo.project.dto.response.EventResponse;
 import com.gdje_izlazimo.project.dto.response.RatingResponse;
+import com.gdje_izlazimo.project.entity.Event;
 import com.gdje_izlazimo.project.entity.Reservation;
 import com.gdje_izlazimo.project.enums.ActionType;
 import com.gdje_izlazimo.project.enums.ActivityStatus;
 import com.gdje_izlazimo.project.enums.EntityType;
 import com.gdje_izlazimo.project.enums.Status;
+import com.gdje_izlazimo.project.repository.EventRepository;
 import com.gdje_izlazimo.project.repository.RatingRepository;
 import com.gdje_izlazimo.project.repository.ReservationRepository;
 import com.gdje_izlazimo.project.service.ActivityLogService;
@@ -32,6 +35,7 @@ public class ActivityLogAspect {
     private final ActivityLogService activityLogService;
     private final ReservationRepository reservationRepository;
     private final RatingRepository ratingRepository;
+    private final EventRepository eventRepository;
 
 
     @AfterReturning(
@@ -43,18 +47,16 @@ public class ActivityLogAspect {
             UUID userId = extractId(result);
             String userName = extractName(result);
             activityLogService.logActivity(
-                    EntityType.USER,
-                    userId.toString(),
-                    userName,
+                    EntityType.USER, userId.toString(), userName,
                     ActionType.CREATED,
                     String.format("Novi korisnik \"%s\" je kreiran", userName),
-                    ActivityStatus.SUCCESS,
-                    getCurrentUsername()
+                    ActivityStatus.SUCCESS, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log user creation", e);
         }
     }
+
 
     @AfterReturning(
             pointcut = "execution(* com.gdje_izlazimo.project.service.VenueService.create*(..))",
@@ -65,13 +67,10 @@ public class ActivityLogAspect {
             UUID venueId = extractId(result);
             String venueName = extractName(result);
             activityLogService.logActivity(
-                    EntityType.VENUE,
-                    venueId.toString(),
-                    venueName,
+                    EntityType.VENUE, venueId.toString(), venueName,
                     ActionType.CREATED,
                     String.format("Novi lokal \"%s\" je kreiran", venueName),
-                    ActivityStatus.SUCCESS,
-                    getCurrentUsername()
+                    ActivityStatus.SUCCESS, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log venue creation", e);
@@ -87,18 +86,16 @@ public class ActivityLogAspect {
             UUID venueId = extractId(result);
             String venueName = extractName(result);
             activityLogService.logActivity(
-                    EntityType.VENUE,
-                    venueId.toString(),
-                    venueName,
+                    EntityType.VENUE, venueId.toString(), venueName,
                     ActionType.UPDATED,
                     String.format("Lokal \"%s\" je ažuriran", venueName),
-                    ActivityStatus.INFO,
-                    getCurrentUsername()
+                    ActivityStatus.INFO, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log venue update", e);
         }
     }
+
 
     @AfterReturning(
             pointcut = "execution(* com.gdje_izlazimo.project.service.ReservationService.createReservation(..))",
@@ -108,15 +105,11 @@ public class ActivityLogAspect {
         try {
             UUID reservationId = extractId(result);
             String venueName = extractVenueName(result);
-
             activityLogService.logActivity(
-                    EntityType.RESERVATION,
-                    reservationId.toString(),
-                    venueName,
+                    EntityType.RESERVATION, reservationId.toString(), venueName,
                     ActionType.CREATED,
                     String.format("Nova rezervacija za \"%s\" čeka odobrenje", venueName),
-                    ActivityStatus.WARNING,
-                    getCurrentUsername()
+                    ActivityStatus.WARNING, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log reservation creation", e);
@@ -139,7 +132,6 @@ public class ActivityLogAspect {
 
             String venueName = resOpt.map(r -> r.getVenue() != null ? r.getVenue().getName() : "Unknown Venue")
                     .orElse("Unknown Venue");
-
             Status status = resOpt.map(Reservation::getStatus).orElse(null);
 
             String message;
@@ -162,11 +154,7 @@ public class ActivityLogAspect {
             activityLogService.logActivity(
                     EntityType.RESERVATION,
                     reservationId != null ? reservationId.toString() : "unknown",
-                    venueName,
-                    ActionType.STATUS_CHANGED,
-                    message,
-                    activityStatus,
-                    getCurrentUsername()
+                    venueName, ActionType.STATUS_CHANGED, message, activityStatus, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log reservation status change", e);
@@ -176,13 +164,11 @@ public class ActivityLogAspect {
     @Around("execution(* com.gdje_izlazimo.project.service.ReservationService.deleteReservation(..))")
     public Object logReservationDelete(ProceedingJoinPoint pjp) throws Throwable {
         UUID reservationId = extractUuidArg(pjp.getArgs());
-
-        String venueName = "Unknown Venue";
-        if (reservationId != null) {
-            venueName = reservationRepository.findByIdWithDetails(reservationId)
-                    .map(r -> r.getVenue() != null ? r.getVenue().getName() : "Unknown Venue")
-                    .orElse("Unknown Venue");
-        }
+        String venueName = reservationId != null
+                ? reservationRepository.findByIdWithDetails(reservationId)
+                .map(r -> r.getVenue() != null ? r.getVenue().getName() : "Unknown Venue")
+                .orElse("Unknown Venue")
+                : "Unknown Venue";
 
         Object result = pjp.proceed();
 
@@ -190,11 +176,9 @@ public class ActivityLogAspect {
             activityLogService.logActivity(
                     EntityType.RESERVATION,
                     reservationId != null ? reservationId.toString() : "unknown",
-                    venueName,
-                    ActionType.DELETED,
+                    venueName, ActionType.DELETED,
                     String.format("Rezervacija za \"%s\" je obrisana", venueName),
-                    ActivityStatus.DANGER,
-                    getCurrentUsername()
+                    ActivityStatus.DANGER, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log reservation delete", e);
@@ -202,6 +186,7 @@ public class ActivityLogAspect {
 
         return result;
     }
+
 
     @AfterReturning(
             pointcut = "execution(* com.gdje_izlazimo.project.service.TableTypeService.createTableType(..))",
@@ -211,15 +196,11 @@ public class ActivityLogAspect {
         try {
             UUID id = extractId(result);
             String name = extractName(result);
-
             activityLogService.logActivity(
-                    EntityType.TABLE_TYPE,
-                    id.toString(),
-                    name,
+                    EntityType.TABLE_TYPE, id.toString(), name,
                     ActionType.CREATED,
                     String.format("Dodat tip stola \"%s\"", name),
-                    ActivityStatus.SUCCESS,
-                    getCurrentUsername()
+                    ActivityStatus.SUCCESS, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log table type creation", e);
@@ -234,15 +215,11 @@ public class ActivityLogAspect {
         try {
             UUID id = extractId(result);
             String name = extractName(result);
-
             activityLogService.logActivity(
-                    EntityType.TABLE_TYPE,
-                    id.toString(),
-                    name,
+                    EntityType.TABLE_TYPE, id.toString(), name,
                     ActionType.UPDATED,
                     String.format("Ažuriran tip stola \"%s\"", name),
-                    ActivityStatus.INFO,
-                    getCurrentUsername()
+                    ActivityStatus.INFO, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log table type update", e);
@@ -252,25 +229,21 @@ public class ActivityLogAspect {
     @Around("execution(* com.gdje_izlazimo.project.service.TableTypeService.deleteTableType(..))")
     public Object logTableTypeDelete(ProceedingJoinPoint pjp) throws Throwable {
         UUID id = extractUuidArg(pjp.getArgs());
-
         Object result = pjp.proceed();
-
         try {
             activityLogService.logActivity(
                     EntityType.TABLE_TYPE,
                     id != null ? id.toString() : "unknown",
-                    "TableType",
-                    ActionType.DELETED,
+                    "TableType", ActionType.DELETED,
                     "Tip stola je obrisan",
-                    ActivityStatus.DANGER,
-                    getCurrentUsername()
+                    ActivityStatus.DANGER, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log table type delete", e);
         }
-
         return result;
     }
+
 
     @AfterReturning(
             pointcut = "execution(* com.gdje_izlazimo.project.service.RatingService.createRating(..))",
@@ -280,13 +253,10 @@ public class ActivityLogAspect {
         try {
             RatingResponse r = (RatingResponse) result;
             activityLogService.logActivity(
-                    EntityType.RATING,
-                    r.id().toString(),
-                    r.userName(),
+                    EntityType.RATING, r.id().toString(), r.userName(),
                     ActionType.CREATED,
                     String.format("Korisnik \"%s\" je ostavio ocjenu %d/5", r.userName(), r.rating()),
-                    ActivityStatus.SUCCESS,
-                    getCurrentUsername()
+                    ActivityStatus.SUCCESS, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log rating creation", e);
@@ -301,13 +271,10 @@ public class ActivityLogAspect {
         try {
             RatingResponse r = (RatingResponse) result;
             activityLogService.logActivity(
-                    EntityType.RATING,
-                    r.id().toString(),
-                    r.userName(),
+                    EntityType.RATING, r.id().toString(), r.userName(),
                     ActionType.UPDATED,
                     String.format("Korisnik \"%s\" je izmijenio ocjenu na %d/5", r.userName(), r.rating()),
-                    ActivityStatus.INFO,
-                    getCurrentUsername()
+                    ActivityStatus.INFO, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log rating update", e);
@@ -318,12 +285,11 @@ public class ActivityLogAspect {
     public Object logRatingDelete(ProceedingJoinPoint pjp) throws Throwable {
         UUID ratingId = extractUuidArg(pjp.getArgs());
 
-        String userName = "Unknown";
-        if (ratingId != null) {
-            userName = ratingRepository.findByIdWithVenue(ratingId)
-                    .map(r -> r.getUser() != null ? r.getUser().getName() : "Unknown")
-                    .orElse("Unknown");
-        }
+        String userName = ratingId != null
+                ? ratingRepository.findByIdWithVenue(ratingId)
+                .map(r -> r.getUser() != null ? r.getUser().getName() : "Unknown")
+                .orElse("Unknown")
+                : "Unknown";
 
         Object result = pjp.proceed();
 
@@ -331,11 +297,9 @@ public class ActivityLogAspect {
             activityLogService.logActivity(
                     EntityType.RATING,
                     ratingId != null ? ratingId.toString() : "unknown",
-                    userName,
-                    ActionType.DELETED,
+                    userName, ActionType.DELETED,
                     String.format("Ocjena korisnika \"%s\" je obrisana", userName),
-                    ActivityStatus.DANGER,
-                    getCurrentUsername()
+                    ActivityStatus.DANGER, getCurrentUsername()
             );
         } catch (Exception e) {
             log.error("Failed to log rating delete", e);
@@ -343,6 +307,74 @@ public class ActivityLogAspect {
 
         return result;
     }
+
+
+    @AfterReturning(
+            pointcut = "execution(* com.gdje_izlazimo.project.service.EventService.createEvent(..))",
+            returning = "result"
+    )
+    public void logEventCreation(Object result) {
+        try {
+            EventResponse e = (EventResponse) result;
+            activityLogService.logActivity(
+                    EntityType.EVENT, e.id().toString(), e.name(),
+                    ActionType.CREATED,
+                    String.format("Novi event \"%s\" je kreiran u lokalu \"%s\"", e.name(), e.venueName()),
+                    ActivityStatus.SUCCESS, getCurrentUsername()
+            );
+        } catch (Exception e) {
+            log.error("Failed to log event creation", e);
+        }
+    }
+
+    @AfterReturning(
+            pointcut = "execution(* com.gdje_izlazimo.project.service.EventService.updateEvent(..))",
+            returning = "result"
+    )
+    public void logEventUpdate(Object result) {
+        try {
+            EventResponse e = (EventResponse) result;
+            activityLogService.logActivity(
+                    EntityType.EVENT, e.id().toString(), e.name(),
+                    ActionType.UPDATED,
+                    String.format("Event \"%s\" u lokalu \"%s\" je ažuriran", e.name(), e.venueName()),
+                    ActivityStatus.INFO, getCurrentUsername()
+            );
+        } catch (Exception e) {
+            log.error("Failed to log event update", e);
+        }
+    }
+
+    @Around("execution(* com.gdje_izlazimo.project.service.EventService.deleteEvent(..))")
+    public Object logEventDelete(ProceedingJoinPoint pjp) throws Throwable {
+        UUID eventId = extractUuidArg(pjp.getArgs());
+
+        String eventName = "Unknown";
+        String venueName = "Unknown";
+        if (eventId != null) {
+            Optional<Event> eventOpt = eventRepository.findByIdWithDetails(eventId);
+            eventName = eventOpt.map(Event::getName).orElse("Unknown");
+            venueName = eventOpt.map(ev -> ev.getVenue() != null ? ev.getVenue().getName() : "Unknown").orElse("Unknown");
+        }
+
+        Object result = pjp.proceed();
+
+        try {
+            activityLogService.logActivity(
+                    EntityType.EVENT,
+                    eventId != null ? eventId.toString() : "unknown",
+                    eventName, ActionType.DELETED,
+                    String.format("Event \"%s\" iz lokala \"%s\" je obrisan", eventName, venueName),
+                    ActivityStatus.DANGER, getCurrentUsername()
+            );
+        } catch (Exception e) {
+            log.error("Failed to log event delete", e);
+        }
+
+        return result;
+    }
+
+
 
     private String getCurrentUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -385,9 +417,7 @@ public class ActivityLogAspect {
         for (Object arg : args) {
             if (arg instanceof UUID) return (UUID) arg;
             if (arg != null) {
-                try {
-                    return UUID.fromString(arg.toString());
-                } catch (Exception ignored) { }
+                try { return UUID.fromString(arg.toString()); } catch (Exception ignored) {}
             }
         }
         return null;
