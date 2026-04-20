@@ -184,3 +184,215 @@
     opacity: 0.5;
   }
 }
+
+/* ============================================================
+   GDJE IZLAZIMO — Hero Entrance Animations
+   GPU-only: only transform + opacity (60fps on mobile)
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   Keyframes
+   ---------------------------------------------------------- */
+
+@keyframes gi-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gi-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gi-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Title: fade up + blur — blur is desktop-only (removed on mobile) */
+@keyframes gi-title-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+}
+
+/* Pill springs in from above with a subtle scale */
+@keyframes gi-pill-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Badges pop up with a micro-bounce */
+@keyframes gi-badge-in {
+  0%   { opacity: 0; transform: translateY(14px) scale(0.95); }
+  70%  { opacity: 1; transform: translateY(-2px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Search bar slides up slightly more for emphasis */
+@keyframes gi-search-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* ----------------------------------------------------------
+   Base class: hidden until animated
+   ---------------------------------------------------------- */
+
+.gi-anim {
+  opacity: 0;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); /* expo-out */
+}
+
+
+/* ----------------------------------------------------------
+   Element classes — add these to your HTML
+   ---------------------------------------------------------- */
+
+/* 1. Purple glow backgrounds */
+.gi-anim-glow {
+  animation-name: gi-fade-in;
+  animation-duration: 1.4s;
+  animation-delay: 0s;
+}
+
+/* 2. Hero lights layer */
+.gi-anim-lights {
+  animation-name: gi-fade-in;
+  animation-duration: 1.8s;
+  animation-delay: 0.1s;
+}
+
+/* 3. Pill badge */
+.gi-anim-pill {
+  animation-name: gi-pill-in;
+  animation-duration: 0.55s;
+  animation-delay: 0.08s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 4. H1 title */
+.gi-anim-title {
+  animation-name: gi-title-reveal;
+  animation-duration: 0.85s;
+  animation-delay: 0.18s;
+}
+
+/* 5. Subtitle */
+.gi-anim-subtitle {
+  animation-name: gi-fade-up;
+  animation-duration: 0.65s;
+  animation-delay: 0.32s;
+}
+
+/* 6. Search bar */
+.gi-anim-search {
+  animation-name: gi-search-in;
+  animation-duration: 0.7s;
+  animation-delay: 0.44s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 7. Social proof row */
+.gi-anim-social {
+  animation-name: gi-fade-up;
+  animation-duration: 0.55s;
+  animation-delay: 0.54s;
+}
+
+/* 8. Badge rows */
+.gi-anim-badges {
+  animation-name: gi-badge-in;
+  animation-duration: 0.6s;
+  animation-delay: 0.64s;
+  animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1); /* spring */
+}
+
+/* 9. Trending venues section */
+.gi-anim-venues {
+  animation-name: gi-fade-up;
+  animation-duration: 0.7s;
+  animation-delay: 0.78s;
+}
+
+
+/* ----------------------------------------------------------
+   Mobile tweaks
+   Remove blur on title — filter is expensive on low-end Android
+   ---------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  @keyframes gi-title-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Slightly faster on mobile — feels snappier */
+  .gi-anim-title    { animation-duration: 0.65s; animation-delay: 0.14s; }
+  .gi-anim-subtitle { animation-duration: 0.55s; animation-delay: 0.26s; }
+  .gi-anim-search   { animation-duration: 0.6s;  animation-delay: 0.36s; }
+  .gi-anim-social   { animation-duration: 0.5s;  animation-delay: 0.46s; }
+  .gi-anim-badges   { animation-duration: 0.5s;  animation-delay: 0.54s; }
+}
+
+
+/* ----------------------------------------------------------
+   Respect reduced-motion preference
+   ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .gi-anim,
+  .gi-anim-glow,
+  .gi-anim-lights,
+  .gi-anim-pill,
+  .gi-anim-title,
+  .gi-anim-subtitle,
+  .gi-anim-search,
+  .gi-anim-social,
+  .gi-anim-badges,
+  .gi-anim-venues {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+}

@@ -23,6 +23,8 @@ public record VenueResponse(
         double longitude,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        List<VenueImageResponse> images
+        List<VenueImageResponse> images,
+        double averageRating,
+        long totalRatings
 ) {
 }

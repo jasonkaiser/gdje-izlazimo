@@ -26,4 +26,6 @@ export interface VenueResponseDto {
   created_at: string;
   updated_at: string;
   images?: VenueImageDto[]; 
+  averageRating: number;
+  totalRatings: number;
 }

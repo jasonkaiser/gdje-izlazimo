@@ -27,6 +27,12 @@ import { RatingService } from '../../core/api/rating-service';
 import { RatingResponseDto } from '../../core/models/ratings/rating-response.dto';
 import { VenueRatingStatsDto } from '../../core/models/ratings/venue-rating-response.dto';
 import { VenueMapComponent } from '../../components/other/venue-map/venue-map';
+import { FormsModule } from '@angular/forms';
+import { RatingModal } from '../../components/modals/rating-modal/rating-modal';
+import { EventService } from '../../core/api/event-service';
+import { EventResponseDto } from '../../core/models/events/event-response.dto';
+import { EventCard } from '../../components/cards/event-card/event-card';
+import { Router } from '@angular/router';
 
 
 type TableTypeVm = {
@@ -35,6 +41,15 @@ type TableTypeVm = {
   title: string;
   description: string;
   capacityLabel: string;
+};
+
+type EventVm = {
+  id: string;
+  title: string;
+  venueName: string;
+  venueAddress: string;
+  imageUrl: string;
+  eventDateTime: string;
 };
 
 type Vm = {
@@ -59,6 +74,8 @@ type Vm = {
   latitude: number;
   longitude: number;
   isPartner: boolean;
+  events: EventVm[];
+  eventsLoading: boolean;
 };
 
 type RatingVm = {
@@ -89,13 +106,14 @@ const EMPTY_VM: Omit<Vm, 'venueId' | 'loading' | 'errorMsg'> = {
   latitude: 0,
   longitude: 0,
   isPartner: false,
-
+  events: [],
+  eventsLoading: false,
 };
 
 @Component({
   selector: 'app-venue-details',
   standalone: true,
-  imports: [InViewDirective, AsyncPipe, ReservationModal, ReservationSuccessModal, DecimalPipe, DatePipe, VenueMapComponent],
+  imports: [InViewDirective, AsyncPipe, ReservationModal, ReservationSuccessModal, DecimalPipe, DatePipe, VenueMapComponent, FormsModule, RatingModal, EventCard],
   templateUrl: './venue-details.html',
   styleUrls: ['./venue-details.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -112,6 +130,8 @@ export class VenueDetails {
   private readonly reservationService = inject(ReservationService);
   private readonly favoriteService = inject(UserFavoriteVenueService);
   private readonly ratingService = inject(RatingService);
+  private readonly eventService = inject(EventService);
+  private readonly router = inject(Router);
 
   private lastVm: Vm | null = null;
 
@@ -124,6 +144,7 @@ export class VenueDetails {
   tablesShown = false;
   whyUsShown = false;
   aboutShown = false;
+  eventsShown = false;
 
   reservationModalShown = false;
   reservationErrorMsg = '';
@@ -136,6 +157,10 @@ export class VenueDetails {
   successDetails: { tableType: string; date: string; time: string; guests: number } = {
     tableType: '', date: '', time: '', guests: 0
   };
+
+  ratingModalShown = false;
+  ratingSubmitting = false;
+  alreadyRated = false;
 
   private readonly retry$ = new BehaviorSubject<void>(undefined);
 
@@ -150,7 +175,10 @@ export class VenueDetails {
       this.tablesShown = false;
       this.whyUsShown = false;
       this.aboutShown = false;
+      this.eventsShown = false;
       this.favoriteLoading = false;
+      this.ratingModalShown = false;
+      this.alreadyRated = false;
     }),
     shareReplay({ bufferSize: 1, refCount: true })
   );
@@ -183,6 +211,11 @@ export class VenueDetails {
             ? this.favoriteService.getFavorites().pipe(catchError(() => of([])))
             : of([]);
 
+          const userId = this.authService.getUserId?.();
+          const hasRated$ = (this.authService.authenticated() && userId)
+            ? this.ratingService.hasRated(venueId, userId).pipe(catchError(() => of(false)))
+            : of(false);
+
           return forkJoin({
             operatingHours: this.venueOperatingHoursService.getByVenueId(venueId).pipe(
               catchError(() => of(null as VenueOperatingHoursResponseDto | null))
@@ -197,8 +230,14 @@ export class VenueDetails {
               catchError(() => of({ averageRating: 0, totalRatings: 0 } as VenueRatingStatsDto))
             ),
             favorites: favorites$,
+            hasRated: hasRated$,
+            events: this.eventService.getEventsByVenue(venueId, { pageSize: 6, sortDir: 'ASC' }).pipe(
+              catchError(() => of([] as EventResponseDto[]))
+            ),
           }).pipe(
-            map(({ operatingHours, tableTypes, favorites, stats, ratings }) => {
+            map(({ operatingHours, tableTypes, favorites, stats, ratings, hasRated, events }) => {
+              this.alreadyRated = hasRated;
+
               const mappedTableTypes = tableTypes.map((vtt) => ({
                 id: vtt.id,
                 tableTypeId: vtt.tableTypeId,
@@ -207,15 +246,24 @@ export class VenueDetails {
                 capacityLabel: `${vtt.minCapacity}–${vtt.maxCapacity} Osoba`,
               } satisfies TableTypeVm));
 
-            const mappedRatings: RatingVm[] = ratings
-              .slice(0, 10)
-              .map(r => ({
-                id:              r.id,
-                userName:        r.userName,
-                rating:          r.rating,
-                comment:         r.comment,
-                createdAt:       r.createdAt,
-                profileImageUrl: r.profileImageUrl ?? null,
+              const mappedRatings: RatingVm[] = ratings
+                .slice(0, 10)
+                .map(r => ({
+                  id:              r.id,
+                  userName:        r.userName,
+                  rating:          r.rating,
+                  comment:         r.comment,
+                  createdAt:       r.createdAt,
+                  profileImageUrl: r.profileImageUrl ?? null,
+                }));
+
+              const mappedEvents: EventVm[] = events.map(e => ({
+                id: e.id,
+                title: e.name,
+                venueName: e.venueName ?? venue.name ?? '',
+                venueAddress: e.venueAddress ?? venue.addressName ?? '',
+                imageUrl: e.imageUrl ?? '',
+                eventDateTime: e.eventDateTime,
               }));
 
               if (!this.openId && mappedTableTypes.length > 0) {
@@ -225,7 +273,6 @@ export class VenueDetails {
               const sortedImages = [...(venue.images ?? [])].sort((a, b) =>
                 a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1
               );
-
 
               const totalCapacity = tableTypes.reduce(
                 (sum, vtt) => sum + vtt.quantity * vtt.maxCapacity, 0
@@ -257,6 +304,8 @@ export class VenueDetails {
                 longitude: venue.longitude ?? 0,
                 isFavorite: (favorites as Array<{ id: string }>).some((v) => v.id === venueId),
                 isPartner: venue.venueKind === 'PARTNER',
+                events: mappedEvents,
+                eventsLoading: false,
               } satisfies Vm;
             })
           );
@@ -276,6 +325,43 @@ export class VenueDetails {
     takeUntilDestroyed(this.destroyRef),
     shareReplay({ bufferSize: 1, refCount: true })
   );
+
+  navigateToEvent(id: string): void {
+    this.router.navigate(['/events', id]);
+  }
+
+  submitRating(payload: { rating: number; comment: string }): void {
+    const vm = this.lastVm;
+    if (!vm) return;
+
+    this.ratingSubmitting = true;
+    this.cdr.markForCheck();
+
+    const userId = this.authService.getUserId?.();
+
+    this.ratingService.createRating({
+      venueId: vm.venueId,
+      userId,
+      rating: payload.rating,
+      comment: payload.comment || undefined,
+    }).subscribe({
+      next: () => {
+        this.ratingSubmitting = false;
+        this.ratingModalShown = false;
+        this.alreadyRated = true;
+        this.retry$.next();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        this.ratingSubmitting = false;
+        if (err.status === 409) {
+          this.alreadyRated = true;
+          this.ratingModalShown = false;
+        }
+        this.cdr.markForCheck();
+      }
+    });
+  }
 
   toggleFavorite(vm: Vm): void {
     if (!this.authService.authenticated()) {
@@ -304,9 +390,7 @@ export class VenueDetails {
     });
   }
 
-  retry(): void {
-    this.retry$.next();
-  }
+  retry(): void { this.retry$.next(); }
 
   prevImage(total: number): void {
     if (!total) return;
@@ -318,13 +402,8 @@ export class VenueDetails {
     this.sliderIndex = (this.sliderIndex + 1) % total;
   }
 
-  toggleAccordion(id: string): void {
-    this.openId = this.openId === id ? null : id;
-  }
-
-  isOpen(id: string): boolean {
-    return this.openId === id;
-  }
+  toggleAccordion(id: string): void { this.openId = this.openId === id ? null : id; }
+  isOpen(id: string): boolean { return this.openId === id; }
 
   onTitleInView(v: boolean): void   { if (v) this.titleShown   = true; }
   onSliderInView(v: boolean): void  { if (v) this.sliderShown  = true; }
@@ -332,6 +411,7 @@ export class VenueDetails {
   onTablesInView(v: boolean): void  { if (v) this.tablesShown  = true; }
   onWhyUsInView(v: boolean): void   { if (v) this.whyUsShown   = true; }
   onAboutInView(v: boolean): void   { if (v) this.aboutShown   = true; }
+  onEventsInView(v: boolean): void  { if (v) this.eventsShown  = true; }
 
   shortText(text: string, maxChars = 180): string {
     const t = (text ?? '').trim().replace(/\s+/g, ' ');
@@ -346,6 +426,15 @@ export class VenueDetails {
   openDescriptionModal(text: string): void {
     this.descriptionText = text;
     this.descriptionModalShown = true;
+  }
+
+  openRatingModal(): void {
+    if (!this.authService.authenticated()) {
+      this.authService.login();
+      return;
+    }
+    this.ratingModalShown = true;
+    this.cdr.markForCheck();
   }
 
   toggleReservation(vm?: Vm): void {

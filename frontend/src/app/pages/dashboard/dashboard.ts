@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -8,10 +8,17 @@ import { PopularVenuesCarouselComponent } from './sections/popular-venues/popula
 import { HowItWorksSectionComponent } from './sections/how-it-works/how-it-works';
 import { CtaComponent } from './sections/cta/cta';
 import { InViewDirective } from '../../core/animations/in-view.directive';
+import { ScrollRevealDirective } from '../../core/animations/scroll-reveal.directive';
 
 import { VenueResponseDto } from '../../core/models/venues/venue-response.dto';
 import { VenueCategory } from '../../core/models/venues/venue-category.enum';
 import { VenueService } from '../../core/api/venue-service';
+import { EventService } from '../../core/api/event-service';
+
+import { PopularEventsCarouselComponent } from './sections/popular-events/popular-events';
+import { EventResponseDto } from '../../core/models/events/event-response.dto';
+import { CategoryBadge, CategoryBadgeComponent } from '../../components/other/category-badge/category-badge';
+import { TonightEventsCarouselComponent } from './sections/tonight-events/tonight-events';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,19 +27,23 @@ import { VenueService } from '../../core/api/venue-service';
     SearchBarComponent,
     BgCardsMarqueeComponent,
     PopularVenuesCarouselComponent,
-    HowItWorksSectionComponent,
+    CategoryBadgeComponent,
+    PopularEventsCarouselComponent,
     CommonModule,
     CtaComponent,
     InViewDirective,
+    ScrollRevealDirective,
+    TonightEventsCarouselComponent
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard implements OnDestroy {
+export class Dashboard implements OnInit, OnDestroy {
   constructor(
     private cdr: ChangeDetectorRef,
     private router: Router,
-    private venueService: VenueService
+    private venueService: VenueService,
+    private eventService: EventService
   ) {}
 
   statsShown = false;
@@ -40,7 +51,9 @@ export class Dashboard implements OnDestroy {
   venuesCount = 0;
 
   popularVenues: VenueResponseDto[] = [];
+  events: EventResponseDto[] = [];
   popularVenuesLoading = true;
+  eventsLoading = true;
 
   venues = [
     {
@@ -70,6 +83,37 @@ export class Dashboard implements OnDestroy {
     },
   ];
 
+  categoryBadges: CategoryBadge[] = [
+    {
+      label: 'Klub',
+      venueType: VenueCategory.CLUB,
+      iconKey: 'club',
+      iconColor: 'rgba(167,139,250,0.9)',
+      pillStyle: 'background: linear-gradient(180deg, rgba(0,0,0,0.2) 70%, rgba(124,58,237,0.22) 100%), rgba(255,255,255,0.025); border: 1px solid rgba(124,58,237,0.28);',
+    },
+    {
+      label: 'Shisha',
+      venueType: VenueCategory.LOUNGE,
+      iconKey: 'shisha',
+      iconColor: 'rgba(96,165,250,0.9)',
+      pillStyle: 'background: linear-gradient(180deg, rgba(0,0,0,0.2) 70%, rgba(58,121,237,0.22) 100%), rgba(255,255,255,0.025); border: 1px solid rgba(58,121,237,0.28);',
+    },
+    {
+      label: 'Pub',
+      venueType: VenueCategory.PUB,
+      iconKey: 'pub',
+      iconColor: 'rgba(251,191,36,0.9)',
+      pillStyle: 'background: linear-gradient(180deg, rgba(0,0,0,0.2) 70%, rgba(255,180,0,0.2) 100%), rgba(255,255,255,0.025); border: 1px solid rgba(255,180,0,0.28);',
+    },
+    {
+      label: 'Restoran',
+      venueType: VenueCategory.RESTAURANT,
+      iconKey: 'restoran',
+      iconColor: 'rgba(251,146,60,0.9)',
+      pillStyle: 'background: linear-gradient(180deg, rgba(0,0,0,0.2) 70%, rgba(255,100,0,0.22) 100%), rgba(255,255,255,0.025); border: 1px solid rgba(255,100,0,0.28);',
+    },
+  ];
+
   private readonly reservationsTarget = 10000;
   private readonly venuesTarget = 100;
 
@@ -80,6 +124,7 @@ export class Dashboard implements OnDestroy {
 
   ngOnInit(): void {
     this.loadPopularVenues();
+    this.loadPopularEvents();
   }
 
   ngOnDestroy(): void {
@@ -100,6 +145,44 @@ export class Dashboard implements OnDestroy {
           this.cdr.detectChanges();
         },
       });
+  }
+
+  private loadPopularEvents(): void {
+    this.eventService
+      .getEvents({ pageNo: 1, pageSize: 8, sortBy: 'eventDateTime', sortDir: 'ASC' })
+      .subscribe({
+        next: (events) => {
+          this.events = events;
+          this.eventsLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.eventsLoading = false;
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  goToVenuesByCategory(venueType: VenueCategory): void {
+    this.router.navigate(['/venues'], {
+      queryParams: {
+        venueType,
+        sort: 'name_asc',
+        pageNo: 1,
+      },
+    });
+  }
+
+  get tonightEvents(): EventResponseDto[] {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayEnd   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+    return this.events.filter(e => {
+      if (!e.eventDateTime) return false;
+      const d = new Date(e.eventDateTime);
+      return d >= todayStart && d <= todayEnd;
+    });
   }
 
   onStatsInView(inView: boolean): void {

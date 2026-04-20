@@ -21,6 +21,8 @@ public interface VenueRepository extends JpaRepository<Venue, UUID> {
 
     Long countByActive(boolean active);
 
+
+
     @Query("SELECT v.id FROM Venue v WHERE " +
             "(CAST(:query AS string) IS NULL OR LOWER(v.name) LIKE LOWER(CONCAT('%', CAST(:query AS string), '%')) OR " +
             "LOWER(v.description) LIKE LOWER(CONCAT('%', CAST(:query AS string), '%'))) AND " +
@@ -47,6 +49,17 @@ public interface VenueRepository extends JpaRepository<Venue, UUID> {
             "GROUP BY v.id, v.name, v.addressName, v.venueType, v.venueKind, v.active " +
             "ORDER BY COUNT(r.id) DESC")
     List<TopVenueProjection> getTopVenuesByReservations();
+
+    @Query("SELECT v.id as venueId, AVG(r.rating) as averageRating, COUNT(r.id) as totalRatings " +
+            "FROM Venue v LEFT JOIN Rating r ON r.venue.id = v.id " +
+            "WHERE v.id IN :ids GROUP BY v.id")
+    List<RatingStatsProjection> findRatingStatsByVenueIds(@Param("ids") List<UUID> ids);
+
+    interface RatingStatsProjection {
+        UUID getVenueId();
+        Double getAverageRating();
+        Long getTotalRatings();
+    }
 
     interface VenueTypeBreakdown {
         VenueCategory getType();

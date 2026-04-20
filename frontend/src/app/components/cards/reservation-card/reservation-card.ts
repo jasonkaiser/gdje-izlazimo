@@ -1,6 +1,6 @@
 import {
   Component, input, output, computed,
-  signal, HostListener, ChangeDetectionStrategy
+  HostListener, ChangeDetectionStrategy
 } from '@angular/core';
 import { ButtonComponent } from '../../buttons/button-component/button-component';
 import { ReservationStatus } from '../../../core/models/reservations/reservation-status.enum';
@@ -26,10 +26,8 @@ export class ReservationCard {
   readonly cancel           = output<string>();
   readonly viewDetails      = output<string>();
   readonly viewRejectReason = output<string>();
-  readonly openRating       = output<ReservationResponseDto>();
 
-  menuOpen     = false;
-  alreadyRated = signal(false);
+  menuOpen = false;
 
   @HostListener('document:click')
   onDocumentClick(): void { this.menuOpen = false; }
@@ -51,22 +49,6 @@ export class ReservationCard {
     const id = this.reservation()?.id;
     if (id) this.viewRejectReason.emit(id);
   }
-
-  openRatingModal(): void {
-    const r = this.reservation();
-    if (!r) return;
-    this.openRating.emit(r);
-    this.closeMenu();
-  }
-  
-  readonly forceAlreadyRated = input<boolean>(false);
-    get canRate(): boolean {
-      const r = this.reservation();
-      if (!r) return false;
-      if (r.status !== ReservationStatus.ACCEPTED) return false;
-      if (this.alreadyRated() || this.forceAlreadyRated()) return false;
-      return new Date(r.reservationDate) < new Date();
-    }
 
   private readonly statusStyles: Record<ReservationStatus, StatusStyle> = {
     PENDING: {
@@ -97,7 +79,4 @@ export class ReservationCard {
       ? this.statusStyles[status]
       : this.statusStyles[ReservationStatus.PENDING];
   });
-
-
-
 }

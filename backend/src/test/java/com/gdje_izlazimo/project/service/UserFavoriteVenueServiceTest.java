@@ -80,7 +80,7 @@ class UserFavoriteVenueServiceTest {
                 VenueCategory.CLUB, VenueKind.PARTNER, "+38733000000",
                 43.8476, 18.3564,
                 LocalDateTime.now(), LocalDateTime.now(),
-                List.of()
+                List.of(), 2.0,4
         );
     }
 

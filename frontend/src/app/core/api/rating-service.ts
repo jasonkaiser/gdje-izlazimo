@@ -23,8 +23,9 @@ export class RatingService {
     return this.http.post<RatingResponseDto>(this.base, request);
   }
 
-  hasRated(reservationId: string): Observable<boolean> {
-    return this.http.get<boolean>(`${this.base}/exists/${reservationId}`);
+  hasRated(venueId: string, userId: string): Observable<boolean> {
+    return this.http.get<boolean>(`${this.base}/exists`, {
+      params: { venueId, userId }
+    });
   }
-  
 }

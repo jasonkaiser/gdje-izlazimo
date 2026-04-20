@@ -16,8 +16,8 @@ import java.util.UUID;
 @Table(name = "ratings",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uq_rating_reservation",
-                        columnNames = "reservation_id"
+                        name = "uq_rating_user_venue",
+                        columnNames = {"user_id", "venue_id"}
                 )
         },
         indexes = {
@@ -37,10 +37,6 @@ public class Rating {
     @Column(name = "id", nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reservation_id", nullable = false, updatable = false)
-    private Reservation reservation;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venue_id", nullable = false, updatable = false)
@@ -63,5 +59,4 @@ public class Rating {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-
 }

@@ -1,0 +1,24 @@
+.event-card-root {
+  position: relative;
+}
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.event-card-root::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 3px;
+  border-radius: 4px 0 0 4px;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+.event-card-root:hover::before {
+  background: #7c3aed;
+}
+

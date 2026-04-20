@@ -9,6 +9,8 @@ import { roleGuard } from './core/auth/role.guard';
 import { VenuesComponent } from './pages/venues/venues';
 import { VenuePanelComponent } from './pages/venue-panel/venue-panel';
 import { Profile } from './pages/profile/profile';
+import { EventDetails } from './pages/event-details/event-details';
+import { EventsComponent } from './pages/events/events';
 
 export const routes: Routes = [
 
@@ -48,6 +50,14 @@ export const routes: Routes = [
             component: Profile,
             canActivate: [authGuard, roleGuard(['user', 'venue_owner', 'admin'])]
 
+        },
+        {
+            path: 'events/:id',
+            component: EventDetails,
+        },
+        {
+            path: 'events',
+            component: EventsComponent,
         },
         {
             path: '**',

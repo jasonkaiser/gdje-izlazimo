@@ -5,23 +5,27 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.UUID;
 
+import jakarta.validation.constraints.*;
+
+
 public record CreateEventRequest(
+
         @NotNull(message = "Venue ID is required")
         UUID venueId,
-        @NotNull(message = "Table Type ID is required")
-        UUID tableTypeId,
-        @NotNull(message = "Event start time is required")
-        LocalTime eventStartTime,
-        @NotNull(message = "Event date time is required")
-        LocalDateTime eventDateTime,
-        @NotBlank(message = "Name is required")
+
+        @NotBlank(message = "Event name is required")
+        @Size(max = 150, message = "Event name must not exceed 150 characters")
         String name,
-        String imageUrl,
-        @NotNull(message = "Quantity is required")
-        @Min(value = 1, message = "Quantity must be at least 1")
-        Integer quantity
-) {
-}
+
+        @Size(max = 1000, message = "Description must not exceed 1000 characters")
+        String description,
+
+        @NotNull(message = "Event date/time is required")
+        @Future(message = "Event date/time must be in the future")
+        LocalDateTime eventDateTime,
+
+        String imageUrl
+
+) {}

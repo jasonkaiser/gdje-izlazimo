@@ -1,6 +1,5 @@
 export interface RatingResponseDto {
   id: string;
-  reservationId: string;
   venueId: string;
   userId: string;
   userName: string;

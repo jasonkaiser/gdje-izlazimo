@@ -22,6 +22,8 @@ type VenueCardVm = {
   category: string;
   location: string;
   imageUrl: string;
+  averageRating: number;
+  totalRatings: number;
 };
 
 @Component({
@@ -242,6 +244,8 @@ export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy 
       category: v.venueType ?? '',
       location: v.addressName ?? '',
       imageUrl: primaryImage?.imageUrl ?? this.getFallbackImage(v.venueType),
+      averageRating: v.averageRating ?? 0,
+      totalRatings:  v.totalRatings ?? 0,
     };
   }
 
