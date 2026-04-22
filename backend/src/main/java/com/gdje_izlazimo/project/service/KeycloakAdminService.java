@@ -5,6 +5,8 @@ import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ public class KeycloakAdminService {
 
     private final String realm;
     private final Keycloak keycloak;
+    private static final Logger log = LoggerFactory.getLogger(KeycloakAdminService.class);
 
     public KeycloakAdminService(
             @Value("${keycloak.server-url}") String serverUrl,
@@ -49,20 +52,31 @@ public class KeycloakAdminService {
     }
 
     public void updateUserAttribute(UUID keycloakUserId, String attributeName, String value) {
-        UserResource userResource = keycloak.realm(realm).users().get(keycloakUserId.toString());
+        try {
+            UserResource userResource = keycloak.realm(realm).users().get(keycloakUserId.toString());
+            UserRepresentation user = userResource.toRepresentation();
 
-        UserRepresentation user = userResource.toRepresentation();
+            Map<String, List<String>> attributes = user.getAttributes();
+            if (attributes == null) attributes = new HashMap<>();
 
-        Map<String, List<String>> attributes = user.getAttributes();
-        if (attributes == null) attributes = new HashMap<>();
+            if (value != null && !value.isBlank()) {
+                attributes.put(attributeName, List.of(value.trim()));
+            } else {
+                attributes.remove(attributeName);
+            }
 
-        if (value != null && !value.isBlank()) {
-            attributes.put(attributeName, List.of(value.trim()));
-        } else {
-            attributes.remove(attributeName);
+            user.setAttributes(attributes);
+            userResource.update(user);
+
+        } catch (jakarta.ws.rs.NotFoundException e) {
+            log.error("Keycloak user NOT FOUND: realm={}, userId={}", realm, keycloakUserId);
+            throw e;
+        } catch (jakarta.ws.rs.NotAuthorizedException e) {
+            log.error("Keycloak 401 - auth failed: realm={}", realm);
+            throw e;
+        } catch (Exception e) {
+            log.error("Keycloak error type={}, message={}", e.getClass().getName(), e.getMessage(), e);
+            throw e;
         }
-
-        user.setAttributes(attributes);
-        userResource.update(user);
     }
 }
