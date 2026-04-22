@@ -1,0 +1,80 @@
+<section class="relative overflow-hidden min-h-screen">
+
+  <!-- BACKGROUND GLOWS — same as venue-details -->
+  <div class="pointer-events-none fixed inset-0 z-5 overflow-hidden">
+    <div class="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-30"
+      style="background: radial-gradient(circle, rgba(124,58,237,0.35) 0%, rgba(109,40,217,0.12) 20%, transparent 70%);
+             filter: blur(60px);"></div>
+    <div class="absolute -top-20 right-0 w-[400px] h-[400px] rounded-full opacity-40"
+      style="background: radial-gradient(circle, rgba(255,255,255,0.15) 10%, transparent 65%);
+             filter: blur(50px);"></div>
+  </div>
+
+  <div class="absolute bottom-60 left-1/2 -translate-x-1/2 w-[1600px] h-[800px] rounded-full opacity-45"
+    style="background: radial-gradient(ellipse, rgba(91,33,182,0.5) 0%, transparent 45%);
+           filter: blur(70px);"></div>
+
+  <div class="relative z-10 mx-auto max-w-[1280px] px-4 sm:px-8 lg:px-16">
+
+    <!-- HEADER -->
+    <div class="pt-20 sm:pt-28 pb-8 text-center">
+      <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
+        <span class="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-500/[0.07] backdrop-blur-sm
+                     px-4 py-1.5 font-dm text-[10px] tracking-[0.2em] uppercase text-violet-300/70">
+          <span class="h-1.5 w-1.5 rounded-full bg-violet-400 animate-pulse"></span>
+          Sarajevo
+        </span>
+      </div>
+      <h1 class="font-sora font-regular text-5xl sm:text-7xl tracking-[-0.03em] leading-[0.95]
+                 bg-gradient-to-b from-white via-white/90 to-white/40 bg-clip-text text-transparent mb-4">
+        Mapa Lokala
+      </h1>
+      <p class="font-dm text-[14px] text-white/40">
+        Svi lokali u Sarajevu na jednom mjestu
+      </p>
+    </div>
+
+    <!-- LOADING -->
+    @if (loading) {
+      <div class="h-[500px] sm:h-[620px] rounded-[28px] bg-white/[0.03] border border-white/[0.05] animate-pulse"></div>
+    }
+
+    <!-- MAP -->
+    @if (!loading && venues.length > 0) {
+      <div class="pb-28 sm:pb-16">
+        <!-- reuse your existing VenueMapComponent — pass first venue as center or hardcode Sarajevo coords -->
+        <app-venue-map
+          [lat]="43.8563"
+          [lng]="18.4131"
+          [venueName]="'Sarajevo'"
+          [address]="'Sarajevo, Bosna i Hercegovina'"
+        />
+
+        <!-- Venue count badge -->
+        <div class="mt-4 flex items-center justify-center">
+          <span class="inline-flex items-center gap-2 rounded-full border border-white/[0.07] bg-white/[0.03] backdrop-blur-sm
+                       px-4 py-2 font-dm text-[11px] text-white/40">
+            <span class="h-1.5 w-1.5 rounded-full bg-violet-400"></span>
+            {{ venues.length }} lokala na mapi
+          </span>
+        </div>
+      </div>
+    }
+
+    <!-- EMPTY STATE -->
+    @if (!loading && venues.length === 0) {
+      <div class="flex justify-center pb-28">
+        <div class="inline-flex flex-col items-center gap-4 rounded-3xl border border-white/[0.07] bg-white/[0.02] px-10 py-10 text-center max-w-sm">
+          <div class="h-12 w-12 rounded-2xl border border-white/[0.08] bg-white/[0.04] flex items-center justify-center">
+            <svg class="h-5 w-5 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M12 22c3.7-3.2 8-7.6 8-12.2A8 8 0 1 0 4 9.8C4 14.4 8.3 18.8 12 22Z" stroke-linecap="round"/>
+              <circle cx="12" cy="10" r="2.5"/>
+            </svg>
+          </div>
+          <p class="font-dm text-[13px] text-white/35">Nema lokala s dostupnom lokacijom.</p>
+        </div>
+      </div>
+    }
+
+  </div>
+</section>

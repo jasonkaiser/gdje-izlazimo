@@ -11,12 +11,17 @@ import { VenuePanelComponent } from './pages/venue-panel/venue-panel';
 import { Profile } from './pages/profile/profile';
 import { EventDetails } from './pages/event-details/event-details';
 import { EventsComponent } from './pages/events/events';
+import { VenueMapPage } from './pages/venue-map/venue-map';
 
 export const routes: Routes = [
 
         {
             path: '',
             component: Dashboard
+        },
+        {
+            path: 'map',
+            component: VenueMapPage,
         },
         {
             path: 'venues/:id',

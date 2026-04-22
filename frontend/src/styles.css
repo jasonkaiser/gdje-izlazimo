@@ -235,5 +235,38 @@ html, body {
   background: #0e0c16 !important;
 }
 
+@keyframes breathe {
+  0%, 100% {
+    box-shadow:
+      0 0 0 4px rgba(124, 58, 237, 0.2),
+      0 0 16px 4px rgba(124, 58, 237, 0.08);
+  }
+  50% {
+    box-shadow:
+      0 0 0 8px rgba(124, 58, 237, 0.18),
+      0 0 28px 10px rgba(124, 58, 237, 0.14);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+@keyframes tap-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(0.82); }
+  70%  { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+nav a:active svg {
+  animation: tap-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Center button has its own active scale via Tailwind active:scale-95,
+   but we override with a bouncier version */
+nav a:active .center-ring,
+nav a.active-center:active svg {
+  animation: tap-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
