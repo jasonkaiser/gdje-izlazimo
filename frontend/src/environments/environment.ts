@@ -1,7 +1,8 @@
 export const environment = {
-
-    production: false, 
-    apiUrl: 'http://localhost:8081'
-
-
-}
+  production: false,
+  apiUrl: 'http://localhost:8081',
+  keycloakUrl: 'http://localhost:8080',
+  realm: 'gdje-izlazimo',
+  clientId: 'gdje-izlazimo',
+  enableAuth: true
+};
