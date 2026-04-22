@@ -60,6 +60,7 @@ export class VenueMapComponent implements AfterViewInit, OnDestroy {
   @Input() lng!: number;
   @Input() venueName = '';
   @Input() address = '';
+  @Input() venues: Array<{ lat: number; lng: number; name: string; address: string }> = [];
 
   @ViewChild('mapContainer') mapContainer!: ElementRef<HTMLDivElement>;
 
@@ -67,59 +68,105 @@ export class VenueMapComponent implements AfterViewInit, OnDestroy {
   private readonly ngZone = inject(NgZone);
 
   get googleMapsUrl(): string {
+    if (this.venues.length > 0) {
+      return `https://www.google.com/maps/search/?api=1&query=kafici+sarajevo`;
+    }
     return `https://www.google.com/maps?q=${this.lat},${this.lng}`;
   }
 
   async ngAfterViewInit(): Promise<void> {
-    const leaflet = await import('leaflet');
-    const L = (leaflet as any).default ?? leaflet;
+  const leaflet = await import('leaflet');
+  const L = (leaflet as any).default ?? leaflet;
 
+  const hasVenues = this.venues?.length > 0;
 
-    this.ngZone.runOutsideAngular(() => {
-      this.map = L.map(this.mapContainer.nativeElement, {
-        center: [this.lat, this.lng],
-        zoom: 16,
-        zoomControl: false,
-        attributionControl: false,
-      });
+  const center: [number, number] = hasVenues
+    ? [this.venues[0].lat, this.venues[0].lng]
+    : [this.lat, this.lng];
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        maxZoom: 19,
-      }).addTo(this.map);
+  this.ngZone.runOutsideAngular(() => {
+    this.map = L.map(this.mapContainer.nativeElement, {
+      center,
+      zoom: hasVenues ? 14 : 16,
+      zoomControl: false,
+      attributionControl: false,
+    });
 
-      L.control.zoom({ position: 'bottomright' }).addTo(this.map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19,
+    }).addTo(this.map);
 
-      const icon = L.divIcon({
-        className: '',
-        html: `
-          <div style="position: relative; width: 36px; height: 36px;">
+    L.control.zoom({ position: 'bottomright' }).addTo(this.map);
+
+    const icon = L.divIcon({
+      className: '',
+      html: `
+        <div style="position: relative; width: 36px; height: 36px;">
+          <div style="
+            width: 36px;
+            height: 36px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            background: linear-gradient(135deg, #7c3aed, #5b21b6);
+            border: 2px solid rgba(167,139,250,0.7);
+            box-shadow: 0 0 24px rgba(124,58,237,0.7), 0 4px 16px rgba(0,0,0,0.6);
+          "></div>
+          <div style="
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 0 6px rgba(255,255,255,0.8);
+          "></div>
+        </div>
+      `,
+      iconSize: [36, 36],
+      iconAnchor: [18, 36],
+      popupAnchor: [0, -40],
+    });
+
+    if (hasVenues) {
+      for (const venue of this.venues) {
+        const marker = L.marker([venue.lat, venue.lng], { icon }).addTo(this.map);
+
+        marker.bindPopup(`
+          <div style="
+            background: rgba(14,12,22,0.97);
+            border: 1px solid rgba(124,58,237,0.4);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-family: 'DM Sans', sans-serif;
+            color: rgba(255,255,255,0.85);
+            font-size: 13px;
+            font-weight: 600;
+            min-width: 140px;
+            box-shadow: 0 8px 32px rgba(124,58,237,0.25);
+          ">
+            ${venue.name}
             <div style="
-              width: 36px;
-              height: 36px;
-              border-radius: 50% 50% 50% 0;
-              transform: rotate(-45deg);
-              background: linear-gradient(135deg, #7c3aed, #5b21b6);
-              border: 2px solid rgba(167,139,250,0.7);
-              box-shadow: 0 0 24px rgba(124,58,237,0.7), 0 4px 16px rgba(0,0,0,0.6);
-            "></div>
-            <div style="
-              position: absolute;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -60%);
-              width: 8px;
-              height: 8px;
-              border-radius: 50%;
-              background: rgba(255,255,255,0.9);
-              box-shadow: 0 0 6px rgba(255,255,255,0.8);
-            "></div>
+              font-size: 11px;
+              color: rgba(255,255,255,0.35);
+              font-weight: 400;
+              margin-top: 3px;
+            ">
+              ${venue.address}
+            </div>
           </div>
-        `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 36],
-        popupAnchor: [0, -40],
-      });
+        `, {
+          className: 'venue-popup',
+          closeButton: false,
+        });
+      }
 
+      if (this.venues.length > 1) {
+        const bounds = L.latLngBounds(this.venues.map(v => [v.lat, v.lng] as [number, number]));
+        this.map.fitBounds(bounds, { padding: [40, 40] });
+      }
+    } else {
       const marker = L.marker([this.lat, this.lng], { icon }).addTo(this.map);
 
       marker.bindPopup(`
@@ -149,12 +196,13 @@ export class VenueMapComponent implements AfterViewInit, OnDestroy {
         className: 'venue-popup',
         closeButton: false,
       }).openPopup();
+    }
 
-      setTimeout(() => this.map.invalidateSize(), 0);
-      setTimeout(() => this.map.invalidateSize(), 150);
-      setTimeout(() => this.map.invalidateSize(), 400);
-    });
-  }
+    setTimeout(() => this.map.invalidateSize(), 0);
+    setTimeout(() => this.map.invalidateSize(), 150);
+    setTimeout(() => this.map.invalidateSize(), 400);
+  });
+}
 
   ngOnDestroy(): void {
     this.map?.remove();

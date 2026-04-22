@@ -43,12 +43,8 @@
     @if (!loading && venues.length > 0) {
       <div class="pb-28 sm:pb-16">
         <!-- reuse your existing VenueMapComponent — pass first venue as center or hardcode Sarajevo coords -->
-        <app-venue-map
-          [lat]="43.8563"
-          [lng]="18.4131"
-          [venueName]="'Sarajevo'"
-          [address]="'Sarajevo, Bosna i Hercegovina'"
-        />
+        <app-venue-map [venues]="venues" />
+
 
         <!-- Venue count badge -->
         <div class="mt-4 flex items-center justify-center">
