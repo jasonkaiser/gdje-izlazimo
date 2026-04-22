@@ -52,31 +52,20 @@ public class KeycloakAdminService {
     }
 
     public void updateUserAttribute(UUID keycloakUserId, String attributeName, String value) {
-        try {
-            UserResource userResource = keycloak.realm(realm).users().get(keycloakUserId.toString());
-            UserRepresentation user = userResource.toRepresentation();
+        UserResource userResource = keycloak.realm(realm).users().get(keycloakUserId.toString());
 
-            Map<String, List<String>> attributes = user.getAttributes();
-            if (attributes == null) attributes = new HashMap<>();
+        UserRepresentation user = userResource.toRepresentation();
 
-            if (value != null && !value.isBlank()) {
-                attributes.put(attributeName, List.of(value.trim()));
-            } else {
-                attributes.remove(attributeName);
-            }
+        Map<String, List<String>> attributes = user.getAttributes();
+        if (attributes == null) attributes = new HashMap<>();
 
-            user.setAttributes(attributes);
-            userResource.update(user);
-
-        } catch (jakarta.ws.rs.NotFoundException e) {
-            log.error("Keycloak user NOT FOUND: realm={}, userId={}", realm, keycloakUserId);
-            throw e;
-        } catch (jakarta.ws.rs.NotAuthorizedException e) {
-            log.error("Keycloak 401 - auth failed: realm={}", realm);
-            throw e;
-        } catch (Exception e) {
-            log.error("Keycloak error type={}, message={}", e.getClass().getName(), e.getMessage(), e);
-            throw e;
+        if (value != null && !value.isBlank()) {
+            attributes.put(attributeName, List.of(value.trim()));
+        } else {
+            attributes.remove(attributeName);
         }
+
+        user.setAttributes(attributes);
+        userResource.update(user);
     }
 }
