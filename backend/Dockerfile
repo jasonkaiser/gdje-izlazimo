@@ -1,6 +1,9 @@
-FROM quay.io/keycloak/keycloak:26.6.1
+FROM eclipse-temurin:21-jdk
 
-COPY ./keycloak-themes /opt/keycloak/themes
+WORKDIR /app
 
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
-CMD ["start", "--http-enabled=true"]
+COPY . .
+
+RUN chmod +x mvnw && ./mvnw clean package -DskipTests
+
+CMD java -jar target/*.jar
