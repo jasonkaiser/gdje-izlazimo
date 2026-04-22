@@ -36,26 +36,17 @@
   <div class="hero-lights pointer-events-none absolute inset-0 z-0 gi-anim gi-anim-lights"></div>
 
   <div>
-    <div class="relative z-10 justify-self-center px-4 mb-50">
+    <div class="relative z-10 justify-self-center px-4 mb-40">
 
       <!-- Hero heading block -->
-      <div class="mt-15 max-sm:mt-14 mb-30 max-sm:mb-0
+      <div class="mt-15 max-sm:mt-10 mb-30 max-sm:mb-0
                   max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-center">
 
         <!-- Pill — keep CSS entrance, fires immediately on load -->
-        <div class="mb-24 max-sm:flex max-sm:justify-center justify-self-center gi-anim gi-anim-pill">
-          <span class="inline-flex items-center gap-1.5
-                      px-3 py-1.5 rounded-full
-                      border border-violet-500/35 bg-violet-500/[0.08]
-                      font-dm font-light text-[11px] text-violet-300/90 tracking-wide">
-            <span class="w-[5px] h-[5px] rounded-full bg-violet-400/90
-                         shadow-[0_0_6px_rgba(167,139,250,0.8)]"></span>
-            Sarajevo nightlife
-          </span>
-        </div>
+  
 
         <!-- Title — keep CSS entrance -->
-        <h1 class="text-white font-sora font-bold hero-title
+        <h1 class="text-white font-sora font-bold hero-title lg:mt-15
                    text-8xl leading-[0.95] tracking-tight mb-3
                    max-sm:text-[54px] max-sm:font-extrabold max-sm:leading-[1.02]
                    max-sm:tracking-[-1.5px] gi-anim gi-anim-title">
@@ -96,7 +87,7 @@
       </div>
 
       <!-- Category badges — keep CSS entrance -->
-      <div class="mt-4 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:flex-nowrap gi-anim gi-anim-badges">
+      <div class="mt-14 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:flex-nowrap gi-anim gi-anim-badges">
         <div class="flex items-center gap-2">
           @for (badge of categoryBadges.slice(0, 3); track badge.label) {
             <app-category-badge [badge]="badge" (clicked)="goToVenuesByCategory($event)" />
