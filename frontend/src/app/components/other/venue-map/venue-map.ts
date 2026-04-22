@@ -71,7 +71,8 @@ export class VenueMapComponent implements AfterViewInit, OnDestroy {
   }
 
   async ngAfterViewInit(): Promise<void> {
-    const L = await import('leaflet');
+    const leaflet = await import('leaflet');
+    const L = (leaflet as any).default ?? leaflet;
 
 
     this.ngZone.runOutsideAngular(() => {
