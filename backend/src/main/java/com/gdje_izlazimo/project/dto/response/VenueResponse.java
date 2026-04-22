@@ -19,6 +19,7 @@ public record VenueResponse(
         VenueCategory venueType,
         VenueKind venueKind,
         String phone,
+        String instagram,
         double latitude,
         double longitude,
         LocalDateTime createdAt,

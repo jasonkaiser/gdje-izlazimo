@@ -246,6 +246,7 @@ export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy 
       imageUrl: primaryImage?.imageUrl ?? this.getFallbackImage(v.venueType),
       averageRating: v.averageRating ?? 0,
       totalRatings:  v.totalRatings ?? 0,
+    
     };
   }
 

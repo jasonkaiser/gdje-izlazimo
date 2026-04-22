@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +25,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -79,13 +81,16 @@ public class EventController {
     @GetMapping("/search")
     public ResponseEntity<List<EventResponse>> searchEvents(
             @RequestParam(required = false) String query,
-            @RequestParam(defaultValue = "1") int pageNo,
-            @RequestParam(defaultValue = "8") int pageSize,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo,
             @RequestParam(defaultValue = "eventDateTime") String sortBy,
-            @RequestParam(defaultValue = "ASC") String sortDir) {
+            @RequestParam(defaultValue = "ASC") String sortDir,
+            @RequestParam(defaultValue = "1") int pageNo,
+            @RequestParam(defaultValue = "8") int pageSize
+    ){
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.Direction.fromString(sortDir), sortBy);
-        return ResponseEntity.ok(eventService.searchEvents(query, pageable));
+        return ResponseEntity.ok(eventService.searchEvents(query, dateFrom, dateTo,pageable));
     }
 
     @Operation(summary = "Get event by ID", description = "Returns a single event by its UUID. Public endpoint.")

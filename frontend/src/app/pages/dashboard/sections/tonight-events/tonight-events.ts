@@ -14,6 +14,8 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { EventCard } from '../../../../components/cards/event-card/event-card';
 import { EventResponseDto } from '../../../../core/models/events/event-response.dto';
+import { Router } from '@angular/router';
+
 
 type EventCardVm = {
   id: string;
@@ -33,6 +35,8 @@ type EventCardVm = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TonightEventsCarouselComponent implements AfterViewInit, OnDestroy {
+
+  
   @Input({ required: true }) set events(raw: EventResponseDto[]) {
     this._events = raw.map((e) => this.toCardVm(e));
     if (this.isBrowser) {
@@ -61,6 +65,7 @@ export class TonightEventsCarouselComponent implements AfterViewInit, OnDestroy 
   constructor(
     private cdr: ChangeDetectorRef,
     private zone: NgZone,
+    private router: Router,
     @Inject(PLATFORM_ID) platformId: object
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
@@ -193,6 +198,15 @@ export class TonightEventsCarouselComponent implements AfterViewInit, OnDestroy 
     return Array.from(el.querySelectorAll<HTMLElement>('[data-card]'));
   }
 
+  goToTonightEvents(): void {
+    const today = new Date();
+    const dateFrom = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 19, 0, 0).toISOString();
+    const dateTo   = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59).toISOString();
+
+    this.router.navigate(['/events'], {
+      queryParams: { dateFrom, dateTo }
+});
+  }
   private toCardVm(e: EventResponseDto): EventCardVm {
     return {
       id:            e.id,

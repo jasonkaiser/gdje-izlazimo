@@ -78,6 +78,7 @@ class UserFavoriteVenueServiceTest {
                 venueId, "Club Atmosphere", "Description",
                 "Ferhadija 12, Sarajevo", true,
                 VenueCategory.CLUB, VenueKind.PARTNER, "+38733000000",
+                "https://www.instagram.com/gdjeizlazimo/",
                 43.8476, 18.3564,
                 LocalDateTime.now(), LocalDateTime.now(),
                 List.of(), 2.0,4

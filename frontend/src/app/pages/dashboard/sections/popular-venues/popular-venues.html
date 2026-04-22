@@ -58,12 +58,16 @@
       } @else {
         @for (v of _venues; track v.id) {
           <div class="w-full max-w-[380px] mx-auto">
-            <app-venue-card
-              [title]="v.title"
-              [category]="v.category"
-              [location]="v.location"
-              [imageUrl]="v.imageUrl"
-            />
+              <app-venue-card
+                [id]="v.id"
+                [title]="v.title"
+                [category]="v.category"
+                [location]="v.location"
+                [imageUrl]="v.imageUrl"
+                [averageRating]="v.averageRating"
+                [totalRatings]="v.totalRatings"
+          
+              />
           </div>
         }
       }
@@ -93,7 +97,7 @@
           >
             <div class="w-[300px] lg:w-[460px]">
               <app-venue-card
-                [id]="v.id" 
+                [id]="v.id"
                 [title]="v.title"
                 [category]="v.category"
                 [location]="v.location"

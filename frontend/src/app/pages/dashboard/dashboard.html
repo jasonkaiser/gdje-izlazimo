@@ -91,7 +91,7 @@
                        bg-green-400/85 shadow-[0_0_8px_rgba(74,222,128,0.8)]"></span>
         </span>
         <span class="font-dm font-light text-[11.5px] text-white/38">
-          <span class="text-white/62 font-normal">200+</span> ljudi traži izlazak večeras
+          <span class="text-white/62 font-normal">300+</span> ljudi traži izlazak večeras
         </span>
       </div>
 
@@ -111,11 +111,21 @@
 
     </div>
 
-    <app-tonight-events
-  [events]="tonightEvents"
-  title="Večeras"
-  subtitle="Dešava se"
-/>
+    <div
+      *ngIf="tonightEvents.length > 0"
+      scrollReveal
+      srVariant="fade-up"
+      [srDistance]="80"
+      [srDelay]="0"
+      [srDuration]="700"
+      [srThreshold]="0.08"
+    >
+      <app-tonight-events
+        [events]="tonightEvents"
+        title="Večeras"
+        subtitle=""
+      />
+    </div>
 
     <!-- ─── SCROLL-TRIGGERED SECTIONS ─── -->
 
@@ -146,7 +156,7 @@
     >
       <app-popular-events
         [events]="events"
-        title="Nadolazeci eventi"
+        title="Nadolazeći dogadjaji"
         subtitle="Ova i iduca sedmica"
       />
     </div>
@@ -169,7 +179,7 @@
       </div>
       <div class="mt-3 flex items-center gap-10 max-sm:gap-6">
         <div class="font-dm italic font-medium text-[20px] leading-[1.0611] text-white/80 max-sm:text-[16px]">
-          {{ reservations | number }}+ <span class="font-light text-white/50">rezervacija</span>
+          {{ reservations | number }}+ <span class="font-light text-white/50">dogadjaja</span>
         </div>
         <div class="font-dm italic font-medium text-[20px] leading-[1.0611] text-white/80 max-sm:text-[16px]">
           {{ venuesCount | number }}+ <span class="font-light text-white/50">lokala</span>

@@ -32,7 +32,7 @@ public class EventView {
     private Event event;
 
     @Column(name = "viewer_ip", length = 45)
-    private String viewerIp;  // optional — for dedup
+    private String viewerIp;
 
     @CreatedDate
     @Column(name = "viewed_at", nullable = false, updatable = false)

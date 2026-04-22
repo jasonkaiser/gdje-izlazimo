@@ -37,6 +37,8 @@ export class EventService {
 
   searchEvents(params: {
     query?: string;
+    dateFrom?: string;
+    dateTo?: string;
     sortBy?: string;
     sortDir?: 'ASC' | 'DESC';
     pageNo?: number;
@@ -44,6 +46,8 @@ export class EventService {
   }) {
     let httpParams = new HttpParams();
     if (params.query)             httpParams = httpParams.set('query',    params.query);
+    if (params.dateFrom)          httpParams = httpParams.set('dateFrom', params.dateFrom);
+    if (params.dateTo)            httpParams = httpParams.set('dateTo',   params.dateTo);
     if (params.sortBy)            httpParams = httpParams.set('sortBy',   params.sortBy);
     if (params.sortDir)           httpParams = httpParams.set('sortDir',  params.sortDir);
     if (params.pageNo  != null)   httpParams = httpParams.set('pageNo',   params.pageNo);

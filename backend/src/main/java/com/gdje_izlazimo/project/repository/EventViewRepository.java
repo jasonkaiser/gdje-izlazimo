@@ -41,4 +41,17 @@ public interface EventViewRepository extends JpaRepository<EventView, UUID> {
         GROUP BY ev.event.id
         """)
     List<Object[]> countByEventIds(@Param("eventIds") List<UUID> eventIds);
+
+
+    @Query("""
+    SELECT COUNT(ev) > 0 FROM EventView ev
+    WHERE ev.event.id = :eventId
+    AND ev.viewerIp = :ip
+    AND ev.viewedAt >= :since
+    """)
+    boolean existsRecentView(
+            @Param("eventId") UUID eventId,
+            @Param("ip") String ip,
+            @Param("since") LocalDateTime since
+    );
 }

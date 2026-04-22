@@ -30,6 +30,8 @@ public record CreateVenueRequest(
         @NotBlank(message = "Phone is required")
         String phone,
 
+        String instagram,
+
         @NotNull(message = "Latitude is required")
         Double latitude,
 

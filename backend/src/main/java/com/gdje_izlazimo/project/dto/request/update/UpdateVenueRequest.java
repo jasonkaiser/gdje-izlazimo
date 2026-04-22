@@ -22,6 +22,8 @@ public record UpdateVenueRequest(
         @NotBlank(message = "Phone is required")
         String phone,
 
+        String instagram,
+
         @NotBlank(message = "Address is required")
         String addressName
 

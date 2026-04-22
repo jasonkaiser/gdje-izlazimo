@@ -77,36 +77,32 @@ export class EventDetails {
   heroShown   = false;
   detailShown = false;
 
-  ngOnInit(): void {
-        const id = this.route.snapshot.paramMap.get('id');
-        if (id) this.eventSvc.recordView(id).subscribe();
 
-  }
 
-  readonly vm$ = this.retry$.pipe(
-    switchMap(() => this.route.paramMap.pipe(map((p) => p.get('id') ?? ''))),
-    tap(() => { this.heroShown = false; this.detailShown = false; }),
-    switchMap((id) => {
-      if (!id) {
-        return of<Vm>({ loading: false, errorMsg: 'Neispravan link.', event: null, day: '--', month: '---', dayName: '', time: '', year: '' });
-      }
+readonly vm$ = this.retry$.pipe(
+  switchMap(() => this.route.paramMap.pipe(map((p) => p.get('id') ?? ''))),
+  tap(() => { this.heroShown = false; this.detailShown = false; }),
+  switchMap((id) => {
+    if (!id) {
+      return of<Vm>({ loading: false, errorMsg: 'Neispravan link.', event: null, day: '--', month: '---', dayName: '', time: '', year: '' });
+    }
 
-      const loading: Vm = { loading: true, errorMsg: '', event: null, day: '--', month: '---', dayName: '', time: '', year: '' };
+    const loading: Vm = { loading: true, errorMsg: '', event: null, day: '--', month: '---', dayName: '', time: '', year: '' };
 
-      return this.eventSvc.getEventById(id).pipe(
-        map((event) => ({
-          loading: false,
-          errorMsg: '',
-          event,
-          ...buildDateParts(event.eventDateTime ?? ''),
-        } satisfies Vm)),
-        catchError(() => of<Vm>({ loading: false, errorMsg: 'Događaj nije pronađen.', event: null, day: '--', month: '---', dayName: '', time: '', year: '' })),
-        startWith(loading),
-      );
-    }),
-    takeUntilDestroyed(this.destroyRef),
-    shareReplay({ bufferSize: 1, refCount: true }),
-  );
+    return this.eventSvc.recordView(id).pipe(  
+      map((event) => ({
+        loading: false,
+        errorMsg: '',
+        event,
+        ...buildDateParts(event.eventDateTime ?? ''),
+      } satisfies Vm)),
+      catchError(() => of<Vm>({ loading: false, errorMsg: 'Događaj nije pronađen.', event: null, day: '--', month: '---', dayName: '', time: '', year: '' })),
+      startWith(loading),
+    );
+  }),
+  takeUntilDestroyed(this.destroyRef),
+  shareReplay({ bufferSize: 1, refCount: true }),
+);
 
   retry(): void { this.retry$.next(); }
 

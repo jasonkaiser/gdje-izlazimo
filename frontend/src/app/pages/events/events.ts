@@ -33,6 +33,8 @@ type ViewModel = {
 
 type Params = {
   query: string;
+  dateFrom: string | null;  
+  dateTo: string | null;   
   sortBy: string;
   sortDir: 'ASC' | 'DESC';
   pageNo: number;
@@ -59,7 +61,9 @@ export class EventsComponent {
 
   private readonly params$ = this.route.queryParamMap.pipe(
     map((p): Params => {
-      const query    = (p.get('query') ?? '').trim();
+      const query    = (p.get('query') ?? '').trim();    
+      const dateFrom = p.get('dateFrom') ?? null;  
+      const dateTo   = p.get('dateTo')   ?? null;  
       const sort     = (p.get('sort') as SortValue) ?? 'date_asc';
       const pageNo   = Number(p.get('pageNo') ?? '1') || 1;
       const pageSize = Number(p.get('pageSize') ?? '8') || 8;
@@ -72,7 +76,7 @@ export class EventsComponent {
       if (sort === 'date_asc')  { sortBy = 'eventDateTime'; sortDir = 'ASC';  }
       if (sort === 'date_desc') { sortBy = 'eventDateTime'; sortDir = 'DESC'; }
 
-      return { query, sortBy, sortDir, pageNo, pageSize };
+      return { query, dateFrom, dateTo,sortBy, sortDir, pageNo, pageSize };
     }),
     tap((p) => {
       if (p.pageNo === 1) {
@@ -103,6 +107,8 @@ export class EventsComponent {
 
     return this.eventService.searchEvents({
       query:    params.query || undefined,
+      dateFrom: params.dateFrom ?? undefined,  
+      dateTo:   params.dateTo   ?? undefined,   
       sortBy:   params.sortBy,
       sortDir:  params.sortDir,
       pageNo,
@@ -135,11 +141,16 @@ export class EventsComponent {
   }
 
   onSearch(e: { query: string; sort: SortValue }): void {
+    const dateFrom = this.route.snapshot.queryParamMap.get('dateFrom');
+    const dateTo   = this.route.snapshot.queryParamMap.get('dateTo');
+
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
         query:    e.query?.trim() || null,
         sort:     e.sort || 'date_asc',
+        dateFrom: dateFrom ?? null,   
+        dateTo:   dateTo   ?? null,  
         pageNo:   1,
         pageSize: 8,
       },

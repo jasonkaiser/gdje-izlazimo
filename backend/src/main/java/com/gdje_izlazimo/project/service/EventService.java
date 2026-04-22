@@ -54,10 +54,11 @@ public class EventService {
         this.eventViewRepository = eventViewRepository;
     }
 
-    public List<EventResponse> searchEvents(String query, Pageable pageable) {
-        List<Event> events = query == null || query.isBlank()
-                ? eventRepository.findAllWithDetails(pageable).getContent()
-                : eventRepository.searchByQuery(query, pageable).getContent();
+    public List<EventResponse> searchEvents(String query, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable) {
+        boolean hasQuery = query != null && !query.isBlank();
+        List<Event> events = hasQuery
+                ? eventRepository.searchByQuery(query, dateFrom, dateTo, pageable).getContent()
+                : eventRepository.findAllFiltered(dateFrom, dateTo, pageable).getContent();
         return enrichWithStats(events);
     }
 
@@ -86,10 +87,15 @@ public class EventService {
         Event event = eventRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
-        EventView view = new EventView();
-        view.setEvent(event);
-        view.setViewerIp(clientIp);
-        eventViewRepository.save(view);
+        LocalDateTime cooldown = LocalDateTime.now().minusMinutes(30);
+        boolean alreadyViewed = eventViewRepository.existsRecentView(id, clientIp, cooldown);
+
+        if (!alreadyViewed) {
+            EventView view = new EventView();
+            view.setEvent(event);
+            view.setViewerIp(clientIp);
+            eventViewRepository.save(view);
+        }
 
         long count = eventViewRepository.countByEventId(id);
         Set<UUID> trending = getTrendingIds();

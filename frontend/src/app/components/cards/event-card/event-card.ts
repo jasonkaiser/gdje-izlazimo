@@ -33,10 +33,8 @@ export class EventCard {
 
   private get date(): Date | null {
     if (!this.eventDateTime) return null;
-    const normalized = this.eventDateTime.endsWith('Z') || this.eventDateTime.includes('+')
-      ? this.eventDateTime
-      : this.eventDateTime + 'Z';
-    const d = new Date(normalized);
+
+    const d = new Date(this.eventDateTime);
     return isNaN(d.getTime()) ? null : d;
   }
 

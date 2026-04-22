@@ -64,6 +64,9 @@ public class Venue {
     @Column(name = "phone", nullable = false)
     private String phone;
 
+    @Column(name = "instagram", nullable = false)
+    private String instagram;
+
     @Column(name = "latitude", nullable = false, updatable = false)
     private double latitude;
 

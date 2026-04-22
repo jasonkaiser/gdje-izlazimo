@@ -80,6 +80,7 @@ class VenueServiceTest {
                 VenueCategory.CLUB,
                 VenueKind.PARTNER,
                 "+38733000000",
+                "https://www.instagram.com/gdjeizlazimo/",
                 43.8476,
                 18.3564,
                 LocalDateTime.now(),
@@ -218,6 +219,7 @@ class VenueServiceTest {
                 VenueCategory.CLUB,
                 VenueKind.PARTNER,
                 "+38733000000",
+                "https://www.instagram.com/gdjeizlazimo/",
                 43.8476,
                 18.3564,
                 ownerId
@@ -246,6 +248,7 @@ class VenueServiceTest {
                 VenueCategory.CLUB,
                 VenueKind.PARTNER,
                 "+38733000000",
+                "https://www.instagram.com/gdjeizlazimo/",
                 43.8476,
                 18.3564,
                 ownerId

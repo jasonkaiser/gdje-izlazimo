@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { SearchBarComponent } from '../../components/other/search-bar/search-bar';
 import { BgCardsMarqueeComponent } from '../../components/cards/bg-card/bg-card';
 import { PopularVenuesCarouselComponent } from './sections/popular-venues/popular-venues';
-import { HowItWorksSectionComponent } from './sections/how-it-works/how-it-works';
 import { CtaComponent } from './sections/cta/cta';
 import { InViewDirective } from '../../core/animations/in-view.directive';
 import { ScrollRevealDirective } from '../../core/animations/scroll-reveal.directive';
@@ -52,6 +51,8 @@ export class Dashboard implements OnInit, OnDestroy {
 
   popularVenues: VenueResponseDto[] = [];
   events: EventResponseDto[] = [];
+  tonightEvents: EventResponseDto[] = [];
+  tonightEventsLoading = true;
   popularVenuesLoading = true;
   eventsLoading = true;
 
@@ -114,8 +115,8 @@ export class Dashboard implements OnInit, OnDestroy {
     },
   ];
 
-  private readonly reservationsTarget = 10000;
-  private readonly venuesTarget = 100;
+  private readonly reservationsTarget = 100;
+  private readonly venuesTarget = 50;
 
   private resRaf: number | null = null;
   private venRaf: number | null = null;
@@ -125,6 +126,7 @@ export class Dashboard implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadPopularVenues();
     this.loadPopularEvents();
+    this.loadTonightEvents();
   }
 
   ngOnDestroy(): void {
@@ -173,18 +175,32 @@ export class Dashboard implements OnInit, OnDestroy {
     });
   }
 
-  get tonightEvents(): EventResponseDto[] {
+  private loadTonightEvents(): void {
     const now = new Date();
-    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const todayEnd   = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+    const tonightStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 19, 0, 0, 0);
+    const todayEnd     = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
 
-    return this.events.filter(e => {
-      if (!e.eventDateTime) return false;
-      const d = new Date(e.eventDateTime);
-      return d >= todayStart && d <= todayEnd;
-    });
+    this.eventService
+      .getEvents({ pageNo: 1, pageSize: 50, sortBy: 'eventDateTime', sortDir: 'ASC' })
+      .subscribe({
+        next: (events) => {
+          this.tonightEvents = events
+            .filter(e => {
+              if (!e.eventDateTime) return false;
+              const d = new Date(e.eventDateTime);
+              return d >= tonightStart && d <= todayEnd;
+            })
+            .slice(0, 6);
+          this.tonightEventsLoading = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.tonightEventsLoading = false;
+          this.cdr.detectChanges();
+        },
+      });
   }
-
+  
   onStatsInView(inView: boolean): void {
     this.statsShown = inView;
 
@@ -240,6 +256,7 @@ export class Dashboard implements OnInit, OnDestroy {
     if (type === 'res') this.resRaf = id;
     else this.venRaf = id;
   }
+
 
   goToVenues(e: { query: string; venueType: VenueCategory | null; sort: 'name_asc' | 'name_desc' }): void {
     this.router.navigate(['/venues'], {
