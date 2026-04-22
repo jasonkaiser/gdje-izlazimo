@@ -5,7 +5,7 @@ spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/gdje_izlazimo}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:jason123}
 
   jpa:
     hibernate:
@@ -56,7 +56,7 @@ keycloak:
   server-url: ${KEYCLOAK_SERVER_URL:http://localhost:8080}
   realm: ${KEYCLOAK_REALM:gdje-izlazimo}
   admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:spring-admin-client}
-  admin-client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:changeme}
+  admin-client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:U2xtbArwz6vFU5iQnFrioEKkrnLUPgnQ}
 
 # ImageKit
 imagekit:

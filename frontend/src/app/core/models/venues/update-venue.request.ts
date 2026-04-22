@@ -9,6 +9,7 @@ export interface UpdateVenueRequest{
     venueType: VenueCategory;
     venueKind: VenueKind,
     phone: string;
+    instagram?: string,
     addressName: string;
 
 }

@@ -9,6 +9,7 @@ export interface CreateVenueRequest {
     venueType: VenueCategory,
     venueKind: VenueKind,
     phone: string,
+    instagram?: string,
     latitude: number, 
     longitude: number, 
     venueOwnerId?: string

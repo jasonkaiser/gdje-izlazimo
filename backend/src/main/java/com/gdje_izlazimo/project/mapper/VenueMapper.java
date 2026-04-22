@@ -19,7 +19,7 @@ public interface VenueMapper {
     @Mapping(source = "isActive", target = "active")
     void updateEntity(UpdateVenueRequest dto, @MappingTarget Venue venue);
 
-    VenueResponse toResponse(Venue venue); // used by create/update/getByOwner
+    VenueResponse toResponse(Venue venue);
 
     @Mapping(source = "venue.images", target = "images")
     @Mapping(source = "stats.averageRating", target = "averageRating")

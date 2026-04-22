@@ -4,6 +4,7 @@ import com.gdje_izlazimo.project.entity.TableType;
 import com.gdje_izlazimo.project.entity.User;
 import com.gdje_izlazimo.project.entity.Venue;
 import com.gdje_izlazimo.project.entity.Reservation;
+import com.gdje_izlazimo.project.exception.custom.UserNotFoundException;
 import com.gdje_izlazimo.project.repository.TableTypeRepository;
 import com.gdje_izlazimo.project.repository.UserRepository;
 import com.gdje_izlazimo.project.repository.VenueRepository;
@@ -38,9 +39,10 @@ public class SharedMapperHelper {
     }
 
     @Named("resolveUser")
-    public User resolveUser(UUID userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public User resolveUser(UUID id) {
+        if (id == null) return null;
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     @Named("resolveReservation")

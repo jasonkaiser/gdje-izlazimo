@@ -25,6 +25,7 @@ export interface VenueResponseDto {
   longitude: number;
   created_at: string;
   updated_at: string;
+  instagram?: string,
   images?: VenueImageDto[]; 
   averageRating: number;
   totalRatings: number;
