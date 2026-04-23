@@ -183,23 +183,32 @@
               </button>
             }
 
+            <!-- LEFT ARROW -->
             <button type="button" (click)="prevImage(vm.images.length)"
-              class="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2
-                     h-11 w-11 rounded-full border border-white/[0.12] bg-black/50 backdrop-blur-xl
-                     flex items-center justify-center text-white/60
-                     hover:text-white hover:border-white/30 hover:bg-black/80
-                     transition-all duration-200 opacity-0 group-hover:opacity-100">
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2
+                    h-10 w-10 sm:h-11 sm:w-11 rounded-full
+                    border border-white/[0.12] bg-black/50 backdrop-blur-xl
+                    flex items-center justify-center text-white/60
+                    hover:text-white hover:border-white/30 hover:bg-black/80
+                    transition-all duration-200
+                    sm:opacity-0 sm:group-hover:opacity-100 opacity-100">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M15 18l-6-6 6-6"/>
               </svg>
             </button>
+
+            <!-- RIGHT ARROW -->
             <button type="button" (click)="nextImage(vm.images.length)"
-              class="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2
-                     h-11 w-11 rounded-full border border-white/[0.12] bg-black/50 backdrop-blur-xl
-                     flex items-center justify-center text-white/60
-                     hover:text-white hover:border-white/30 hover:bg-black/80
-                     transition-all duration-200 opacity-0 group-hover:opacity-100">
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2
+                    h-10 w-10 sm:h-11 sm:w-11 rounded-full
+                    border border-white/[0.12] bg-black/50 backdrop-blur-xl
+                    flex items-center justify-center text-white/60
+                    hover:text-white hover:border-white/30 hover:bg-black/80
+                    transition-all duration-200
+                    sm:opacity-0 sm:group-hover:opacity-100 opacity-100">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 6l6 6-6 6"/>
               </svg>
             </button>
