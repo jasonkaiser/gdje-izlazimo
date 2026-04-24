@@ -32,6 +32,10 @@ export class SearchBarComponent implements OnDestroy {
   sortOpen    = false;
   filtersOpen = false;
 
+  mobileTypesOpen = false;
+  mobileKindsOpen = false;
+  mobileSortOpen  = false;
+
   types: VenueTypeOption[] = [
     { label: 'Svi',       value: null },
     { label: 'Klub',      value: VenueCategory.CLUB },
@@ -67,7 +71,6 @@ export class SearchBarComponent implements OnDestroy {
         || this.selectedSort.value !== 'name_asc';
   }
 
-
   toggleTypes(): void {
     this.typesOpen   = !this.typesOpen;
     this.kindsOpen   = false;
@@ -94,8 +97,12 @@ export class SearchBarComponent implements OnDestroy {
     this.typesOpen   = false;
     this.kindsOpen   = false;
     this.sortOpen    = false;
+    if (!this.filtersOpen) {
+      this.mobileTypesOpen = false;
+      this.mobileKindsOpen = false;
+      this.mobileSortOpen  = false;
+    }
   }
-
 
   selectType(t: VenueTypeOption): void {
     this.selectedType = t;
@@ -115,28 +122,24 @@ export class SearchBarComponent implements OnDestroy {
     if (this.live) this.emitSearch();
   }
 
-
   selectTypeFromFilters(t: VenueTypeOption): void {
     this.selectedType = t;
-    this.filtersOpen  = false;
     if (this.live) this.emitSearch();
   }
 
   selectKindFromFilters(k: VenueKindOption): void {
     this.selectedKind = k;
-    this.filtersOpen  = false;
     if (this.live) this.emitSearch();
   }
 
   selectSortFromFilters(s: SortOption): void {
     this.selectedSort = s;
-    this.filtersOpen  = false;
     if (this.live) this.emitSearch();
   }
 
-
   onSearch(): void {
     clearTimeout(this.typingTimer);
+    this.filtersOpen = false;
     this.emitSearch();
   }
 

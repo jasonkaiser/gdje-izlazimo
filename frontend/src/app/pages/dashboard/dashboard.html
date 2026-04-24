@@ -1,4 +1,22 @@
-<!-- hero section -->
+<!-- Glow blobs — clipped separately so section can be overflow-visible -->
+<div class="relative overflow-hidden pointer-events-none h-0">
+  <div
+    class="pointer-events-none absolute z-0
+           w-[2800px] h-[2400px]
+           -left-[350px] top-[1100px]
+           sm:w-[2000px] sm:h-[1000px]
+           sm:-left-[250px] sm:top-[1100px]
+           md:w-[2400px] md:h-[1200px]
+           md:-left-[300px] md:top-[1200px]
+           lg:w-[2816px] lg:h-[1363px]
+           lg:-left-[353px] lg:top-[1320px]
+           opacity-50 gi-anim gi-anim-glow"
+    style="background: radial-gradient(47.95% 47.95% at 50% 50%, rgba(124, 58, 237, 0.5) 0%, rgba(124, 58, 237, 0) 100%);"
+  ></div>
+  <div class="hero-lights pointer-events-none absolute inset-0 z-0 gi-anim gi-anim-lights"></div>
+</div>
+
+<!-- White top glow -->
 <div class="pointer-events-none inset-0 z-0 overflow-hidden">
   <div
     class="
@@ -14,26 +32,8 @@
   ></div>
 </div>
 
-<section class="relative overflow-hidden min-h-[720px] sm:px-8 lg:px-16 py-8">
-
-  <!-- purple glow backgrounds — keep CSS animation, no scroll trigger needed -->
-  <div
-    class="pointer-events-none absolute z-0
-           w-[2800px] h-[2400px]
-           -left-[350px] top-[1100px]
-           sm:w-[2000px] sm:h-[1000px]
-           sm:-left-[250px] sm:top-[1100px]
-           md:w-[2400px] md:h-[1200px]
-           md:-left-[300px] md:top-[1200px]
-           lg:w-[2816px] lg:h-[1363px]
-           lg:-left-[353px] lg:top-[1320px]
-           opacity-50 gi-anim gi-anim-glow"
-    style="background: radial-gradient(47.95% 47.95% at 50% 50%, rgba(124, 58, 237, 0.5) 0%, rgba(124, 58, 237, 0) 100%);"
-  ></div>
-
-
-
-  <div class="hero-lights pointer-events-none absolute inset-0 z-0 gi-anim gi-anim-lights"></div>
+<!-- Section WITHOUT overflow-hidden so dropdown can escape -->
+<section class="relative overflow-visible min-h-[720px] sm:px-8 lg:px-16 py-8">
 
   <div>
     <div class="relative z-10 justify-self-center px-4 mb-40">
@@ -42,10 +42,7 @@
       <div class="mt-15 max-sm:mt-10 mb-30 max-sm:mb-0
                   max-sm:flex max-sm:flex-col max-sm:items-center max-sm:text-center">
 
-        <!-- Pill — keep CSS entrance, fires immediately on load -->
-  
-
-        <!-- Title — keep CSS entrance -->
+        <!-- Title -->
         <h1 class="text-white font-sora font-bold hero-title lg:mt-15
                    text-8xl leading-[0.95] tracking-tight mb-3
                    max-sm:text-[54px] max-sm:font-extrabold max-sm:leading-[1.02]
@@ -57,7 +54,7 @@
           </span>
         </h1>
 
-        <!-- Subtitle — keep CSS entrance -->
+        <!-- Subtitle -->
         <p class="text-[18px] -mt-7 italic gi-anim gi-anim-subtitle font-light text-white/55
                   justify-self-end text-right
                   max-sm:text-[13px] max-sm:-mt-3 max-sm:mb-5 -mb-10
@@ -68,13 +65,13 @@
         </p>
       </div>
 
-      <!-- Search bar — keep CSS entrance -->
-      <div class="max-sm:mt-8 lg:-mx-7 gi-anim gi-anim-search">
+      <!-- Search bar — z-50 so dropdown floats above badges -->
+      <div class="max-sm:mt-8 lg:-mx-7 gi-anim gi-anim-search relative z-50">
         <app-search-bar [live]="false" (search)="goToVenues($event)"></app-search-bar>
       </div>
 
-      <!-- Social proof — keep CSS entrance -->
-      <div class="mt-5.5 flex items-center justify-center gap-2 gi-anim gi-anim-social">
+      <!-- Social proof — z-10, below search dropdown -->
+      <div class="mt-5.5 flex items-center justify-center gap-2 gi-anim gi-anim-social relative z-10">
         <span class="relative flex h-[6px] w-[6px] flex-shrink-0">
           <span class="absolute inline-flex h-full w-full rounded-full
                        bg-green-400/60 animate-ping"></span>
@@ -86,8 +83,8 @@
         </span>
       </div>
 
-      <!-- Category badges — keep CSS entrance -->
-      <div class="mt-14 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:flex-nowrap gi-anim gi-anim-badges">
+      <!-- Category badges — z-10, below search dropdown -->
+      <div class="mt-14 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:flex-nowrap gi-anim gi-anim-badges relative z-10">
         <div class="flex items-center gap-2">
           @for (badge of categoryBadges.slice(0, 3); track badge.label) {
             <app-category-badge [badge]="badge" (clicked)="goToVenuesByCategory($event)" />
@@ -102,6 +99,7 @@
 
     </div>
 
+    <!-- Tonight events -->
     <div
       *ngIf="tonightEvents.length > 0"
       scrollReveal
@@ -117,8 +115,6 @@
         subtitle=""
       />
     </div>
-
-    <!-- ─── SCROLL-TRIGGERED SECTIONS ─── -->
 
     <!-- Trending venues -->
     <div
@@ -152,7 +148,7 @@
       />
     </div>
 
-    <!-- Stats section — keep your existing inView logic for the count-up -->
+    <!-- Stats -->
     <div
       inView
       (inViewChange)="onStatsInView($event)"

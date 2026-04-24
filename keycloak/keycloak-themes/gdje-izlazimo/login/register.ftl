@@ -104,8 +104,6 @@
         </div>
         <#if messagesPerField?? && messagesPerField.existsError('user.attributes.phone')>
           <span class="gi-field-error">${messagesPerField.getFirstError('user.attributes.phone')}</span>
-        <#else>
-          <span class="gi-field-hint">Npr. 065052080 ili +38765052080</span>
         </#if>
       </div>
 

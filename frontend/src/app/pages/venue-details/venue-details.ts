@@ -59,6 +59,7 @@ type Vm = {
   address: string;
   workingHours: string;
   phone: string;
+  instagram: string;
   description: string;
   images: string[];
   tableTypes: TableTypeVm[];
@@ -93,6 +94,7 @@ const EMPTY_VM: Omit<Vm, 'venueId' | 'loading' | 'errorMsg'> = {
   address: '',
   workingHours: '',
   phone: '',
+  instagram: '',
   description: '',
   images: [],
   tableTypes: [],
@@ -284,6 +286,7 @@ export class VenueDetails {
                 category: venue.venueType ?? '',
                 address: venue.addressName ?? '',
                 phone: venue.phone ?? '',
+                instagram: venue.instagram ?? '',
                 description: venue.description ?? 'Dobrodošli u naš lokal!',
                 images: sortedImages.length
                   ? sortedImages.map((i) => i.imageUrl)
@@ -445,6 +448,14 @@ export class VenueDetails {
     } else {
       this.reservationModalShown = !this.reservationModalShown;
     }
+  }
+
+    scrollToReviews(): void {
+    const el = document.getElementById('venue-reviews');
+    if (!el) return;
+    const offset = 80; 
+    const top = el.getBoundingClientRect().top + window.scrollY - offset;
+    window.scrollTo({ top, behavior: 'smooth' });
   }
 
   createReservation(payload: CreateReservationRequest): void {

@@ -122,7 +122,6 @@
           <path d="M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <path d="M17 18v0" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>
         </svg>
-        <!-- active indicator dot -->
         @if (hasActiveFilters()) {
           <span class="absolute top-2.5 right-2.5 h-1.5 w-1.5 rounded-full bg-violet-400"></span>
         }
@@ -131,9 +130,9 @@
 
     <!-- ── Desktop: Tip lokala dropdown ───────────────────────────── -->
     @if (typesOpen) {
-      <div class="absolute left-0 right-0 top-full mt-2 z-50
+      <div class="absolute left-0 right-0 top-full mt-2 z-999
                   w-full sm:left-auto sm:right-0 sm:w-[200px]
-                  rounded-4xl border border-white/5 bg-white/2 backdrop-blur
+                  rounded-4xl border border-white/5 bg-[#111111]
                   p-2 shadow-[4px_3px_10px_3px_rgba(0,0,0,0.7)]">
         @for (t of types; track t.value) {
           <button
@@ -158,9 +157,9 @@
 
     <!-- ── Desktop: Vrsta dropdown ────────────────────────────────── -->
     @if (kindsOpen) {
-      <div class="absolute left-0 right-0 top-full mt-2 z-50
+      <div class="absolute left-0 right-0 top-full mt-2 z-999
                   w-full sm:left-auto sm:right-0 sm:w-[200px]
-                  rounded-4xl border border-white/5 bg-white/2 backdrop-blur
+                  rounded-4xl border border-white/5 bg-[#111111]
                   p-2 shadow-[4px_3px_10px_3px_rgba(0,0,0,0.7)]">
         @for (k of kinds; track k.value) {
           <button
@@ -173,7 +172,6 @@
               : 'text-white/55 hover:bg-white/5 hover:text-white'"
           >
             <div class="flex items-center gap-2.5">
-              <!-- Partner gets a small violet dot, Listed a dim dot -->
               <span class="h-1.5 w-1.5 rounded-full flex-shrink-0"
                     [style.background]="k.value === 'PARTNER' ? 'rgba(167,139,250,0.9)' : k.value === null ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.3)'"></span>
               {{ k.label }}
@@ -190,9 +188,9 @@
 
     <!-- ── Desktop: Sortiraj dropdown ────────────────────────────── -->
     @if (sortOpen) {
-      <div class="absolute left-0 right-0 top-full mt-2 z-50
+      <div class="absolute left-0 right-0 top-full mt-2 z-999
                   w-full sm:left-auto sm:right-0 sm:w-[220px]
-                  rounded-4xl border border-white/5 bg-white/2 backdrop-blur
+                  rounded-4xl border border-white/5 bg-[#111111]
                   p-2 shadow-[4px_3px_10px_3px_rgba(0,0,0,0.7)]">
         @for (s of sorts; track s.value) {
           <button
@@ -215,82 +213,170 @@
       </div>
     }
 
-    <!-- ── Mobile: unified filters panel ─────────────────────────── -->
+    <!-- ── Mobile: unified filters panel with accordions ─────────── -->
     @if (filtersOpen) {
-      <div class="absolute left-0 right-0 top-full mt-2 z-50
-                  rounded-4xl border border-white/5 bg-white/2 backdrop-blur
+      <div class="absolute left-0 right-0 top-full mt-2 z-999
+                  rounded-4xl border border-white/5 bg-[#111111]
                   p-2 shadow-[4px_3px_10px_3px_rgba(0,0,0,0.7)]">
 
-        <!-- Tip lokala -->
-        <div class="px-3 pt-3 pb-2 font-dm text-[11px] tracking-[0.14em] text-white/30">TIP LOKALA</div>
-        @for (t of types; track t.value) {
-          <button
-            type="button"
-            (click)="selectTypeFromFilters(t)"
-            class="w-full text-left px-5 py-3 rounded-4xl font-dm font-light text-sm transition-all duration-150
-                   flex items-center justify-between"
-            [class]="selectedType.value === t.value
-              ? 'text-violet-300 bg-violet-500/[0.08]'
-              : 'text-white/55 hover:bg-white/5 hover:text-white'"
-          >
-            {{ t.label }}
-            @if (selectedType.value === t.value) {
-              <svg class="h-3 w-3 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 13l4 4L19 7"/>
-              </svg>
+        <!-- ── Accordion: Tip lokala ── -->
+        <button
+          type="button"
+          (click)="mobileTypesOpen = !mobileTypesOpen"
+          class="w-full flex items-center justify-between
+                 px-4 py-3.5 rounded-3xl transition-all duration-150
+                 font-dm text-[12px] tracking-[0.12em] uppercase"
+          [class]="mobileTypesOpen || selectedType.value !== null
+            ? 'text-violet-300'
+            : 'text-white/35 hover:text-white/55'"
+        >
+          <div class="flex items-center gap-2.5">
+            <span>Tip lokala</span>
+            @if (selectedType.value !== null) {
+              <span class="text-[11px] normal-case tracking-normal font-light
+                           bg-violet-500/15 text-violet-300 px-2 py-0.5 rounded-full">
+                {{ selectedType.label }}
+              </span>
             }
-          </button>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+               class="opacity-60 transition-transform duration-200 flex-shrink-0"
+               [style.transform]="mobileTypesOpen ? 'rotate(180deg)' : 'rotate(0deg)'">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        @if (mobileTypesOpen) {
+          <div class="px-1 pb-1">
+            @for (t of types; track t.value) {
+              <button
+                type="button"
+                (click)="selectTypeFromFilters(t)"
+                class="w-full text-left px-5 py-3 rounded-3xl font-dm font-light text-sm transition-all duration-150
+                       flex items-center justify-between"
+                [class]="selectedType.value === t.value
+                  ? 'text-violet-300 bg-violet-500/[0.08]'
+                  : 'text-white/55 hover:bg-white/5 hover:text-white'"
+              >
+                {{ t.label }}
+                @if (selectedType.value === t.value) {
+                  <svg class="h-3 w-3 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 13l4 4L19 7"/>
+                  </svg>
+                }
+              </button>
+            }
+          </div>
         }
 
-        <div class="my-2 h-px bg-white/[0.06]"></div>
+        <div class="mx-3 h-px bg-white/[0.06]"></div>
 
-        <!-- Vrsta lokala -->
-        <div class="px-3 pt-2 pb-2 font-dm text-[11px] tracking-[0.14em] text-white/30">VRSTA LOKALA</div>
-        @for (k of kinds; track k.value) {
-          <button
-            type="button"
-            (click)="selectKindFromFilters(k)"
-            class="w-full text-left px-5 py-3 rounded-4xl font-dm font-light text-sm transition-all duration-150
-                   flex items-center justify-between gap-3"
-            [class]="selectedKind.value === k.value
-              ? 'text-violet-300 bg-violet-500/[0.08]'
-              : 'text-white/55 hover:bg-white/5 hover:text-white'"
-          >
-            <div class="flex items-center gap-2.5">
-              <span class="h-1.5 w-1.5 rounded-full flex-shrink-0"
-                    [style.background]="k.value === 'PARTNER' ? 'rgba(167,139,250,0.9)' : k.value === null ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.3)'"></span>
-              {{ k.label }}
-            </div>
-            @if (selectedKind.value === k.value) {
-              <svg class="h-3 w-3 text-violet-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 13l4 4L19 7"/>
-              </svg>
+        <!-- ── Accordion: Vrsta lokala ── -->
+        <button
+          type="button"
+          (click)="mobileKindsOpen = !mobileKindsOpen"
+          class="w-full flex items-center justify-between
+                 px-4 py-3.5 rounded-3xl transition-all duration-150
+                 font-dm text-[12px] tracking-[0.12em] uppercase"
+          [class]="mobileKindsOpen || selectedKind.value !== null
+            ? 'text-violet-300'
+            : 'text-white/35 hover:text-white/55'"
+        >
+          <div class="flex items-center gap-2.5">
+            <span>Vrsta lokala</span>
+            @if (selectedKind.value !== null) {
+              <span class="text-[11px] normal-case tracking-normal font-light
+                           bg-violet-500/15 text-violet-300 px-2 py-0.5 rounded-full">
+                {{ selectedKind.label }}
+              </span>
             }
-          </button>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+               class="opacity-60 transition-transform duration-200 flex-shrink-0"
+               [style.transform]="mobileKindsOpen ? 'rotate(180deg)' : 'rotate(0deg)'">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        @if (mobileKindsOpen) {
+          <div class="px-1 pb-1">
+            @for (k of kinds; track k.value) {
+              <button
+                type="button"
+                (click)="selectKindFromFilters(k)"
+                class="w-full text-left px-5 py-3 rounded-3xl font-dm font-light text-sm transition-all duration-150
+                       flex items-center justify-between gap-3"
+                [class]="selectedKind.value === k.value
+                  ? 'text-violet-300 bg-violet-500/[0.08]'
+                  : 'text-white/55 hover:bg-white/5 hover:text-white'"
+              >
+                <div class="flex items-center gap-2.5">
+                  <span class="h-1.5 w-1.5 rounded-full flex-shrink-0"
+                        [style.background]="k.value === 'PARTNER' ? 'rgba(167,139,250,0.9)' : k.value === null ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.3)'"></span>
+                  {{ k.label }}
+                </div>
+                @if (selectedKind.value === k.value) {
+                  <svg class="h-3 w-3 text-violet-400 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 13l4 4L19 7"/>
+                  </svg>
+                }
+              </button>
+            }
+          </div>
         }
 
-        <div class="my-2 h-px bg-white/[0.06]"></div>
+        <div class="mx-3 h-px bg-white/[0.06]"></div>
 
-        <!-- Sortiraj -->
-        <div class="px-3 pt-2 pb-2 font-dm text-[11px] tracking-[0.14em] text-white/30">SORTIRAJ</div>
-        @for (s of sorts; track s.value) {
-          <button
-            type="button"
-            (click)="selectSortFromFilters(s)"
-            class="w-full text-left px-5 py-3 rounded-4xl font-dm font-light text-sm transition-all duration-150
-                   flex items-center justify-between"
-            [class]="selectedSort.value === s.value
-              ? 'text-violet-300 bg-violet-500/[0.08]'
-              : 'text-white/55 hover:bg-white/5 hover:text-white'"
-          >
-            {{ s.label }}
-            @if (selectedSort.value === s.value) {
-              <svg class="h-3 w-3 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 13l4 4L19 7"/>
-              </svg>
+        <!-- ── Accordion: Sortiraj ── -->
+        <button
+          type="button"
+          (click)="mobileSortOpen = !mobileSortOpen"
+          class="w-full flex items-center justify-between
+                 px-4 py-3.5 rounded-3xl transition-all duration-150
+                 font-dm text-[12px] tracking-[0.12em] uppercase"
+          [class]="mobileSortOpen || selectedSort.value !== 'name_asc'
+            ? 'text-violet-300'
+            : 'text-white/35 hover:text-white/55'"
+        >
+          <div class="flex items-center gap-2.5">
+            <span>Sortiraj</span>
+            @if (selectedSort.value !== 'name_asc') {
+              <span class="text-[11px] normal-case tracking-normal font-light
+                           bg-violet-500/15 text-violet-300 px-2 py-0.5 rounded-full">
+                {{ selectedSort.label }}
+              </span>
             }
-          </button>
+          </div>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+               class="opacity-60 transition-transform duration-200 flex-shrink-0"
+               [style.transform]="mobileSortOpen ? 'rotate(180deg)' : 'rotate(0deg)'">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        @if (mobileSortOpen) {
+          <div class="px-1 pb-1">
+            @for (s of sorts; track s.value) {
+              <button
+                type="button"
+                (click)="selectSortFromFilters(s)"
+                class="w-full text-left px-5 py-3 rounded-3xl font-dm font-light text-sm transition-all duration-150
+                       flex items-center justify-between"
+                [class]="selectedSort.value === s.value
+                  ? 'text-violet-300 bg-violet-500/[0.08]'
+                  : 'text-white/55 hover:bg-white/5 hover:text-white'"
+              >
+                {{ s.label }}
+                @if (selectedSort.value === s.value) {
+                  <svg class="h-3 w-3 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 13l4 4L19 7"/>
+                  </svg>
+                }
+              </button>
+            }
+          </div>
         }
+
       </div>
     }
   </div>

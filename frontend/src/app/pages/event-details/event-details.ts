@@ -1,4 +1,5 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
+import { Location } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -70,6 +71,7 @@ export class EventDetails {
   private readonly eventSvc   = inject(EventService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cdr        = inject(ChangeDetectorRef);
+   private readonly location   = inject(Location); 
 
 
   private readonly retry$ = new BehaviorSubject<void>(undefined);
@@ -108,4 +110,8 @@ readonly vm$ = this.retry$.pipe(
 
   onHeroInView(v: boolean):   void { if (v) this.heroShown   = true; }
   onDetailInView(v: boolean): void { if (v) this.detailShown = true; }
+
+    goBack(): void {
+    this.location.back();
+  }
 }
