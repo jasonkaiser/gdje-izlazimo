@@ -1,6 +1,5 @@
 <!-- Glow blobs — clipped separately so section can be overflow-visible -->
-<div class="relative overflow-hidden pointer-events-none h-0">
-  <div
+<div class="absolute inset-0 overflow-visible pointer-events-none z-0">  <div
     class="pointer-events-none absolute z-0
            w-[2800px] h-[2400px]
            -left-[350px] top-[1100px]
@@ -95,9 +94,18 @@
             <app-category-badge [badge]="badge" (clicked)="goToVenuesByCategory($event)" />
           }
         </div>
+        
       </div>
-
+        
     </div>
+
+    <div class="mt-8 mb-20 relative z-30">
+      <app-odluci-za-mene
+        [venues]="wheelVenues"
+        (decide)="onOdluciZaMene($event)">
+      </app-odluci-za-mene>
+    </div>
+      
 
     <!-- Tonight events -->
     <div

@@ -1,0 +1,54 @@
+<div class="odluci-overlay" [class.active]="overlayActive" (click)="onOverlayClick()"></div>
+
+<canvas class="confetti-canvas" #confettiCanvas></canvas>
+
+<div class="wheel-stage" [class.visible]="wheelVisible" [class.hiding]="wheelHiding">
+  <div class="wheel-shell">
+    <div class="wheel-pointer"></div>
+    <canvas #wheelCanvas width="520" height="520"></canvas>
+  </div>
+</div>
+
+<div class="result-modal" [class.open]="modalOpen" *ngIf="selectedVenue">
+  <div class="modal-inner">
+    <button class="modal-close" type="button" (click)="onModalClose()">✕</button>
+
+    <div class="modal-img-wrap">
+      <img [src]="selectedVenue.img" [alt]="selectedVenue.name" class="modal-img" />
+      <div class="modal-img-fade"></div>
+    </div>
+
+    <div class="modal-body">
+      <p class="modal-sublabel">Večeras ideš u</p>
+      <h3 class="modal-venue-name">{{ selectedVenue.name }}</h3>
+      <p class="modal-tags">{{ selectedVenue.tags }}</p>
+      <p class="modal-info">{{ selectedVenue.info }}</p>
+
+      <button class="modal-cta" type="button" (click)="onIdemo()">Pogledaj lokal</button>
+      <button class="modal-retry" type="button" (click)="onRetry()">Zavrti ponovo</button>
+    </div>
+  </div>
+</div>
+
+<div class="odluci-section">
+  <div class="odluci-bg"></div>
+  <div class="odluci-border-light"></div>
+
+  <p class="section-label">Ne znaš gdje večeras?</p>
+
+     <div class="section-signature">
+        Sarajevo
+      </div>
+
+  <p class="section-headline mt-2">
+    neka odluči za tebe.
+  </p>
+
+  <p class="section-sub">
+    Zavrtimo jedan lokal iz grada — bez dogovaranja, bez razmišljanja.
+  </p>
+
+  <button class="odluci-btn" type="button" (click)="onTrigger()">
+    Odluči za mene
+  </button>
+</div>

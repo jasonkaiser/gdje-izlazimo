@@ -18,6 +18,7 @@ import { PopularEventsCarouselComponent } from './sections/popular-events/popula
 import { EventResponseDto } from '../../core/models/events/event-response.dto';
 import { CategoryBadge, CategoryBadgeComponent } from '../../components/other/category-badge/category-badge';
 import { TonightEventsCarouselComponent } from './sections/tonight-events/tonight-events';
+import { OdluciZaMeneComponent } from './sections/odluci-za-mene/odluci-za-mene';
 
 @Component({
   selector: 'app-dashboard',
@@ -32,7 +33,8 @@ import { TonightEventsCarouselComponent } from './sections/tonight-events/tonigh
     CtaComponent,
     InViewDirective,
     ScrollRevealDirective,
-    TonightEventsCarouselComponent
+    TonightEventsCarouselComponent,
+    OdluciZaMeneComponent
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
@@ -49,6 +51,7 @@ export class Dashboard implements OnInit, OnDestroy {
   reservations = 0;
   venuesCount = 0;
 
+  wheelVenues: VenueResponseDto[] = [];
   popularVenues: VenueResponseDto[] = [];
   events: EventResponseDto[] = [];
   tonightEvents: EventResponseDto[] = [];
@@ -127,6 +130,7 @@ export class Dashboard implements OnInit, OnDestroy {
     this.loadPopularVenues();
     this.loadPopularEvents();
     this.loadTonightEvents();
+    this.loadWheelVenues();
   }
 
   ngOnDestroy(): void {
@@ -200,6 +204,26 @@ export class Dashboard implements OnInit, OnDestroy {
         },
       });
   }
+
+  private loadWheelVenues(): void {
+  this.venueService
+    .getVenues({
+      pageNo: 1,
+      pageSize: 30,
+      sortBy: 'name',
+      sortDir: 'ASC',
+    })
+    .subscribe({
+      next: (venues) => {
+        this.wheelVenues = venues;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.wheelVenues = [];
+        this.cdr.detectChanges();
+      },
+    });
+}
   
   onStatsInView(inView: boolean): void {
     this.statsShown = inView;
@@ -267,5 +291,9 @@ export class Dashboard implements OnInit, OnDestroy {
         pageNo: 1,
       },
     });
+  }
+
+  onOdluciZaMene(venue: VenueResponseDto): void {
+    this.router.navigate(['/venues', venue.id]);
   }
 }
