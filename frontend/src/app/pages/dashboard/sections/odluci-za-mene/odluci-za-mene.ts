@@ -67,6 +67,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
   private spinning = false;
   private animFrame: number | null = null;
   private confettiRaf: number | null = null;
+  private pulseRaf: number | null = null;
   private particles: Particle[] = [];
 
   private readonly size = 520;
@@ -80,22 +81,22 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
   private readonly fallbackImage =
     'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=900&q=75';
   private readonly confettiColors = [
-  '#ffffff',
-  '#f5f3ff',
-  '#ddd6fe',
-  '#c4b5fd',
-  '#a78bfa',
-  '#8b5cf6',
-  '#fbbf24',
-];
+    '#ffffff',
+    '#f5f3ff',
+    '#ddd6fe',
+    '#c4b5fd',
+    '#a78bfa',
+    '#8b5cf6',
+    '#fbbf24',
+  ];
 
   private resizeHandler = () => this.resizeConfetti();
 
   constructor(private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
-    const wheelCtx = this.wheelCanvasRef.nativeElement.getContext('2d');
-    const confettiCtx = this.confettiCanvasRef.nativeElement.getContext('2d');
+    const wheelCtx = this.wheelCanvasRef.nativeElement.getContext('2d', { alpha: true });
+    const confettiCtx = this.confettiCanvasRef.nativeElement.getContext('2d', { alpha: true });
 
     if (!wheelCtx || !confettiCtx) return;
 
@@ -106,7 +107,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
     this.resizeConfetti();
     this.drawWheel();
 
-    window.addEventListener('resize', this.resizeHandler);
+    window.addEventListener('resize', this.resizeHandler, { passive: true });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -122,6 +123,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
 
     if (this.animFrame) cancelAnimationFrame(this.animFrame);
     if (this.confettiRaf) cancelAnimationFrame(this.confettiRaf);
+    if (this.pulseRaf) cancelAnimationFrame(this.pulseRaf);
   }
 
   onTrigger(): void {
@@ -132,6 +134,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
     this.overlayActive = true;
     this.wheelHiding = false;
     this.wheelVisible = true;
+    this.winPulseStartedAt = 0;
     this.cdr.markForCheck();
 
     setTimeout(() => this.spin(), 250);
@@ -151,6 +154,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
 
     this.modalOpen = false;
     this.selectedVenue = null;
+    this.winPulseStartedAt = 0;
     this.stopConfetti();
     this.cdr.markForCheck();
 
@@ -173,7 +177,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
 
   private prepareVenues(): void {
     this.wheelVenues = (this.venues ?? [])
-      .filter((venue) => !!venue)
+      .filter(Boolean)
       .map((venue) => this.mapVenue(venue));
   }
 
@@ -201,7 +205,6 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
   }
 
   private shorten(text: string, max: number): string {
-    if (!text) return '';
     return text.length > max ? `${text.slice(0, max).trim()}...` : text;
   }
 
@@ -220,6 +223,8 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
     const targetRotation = startRotation + extraSpins + neededDelta;
     const duration = 4200;
     const start = performance.now();
+
+    if (this.animFrame) cancelAnimationFrame(this.animFrame);
 
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / duration);
@@ -245,19 +250,8 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
   private finishSpin(): void {
     setTimeout(() => {
       this.winPulseStartedAt = performance.now();
+      this.startWinnerPulse(780);
 
-      const pulseUntil = performance.now() + 900;
-
-      const pulseTick = () => {
-        this.drawWheel();
-
-        if (performance.now() < pulseUntil) {
-          requestAnimationFrame(pulseTick);
-        }
-      };
-
-      pulseTick();
-      
       this.wheelHiding = true;
       this.cdr.markForCheck();
 
@@ -269,9 +263,27 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
           this.selectedVenue = this.wheelVenues[this.winnerIdx];
           this.modalOpen = true;
           this.cdr.markForCheck();
-        }, 850);
-      }, 850);
-    }, 900);
+        }, 650);
+      }, 720);
+    }, 850);
+  }
+
+  private startWinnerPulse(duration: number): void {
+    if (this.pulseRaf) cancelAnimationFrame(this.pulseRaf);
+
+    const end = performance.now() + duration;
+
+    const tick = () => {
+      this.drawWheel();
+
+      if (performance.now() < end) {
+        this.pulseRaf = requestAnimationFrame(tick);
+      } else {
+        this.pulseRaf = null;
+      }
+    };
+
+    tick();
   }
 
   private drawWheel(): void {
@@ -298,17 +310,19 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
 
       if (active) {
         const elapsed = this.winPulseStartedAt ? performance.now() - this.winPulseStartedAt : 0;
-        const pulse = 0.5 + Math.sin(elapsed / 120) * 0.5;
-        const glow = 0.18 + pulse * 0.22;
+        const pulse = this.winPulseStartedAt ? 0.5 + Math.sin(elapsed / 130) * 0.5 : 0;
+        const glow = 0.16 + pulse * 0.18;
 
         ctx.fillStyle = '#24104a';
         ctx.fill();
 
-        ctx.save();
-        ctx.globalCompositeOperation = 'lighter';
-        ctx.fillStyle = `rgba(124, 58, 237, ${glow})`;
-        ctx.fill();
-        ctx.restore();
+        if (this.winPulseStartedAt) {
+          ctx.save();
+          ctx.globalCompositeOperation = 'lighter';
+          ctx.fillStyle = `rgba(124, 58, 237, ${glow})`;
+          ctx.fill();
+          ctx.restore();
+        }
       } else {
         ctx.fillStyle = this.colors[i % 2];
         ctx.fill();
@@ -319,8 +333,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
       ctx.stroke();
 
       const mid = start + segmentAngle / 2;
-
-    const dotRadius = this.radius * 0.68;
+      const dotRadius = this.radius * 0.68;
 
       ctx.save();
       ctx.rotate(mid);
@@ -373,7 +386,14 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
     this.modalOpen = false;
     this.selectedVenue = null;
     this.spinning = false;
+    this.winPulseStartedAt = 0;
     this.stopConfetti();
+
+    if (this.pulseRaf) {
+      cancelAnimationFrame(this.pulseRaf);
+      this.pulseRaf = null;
+    }
+
     this.cdr.markForCheck();
   }
 
@@ -381,101 +401,111 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
     const canvas = this.confettiCanvasRef?.nativeElement;
     if (!canvas) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    canvas.width = Math.floor(window.innerWidth * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width = `${window.innerWidth}px`;
+    canvas.style.height = `${window.innerHeight}px`;
+
+    if (this.cctx) {
+      this.cctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
   }
 
- private fireConfetti(): void {
-  const canvas = this.confettiCanvasRef.nativeElement;
-  const cx = canvas.width / 2;
-  const cy = canvas.height * 0.38;
+  private fireConfetti(): void {
+    const canvas = this.confettiCanvasRef.nativeElement;
+    const isMobile = window.innerWidth <= 640;
+    const count = isMobile ? 58 : 100;
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight * 0.38;
 
-  this.particles = [];
+    this.particles = [];
 
-  for (let i = 0; i < 120; i++) {
-    const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.25;
-    const speed = 3 + Math.random() * 7;
+    for (let i = 0; i < count; i++) {
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.18;
+      const speed = (isMobile ? 2.4 : 3) + Math.random() * (isMobile ? 4.5 : 6.5);
 
-    this.particles.push({
-      x: cx + (Math.random() - 0.5) * 120,
-      y: cy + (Math.random() - 0.5) * 40,
-      vx: Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      rot: Math.random() * this.tau,
-      vrot: (Math.random() - 0.5) * 0.28,
-      w: 5 + Math.random() * 9,
-      h: 2 + Math.random() * 5,
-      color: this.confettiColors[Math.floor(Math.random() * this.confettiColors.length)],
-      alpha: 1,
-    });
+      this.particles.push({
+        x: cx + (Math.random() - 0.5) * (isMobile ? 80 : 120),
+        y: cy + (Math.random() - 0.5) * 36,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        rot: Math.random() * this.tau,
+        vrot: (Math.random() - 0.5) * 0.22,
+        w: (isMobile ? 4 : 5) + Math.random() * (isMobile ? 6 : 8),
+        h: 2 + Math.random() * 4,
+        color: this.confettiColors[Math.floor(Math.random() * this.confettiColors.length)],
+        alpha: 1,
+      });
+    }
+
+    this.animateConfetti();
   }
 
-  this.animateConfetti();
-}
+  private animateConfetti(): void {
+    const canvas = this.confettiCanvasRef.nativeElement;
+    const ctx = this.cctx;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const isMobile = width <= 640;
 
- private animateConfetti(): void {
-  const canvas = this.confettiCanvasRef.nativeElement;
-  const ctx = this.cctx;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  const glowAlpha = Math.max(
-    0,
-    Math.min(1, this.particles.reduce((max, p) => Math.max(max, p.alpha), 0))
-  );
-
-  if (glowAlpha > 0) {
-    const gradient = ctx.createRadialGradient(
-      canvas.width / 2,
-      canvas.height * 0.18,
+    const glowAlpha = Math.max(
       0,
-      canvas.width / 2,
-      canvas.height * 0.18,
-      canvas.width * 0.55
+      Math.min(1, this.particles.reduce((max, p) => Math.max(max, p.alpha), 0))
     );
 
-    gradient.addColorStop(0, `rgba(124, 58, 237, ${0.32 * glowAlpha})`);
-    gradient.addColorStop(0.38, `rgba(124, 58, 237, ${0.14 * glowAlpha})`);
-    gradient.addColorStop(1, 'rgba(124, 58, 237, 0)');
+    if (glowAlpha > 0) {
+      const gradient = ctx.createRadialGradient(
+        width / 2,
+        height * 0.18,
+        0,
+        width / 2,
+        height * 0.18,
+        width * (isMobile ? 0.65 : 0.55)
+      );
 
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.restore();
+      gradient.addColorStop(0, `rgba(124, 58, 237, ${isMobile ? 0.18 * glowAlpha : 0.28 * glowAlpha})`);
+      gradient.addColorStop(0.42, `rgba(124, 58, 237, ${isMobile ? 0.08 * glowAlpha : 0.12 * glowAlpha})`);
+      gradient.addColorStop(1, 'rgba(124, 58, 237, 0)');
+
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+      ctx.restore();
+    }
+
+    let alive = false;
+
+    for (const p of this.particles) {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += isMobile ? 0.075 : 0.085;
+      p.vx *= 0.986;
+      p.rot += p.vrot;
+      p.alpha -= isMobile ? 0.012 : 0.009;
+
+      if (p.alpha <= 0) continue;
+
+      alive = true;
+
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    }
+
+    if (alive) {
+      this.confettiRaf = requestAnimationFrame(() => this.animateConfetti());
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
   }
-
-  let alive = false;
-
-  for (const p of this.particles) {
-    p.x += p.vx;
-    p.y += p.vy;
-
-    p.vy += 0.085;
-    p.vx *= 0.985;
-    p.rot += p.vrot;
-    p.alpha -= 0.0075;
-
-    if (p.alpha <= 0) continue;
-
-    alive = true;
-
-    ctx.save();
-    ctx.globalAlpha = p.alpha;
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.translate(p.x, p.y);
-    ctx.rotate(p.rot);
-    ctx.fillStyle = p.color;
-    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-    ctx.restore();
-  }
-
-  if (alive) {
-    this.confettiRaf = requestAnimationFrame(() => this.animateConfetti());
-  } else {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
-}
 
   private stopConfetti(): void {
     if (this.confettiRaf) cancelAnimationFrame(this.confettiRaf);
