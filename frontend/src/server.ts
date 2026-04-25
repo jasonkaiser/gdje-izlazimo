@@ -47,6 +47,18 @@ app.use((req, res, next) => {
     .catch(next);
 });
 
+
+app.use((req, res, next) => {
+  if (req.path === '/ngsw-worker.js') {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Service-Worker-Allowed', '/');
+  }
+  if (req.path === '/manifest.webmanifest') {
+    res.setHeader('Cache-Control', 'no-cache');
+  }
+  next();
+});
+
 /**
  * Start the server if this module is the main entry point, or it is ran via PM2.
  * The server listens on the port defined by the `PORT` environment variable, or defaults to 4000.

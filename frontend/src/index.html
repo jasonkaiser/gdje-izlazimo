@@ -1,23 +1,60 @@
 <!doctype html>
-<html lang="en">
+<html lang="bs">
 <head>
   <meta charset="utf-8">
   <title>Gdje Izlazimo</title>
   <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link rel="icon" type="image/x-icon" href="android-chrome-512x512.png">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Viewport: prevent zoom on iOS form inputs -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<link
-  href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700&display=swap"
-  rel="stylesheet"
-/>
+  <!-- PWA core -->
+  <meta name="theme-color" content="#0f0f0f" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#0f0f0f" media="(prefers-color-scheme: light)">
+  <link rel="manifest" href="manifest.webmanifest">
 
+  <!-- iOS PWA — Apple ignores manifest for these -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Gdje Izlazimo">
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144x144.png">
 
+  <!-- iOS splash screens (optional but premium UX) -->
+  <meta name="msapplication-TileColor" content="#0f0f0f">
+  <meta name="msapplication-TileImage" content="icons/icon-144x144.png">
+
+  <!-- SEO/Social -->
+  <meta name="description" content="Otkrij mjesta i događaje u tvojom gradu.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Gdje Izlazimo">
+  <meta property="og:description" content="Otkrij mjesta i događaje u tvojom gradu.">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Sora:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
 </head>
 <body>
   <app-root></app-root>
+
+  <!-- Inline SW registration: only in browser, after app boots -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/ngsw-worker.js', { scope: '/' })
+          .catch(err => console.warn('[SW] Registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>

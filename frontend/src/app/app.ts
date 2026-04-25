@@ -8,11 +8,12 @@ import { PublicNavbar } from './core/layout/public-navbar/public-navbar';
 import { ToastHost } from './core/ui/toast-host/toast-host';
 import { LoadingBar } from './components/other/loading-bar/loading-bar';
 import { AppFooterComponent } from './core/layout/footer/footer';
+import { InstallBannerComponent } from './core/pwa/install-banner/install-baner';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AuthNavbar, PublicNavbar, ToastHost, LoadingBar, AppFooterComponent],
+  imports: [RouterOutlet, AuthNavbar, PublicNavbar, ToastHost, LoadingBar, AppFooterComponent, InstallBannerComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
