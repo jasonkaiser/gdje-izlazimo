@@ -50,23 +50,52 @@ import { InstallPromptService } from '../install-prompt.service';
   `,
   styles: [`
     .install-banner {
-      position: fixed;
-      bottom: 5.5rem;       
-      left: 1rem;
-      right: 1rem;
-      background: #1a1a1a;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 16px;
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      z-index: 99999;        
-      pointer-events: all;  
-      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-      animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
+    position: fixed;
+    bottom: 7rem;
+    left: 1rem;
+    right: 1rem;
+    background: #1a1a1a;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    z-index: 99999;
+    pointer-events: all !important;   
+    touch-action: manipulation;        
+    -webkit-tap-highlight-color: transparent;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .install-banner__dismiss {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    padding: 12px;          
+    font-size: 1.1rem;
+    line-height: 1;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .install-banner__install {
+    background: #ffffff;
+    color: #0f0f0f;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    touch-action: manipulation;        
+    -webkit-tap-highlight-color: transparent;
+    min-height: 44px;               
+  }
 
     .ios-banner {
        bottom: 5.5rem; 
@@ -148,33 +177,11 @@ import { InstallPromptService } from '../install-prompt.service';
       flex-shrink: 0;
     }
 
-    .install-banner__dismiss {
-      background: none;
-      border: none;
-      color: rgba(255,255,255,0.4);
-      cursor: pointer;
-      padding: 4px 8px;
-      font-size: 1.1rem;
-      line-height: 1;
-      transition: color 0.2s;
-    }
 
     .install-banner__dismiss:hover {
       color: rgba(255,255,255,0.7);
     }
 
-    .install-banner__install {
-      background: #ffffff;
-      color: #0f0f0f;
-      border: none;
-      border-radius: 8px;
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: opacity 0.2s;
-    }
 
     .install-banner__install:hover {
       opacity: 0.9;
