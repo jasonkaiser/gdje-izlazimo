@@ -13,7 +13,6 @@ import {
 } from '@angular/core';
 
 type NavLink = { name: string; href: string };
-type SocialLink = { name: string; href: string; icon: 'linkedin' | 'instagram' | 'mail' | 'phone' };
 
 @Component({
   selector: 'app-footer',
@@ -37,13 +36,6 @@ export class AppFooterComponent implements AfterViewInit {
     { name: 'Rezervacije', href: '/rezervacije' },
     { name: 'Lokali', href: '/lokali' },
     { name: 'Profil', href: '/profil' },
-  ];
-
-  socialLinks: SocialLink[] = [
-    { name: 'LinkedIn', href: 'https://www.linkedin.com/', icon: 'linkedin' },
-    { name: 'Instagram', href: 'https://www.instagram.com/', icon: 'instagram' },
-    { name: 'Email', href: 'mailto:info@gdje-izlazimo.ba', icon: 'mail' },
-    { name: 'Telefon', href: 'tel:+38760000000', icon: 'phone' },
   ];
 
   ngAfterViewInit(): void {
