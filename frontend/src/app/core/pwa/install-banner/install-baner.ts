@@ -21,27 +21,25 @@ import { InstallPromptService } from '../install-prompt.service';
         </div>
       </div>
     }
-
     @if (showIosBanner()) {
       <div class="install-banner ios-banner">
         <div class="install-banner__content">
           <img src="android-chrome-512x512.png" alt="Gdje Izlazimo" class="install-banner__icon">
           <div class="install-banner__text">
-            <strong>Instaliraj aplikaciju</strong>
-            <span>Tapni dugme i odaberi "Dodaj na početni ekran"</span>
+            <strong>Dodaj na početni ekran</strong>
+            <span>
+              Tapni
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#007AFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin:0 2px">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+              dole, pa <b>"Dodaj na početni ekran"</b>
+            </span>
           </div>
         </div>
-        <div class="install-banner__actions">
-          <button class="install-banner__dismiss" (click)="dismissIos()">✕</button>
-          <button class="install-banner__install install-banner__share" (click)="shareIos()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-              <polyline points="16 6 12 2 8 6"/>
-              <line x1="12" y1="2" x2="12" y2="15"/>
-            </svg>
-            Dijeli
-          </button>
-        </div>
+        <button class="install-banner__dismiss" (click)="dismissIos()">✕</button>
+        <div class="ios-arrow"></div>
       </div>
     }
   `,
@@ -73,8 +71,20 @@ import { InstallPromptService } from '../install-prompt.service';
       isolation: isolate;
     }
 
+    .ios-arrow {
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 16px;
+      height: 8px;
+      background: #1c1c1e;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      pointer-events: none;
+    }
+
     .ios-banner {
-      bottom: 7rem;
+      bottom: 5rem;
     }
 
     @keyframes slideUp {
