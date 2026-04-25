@@ -16,7 +16,7 @@ import { InstallPromptService } from '../install-prompt.service';
           </div>
         </div>
         <div class="install-banner__actions">
-          <button class="install-banner__dismiss" (click)="dismissAndroid()" aria-label="Zatvori">✕</button>
+          <button class="install-banner__dismiss" (click)="dismissAndroid()">✕</button>
           <button class="install-banner__install" (click)="install()">Instaliraj</button>
         </div>
       </div>
@@ -28,95 +28,58 @@ import { InstallPromptService } from '../install-prompt.service';
           <img src="android-chrome-512x512.png" alt="Gdje Izlazimo" class="install-banner__icon">
           <div class="install-banner__text">
             <strong>Instaliraj aplikaciju</strong>
-            <span>
-              Tapni
-              <span class="ios-share-icon">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                  <polyline points="16 6 12 2 8 6"/>
-                  <line x1="12" y1="2" x2="12" y2="15"/>
-                </svg>
-              </span>
-              pa <b>"Dodaj na početni ekran"</b>
-            </span>
+            <span>Tapni dugme i odaberi "Dodaj na početni ekran"</span>
           </div>
         </div>
         <div class="install-banner__actions">
-          <button class="install-banner__dismiss" (click)="dismissIos()" aria-label="Zatvori">✕</button>
+          <button class="install-banner__dismiss" (click)="dismissIos()">✕</button>
+          <button class="install-banner__install install-banner__share" (click)="shareIos()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+              <polyline points="16 6 12 2 8 6"/>
+              <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg>
+            Dijeli
+          </button>
         </div>
-        <div class="ios-arrow"></div>
       </div>
     }
   `,
   styles: [`
-    .install-banner {
-    position: fixed;
-    bottom: 7rem;
-    left: 1rem;
-    right: 1rem;
-    background: #1a1a1a;
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 16px;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    z-index: 99999;
-    pointer-events: all !important;   
-    touch-action: manipulation;        
-    -webkit-tap-highlight-color: transparent;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-    animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-
-  .install-banner__dismiss {
-    background: none;
-    border: none;
-    color: rgba(255,255,255,0.4);
-    cursor: pointer;
-    padding: 12px;          
-    font-size: 1.1rem;
-    line-height: 1;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .install-banner__install {
-    background: #ffffff;
-    color: #0f0f0f;
-    border: none;
-    border-radius: 8px;
-    padding: 0.6rem 1.2rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-    touch-action: manipulation;        
-    -webkit-tap-highlight-color: transparent;
-    min-height: 44px;               
-  }
-
-    .ios-banner {
-       bottom: 5.5rem; 
+    :host {
+      display: contents;
+      pointer-events: none;
     }
 
-    .ios-arrow {
-      position: absolute;
-      bottom: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 16px;
-      height: 8px;
-      background: #1a1a1a;
-      clip-path: polygon(0 0, 100% 0, 50% 100%);
-      border-left: 1px solid rgba(255,255,255,0.12);
-      border-right: 1px solid rgba(255,255,255,0.12);
+    .install-banner {
+      position: fixed;
+      bottom: 7rem;
+      left: 1rem;
+      right: 1rem;
+      background: #1c1c1e;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      padding: 0.875rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      z-index: 999999;
+      pointer-events: all;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.05) inset;
+      animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      isolation: isolate;
+    }
+
+    .ios-banner {
+      bottom: 7rem;
     }
 
     @keyframes slideUp {
-      from { transform: translateY(120%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      from { transform: translateY(130%); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
     }
 
     .install-banner__content {
@@ -125,11 +88,12 @@ import { InstallPromptService } from '../install-prompt.service';
       gap: 0.75rem;
       flex: 1;
       min-width: 0;
+      pointer-events: none;
     }
 
     .install-banner__icon {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       border-radius: 10px;
       flex-shrink: 0;
     }
@@ -137,54 +101,91 @@ import { InstallPromptService } from '../install-prompt.service';
     .install-banner__text {
       display: flex;
       flex-direction: column;
-      gap: 3px;
-      font-size: 0.875rem;
+      gap: 2px;
       min-width: 0;
     }
 
     .install-banner__text strong {
       font-weight: 600;
       color: #ffffff;
-      font-size: 0.9rem;
+      font-size: 0.875rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .install-banner__text span {
-      color: rgba(255,255,255,0.55);
-      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      font-size: 0.72rem;
       line-height: 1.4;
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      flex-wrap: wrap;
-    }
-
-    .install-banner__text span b {
-      color: rgba(255,255,255,0.8);
-      font-weight: 500;
-    }
-
-    .ios-share-icon {
-      display: inline-flex;
-      align-items: center;
-      color: #007AFF;
-      margin: 0 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .install-banner__actions {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.4rem;
       flex-shrink: 0;
     }
 
-
-    .install-banner__dismiss:hover {
-      color: rgba(255,255,255,0.7);
+    .install-banner__dismiss {
+      all: unset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      color: rgba(255,255,255,0.35);
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 50%;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      pointer-events: all;
+      transition: color 0.15s, background 0.15s;
     }
 
+    .install-banner__dismiss:hover,
+    .install-banner__dismiss:active {
+      color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .install-banner__install {
+      all: unset;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      background: #7c3aed;
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 0 1rem;
+      height: 36px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      pointer-events: all;
+      transition: opacity 0.15s, transform 0.1s;
+      box-sizing: border-box;
+    }
 
     .install-banner__install:hover {
       opacity: 0.9;
+    }
+
+    .install-banner__install:active {
+      transform: scale(0.96);
+      opacity: 0.85;
+    }
+
+    .install-banner__share {
+      background: #007AFF;
     }
   `]
 })
@@ -200,26 +201,31 @@ export class InstallBannerComponent implements OnInit {
 
     this.promptService.init();
 
-    const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    const isAndroid = /android/i.test(navigator.userAgent);
+    const ua = navigator.userAgent;
+    const isIos = /iphone|ipad|ipod/i.test(ua);
+    const isAndroid = /android/i.test(ua);
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches
       || (navigator as any).standalone === true;
 
     if (isStandalone) return;
 
-   if (isIos) {
-      const dismissed = sessionStorage.getItem('ios-banner-dismissed');
-      if (!dismissed) {
-        setTimeout(() => this.showIosBanner.set(true), 2000);
+    if (isIos) {
+      if (!sessionStorage.getItem('ios-banner-dismissed')) {
+        setTimeout(() => this.showIosBanner.set(true), 2500);
       }
+
     } else if (isAndroid) {
-      const dismissed = sessionStorage.getItem('android-banner-dismissed');
-      if (!dismissed) {
-        setTimeout(() => {
+      if (!sessionStorage.getItem('android-banner-dismissed')) {
+        let elapsed = 0;
+        const interval = setInterval(() => {
+          elapsed += 500;
           if (this.promptService.canInstall()) {
             this.showAndroidBanner.set(true);
+            clearInterval(interval);
+          } else if (elapsed >= 10000) {
+            clearInterval(interval);
           }
-        }, 2000);
+        }, 500);
       }
     }
   }
@@ -228,6 +234,18 @@ export class InstallBannerComponent implements OnInit {
     const result = await this.promptService.promptInstall();
     if (result === 'accepted') {
       this.showAndroidBanner.set(false);
+    }
+  }
+
+  async shareIos() {
+    if (!navigator.share) return;
+    try {
+      await navigator.share({
+        title: 'Gdje Izlazimo',
+        text: 'Otkrij mjesta i događaje u tvojom gradu.',
+        url: window.location.origin
+      });
+    } catch {
     }
   }
 
