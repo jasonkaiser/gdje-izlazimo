@@ -51,7 +51,7 @@ import { InstallPromptService } from '../install-prompt.service';
   styles: [`
     .install-banner {
       position: fixed;
-      bottom: 1.25rem;
+      bottom: 5.5rem;       
       left: 1rem;
       right: 1rem;
       background: #1a1a1a;
@@ -62,13 +62,14 @@ import { InstallPromptService } from '../install-prompt.service';
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
-      z-index: 9999;
+      z-index: 99999;        
+      pointer-events: all;  
       box-shadow: 0 8px 40px rgba(0,0,0,0.5);
       animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .ios-banner {
-      bottom: 1.5rem;
+       bottom: 5.5rem; 
     }
 
     .ios-arrow {
@@ -199,21 +200,20 @@ export class InstallBannerComponent implements OnInit {
 
     if (isStandalone) return;
 
-    if (isIos) {
+   if (isIos) {
       const dismissed = sessionStorage.getItem('ios-banner-dismissed');
       if (!dismissed) {
-        setTimeout(() => this.showIosBanner.set(true), 3000);
+        setTimeout(() => this.showIosBanner.set(true), 2000);
       }
     } else if (isAndroid) {
-
-      const checkInterval = setInterval(() => {
-        if (this.promptService.canInstall()) {
-          this.showAndroidBanner.set(true);
-          clearInterval(checkInterval);
-        }
-      }, 500);
-
-      setTimeout(() => clearInterval(checkInterval), 30000);
+      const dismissed = sessionStorage.getItem('android-banner-dismissed');
+      if (!dismissed) {
+        setTimeout(() => {
+          if (this.promptService.canInstall()) {
+            this.showAndroidBanner.set(true);
+          }
+        }, 2000);
+      }
     }
   }
 
