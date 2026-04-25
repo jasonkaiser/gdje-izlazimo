@@ -19,6 +19,8 @@ type VenueCardVm = {
   category: string;
   location: string;
   imageUrl: string;
+  averageRating: number;
+  totalRatings: number;
 };
 
 type ViewModel = {
@@ -176,6 +178,8 @@ export class VenuesComponent {
       category: v.venueType ?? '',
       location: v.addressName ?? '',
       imageUrl: primaryImage?.imageUrl ?? this.getFallbackImage(v.venueType),
+      averageRating: v.averageRating,
+      totalRatings: v.totalRatings,
     };
   }
 
