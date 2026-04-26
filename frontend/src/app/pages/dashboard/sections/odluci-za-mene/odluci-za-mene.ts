@@ -75,13 +75,13 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
   private pulseRaf: number | null = null;
   private particles: Particle[] = [];
 
-  private dpr = 1;
-  private readonly canvasSize = 520; 
+  // Drawing dimensions recomputed in setupWheelCanvas() from actual rendered size.
+  // All drawing uses these — never hardcoded 520.
+  private size   = 520;
+  private center = 260;
+  private radius = 242;
 
-  private readonly size = 520;
-  private readonly center = this.size / 2;
-  private readonly radius = this.center - 18;
-  private readonly tau = Math.PI * 2;
+  private readonly tau          = Math.PI * 2;
   private readonly pointerAngle = -Math.PI / 2;
 
   private winPulseStartedAt = 0;
@@ -110,16 +110,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
   ) {}
 
   ngAfterViewInit(): void {
-    const wheelEl = this.wheelCanvasRef.nativeElement;
-    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const logical = this.canvasSize;
-
-    wheelEl.width  = Math.round(logical * this.dpr);
-    wheelEl.height = Math.round(logical * this.dpr);
-    wheelEl.style.width  = `${logical}px`;
-    wheelEl.style.height = `${logical}px`;
-
-    const wheelCtx = wheelEl.getContext('2d', {
+    const wheelCtx = this.wheelCanvasRef.nativeElement.getContext('2d', {
       alpha: true,
       desynchronized: true,
     } as CanvasRenderingContext2DSettings);
@@ -134,8 +125,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
     this.ctx  = wheelCtx;
     this.cctx = confettiCtx;
 
-    this.ctx.scale(this.dpr, this.dpr);
-
+    this.setupWheelCanvas();
     this.prepareVenues();
     this.rebuildBaseWheel();
     this.resizeConfetti();
@@ -161,20 +151,22 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
   ngOnDestroy(): void {
     window.removeEventListener('resize', this.resizeHandler);
 
-    if (this.animFrame)    cancelAnimationFrame(this.animFrame);
-    if (this.confettiRaf)  cancelAnimationFrame(this.confettiRaf);
-    if (this.pulseRaf)     cancelAnimationFrame(this.pulseRaf);
+    if (this.animFrame)   cancelAnimationFrame(this.animFrame);
+    if (this.confettiRaf) cancelAnimationFrame(this.confettiRaf);
+    if (this.pulseRaf)    cancelAnimationFrame(this.pulseRaf);
   }
+
+  // ── Public event handlers ─────────────────────────────────────────────────
 
   onTrigger(): void {
     if (this.spinning || this.wheelVenues.length === 0) return;
 
-    this.selectedVenue       = null;
-    this.modalOpen           = false;
-    this.overlayActive       = true;
-    this.wheelHiding         = false;
-    this.wheelVisible        = true;
-    this.winPulseStartedAt   = 0;
+    this.selectedVenue     = null;
+    this.modalOpen         = false;
+    this.overlayActive     = true;
+    this.wheelHiding       = false;
+    this.wheelVisible      = true;
+    this.winPulseStartedAt = 0;
 
     this.cdr.markForCheck();
 
@@ -193,9 +185,9 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
   onRetry(): void {
     if (this.wheelVenues.length === 0) return;
 
-    this.modalOpen           = false;
-    this.selectedVenue       = null;
-    this.winPulseStartedAt   = 0;
+    this.modalOpen         = false;
+    this.selectedVenue     = null;
+    this.winPulseStartedAt = 0;
     this.stopConfetti();
 
     this.cdr.markForCheck();
@@ -216,6 +208,37 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
     this.closeAll();
   }
 
+  // ── Canvas setup ──────────────────────────────────────────────────────────
+
+  /**
+   * Reads the canvas element's actual CSS rendered size via getBoundingClientRect,
+   * sets the bitmap to logical × DPR, applies setTransform so all drawing code
+   * works in logical CSS pixels, and recomputes size / center / radius.
+   *
+   * Called once in ngAfterViewInit and again at the start of spin() to pick up
+   * the real size after the wheel-shell has become visible and reflowed.
+   */
+  private setupWheelCanvas(): void {
+    const el  = this.wheelCanvasRef.nativeElement;
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+
+    const rect    = el.getBoundingClientRect();
+    const logical = rect.width > 0 ? Math.round(rect.width) : 520;
+
+    el.width  = Math.round(logical * dpr);
+    el.height = Math.round(logical * dpr);
+
+    // One transform to rule them all — drawing code never needs to touch DPR again
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    this.size   = logical;
+    this.center = logical / 2;
+    this.radius = this.center - 18;
+
+    this.baseWheelDirty = true;
+  }
+
+  // ── Private helpers ───────────────────────────────────────────────────────
 
   private prepareVenues(): void {
     this.wheelVenues = (this.venues ?? [])
@@ -226,9 +249,9 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
   private mapVenue(venue: VenueResponseDto): WheelVenue {
     const anyVenue = venue as any;
 
-    const name     = anyVenue.name     ?? anyVenue.title    ?? 'Nepoznat lokal';
+    const name     = anyVenue.name      ?? anyVenue.title    ?? 'Nepoznat lokal';
     const category = anyVenue.venueType ?? anyVenue.category ?? 'Lokal';
-    const location = anyVenue.city     ?? anyVenue.location  ?? anyVenue.address ?? 'Sarajevo';
+    const location = anyVenue.city      ?? anyVenue.location ?? anyVenue.address ?? 'Sarajevo';
 
     return {
       source: venue,
@@ -238,10 +261,10 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
         ? this.shorten(anyVenue.description, 70)
         : 'Pogledaj detalje lokala i odluči da li je ovo tvoja večer.',
       img:
-        anyVenue.imageUrl       ??
-        anyVenue.coverImageUrl  ??
-        anyVenue.image          ??
-        anyVenue.logoUrl        ??
+        anyVenue.imageUrl      ??
+        anyVenue.coverImageUrl ??
+        anyVenue.image         ??
+        anyVenue.logoUrl       ??
         this.fallbackImage,
     };
   }
@@ -253,6 +276,10 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
   private spin(): void {
     if (this.spinning || this.wheelVenues.length === 0) return;
 
+    // Re-read now that the wheel-shell is fully visible and laid out
+    this.setupWheelCanvas();
+    this.rebuildBaseWheel();
+
     this.spinning          = true;
     this.winnerIdx         = Math.floor(Math.random() * this.wheelVenues.length);
     this.winPulseStartedAt = 0;
@@ -262,19 +289,19 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
     const currentWinnerPosition = this.normalize(this.rotation + winnerCenter);
     const neededDelta           = this.normalize(this.pointerAngle - currentWinnerPosition);
 
-    const isMobile      = window.innerWidth <= 640;
-    const extraSpins    = this.tau * (isMobile ? 4 : 6);
-    const startRotation = this.rotation;
+    const isMobile       = window.innerWidth <= 640;
+    const extraSpins     = this.tau * (isMobile ? 4 : 6);
+    const startRotation  = this.rotation;
     const targetRotation = startRotation + extraSpins + neededDelta;
-    const duration      = isMobile ? 3000 : 4100;
-    const start         = performance.now();
+    const duration       = isMobile ? 3000 : 4100;
+    const start          = performance.now();
 
     if (this.animFrame) cancelAnimationFrame(this.animFrame);
 
     this.zone.runOutsideAngular(() => {
       const tick = (now: number) => {
-        const t      = Math.min(1, (now - start) / duration);
-        const eased  = 1 - Math.pow(1 - t, 4);
+        const t     = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 4);
 
         this.rotation = startRotation + (targetRotation - startRotation) * eased;
         this.drawWheel();
@@ -335,22 +362,25 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
     });
   }
 
+  /**
+   * Builds a cached offscreen canvas of the static wheel background.
+   * Drawn at this.size x this.size in logical pixels — no DPR here.
+   * drawWheel() blits it via drawImage at the same logical size;
+   * the main ctx's DPR transform handles sharpness automatically.
+   */
   private rebuildBaseWheel(): void {
     if (!this.wheelVenues.length) return;
 
-    const canvas = document.createElement('canvas');
-    canvas.width  = Math.round(this.size * this.dpr);
-    canvas.height = Math.round(this.size * this.dpr);
+    const canvas  = document.createElement('canvas');
+    canvas.width  = this.size;
+    canvas.height = this.size;
 
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    ctx.scale(this.dpr, this.dpr);
-
     const segmentAngle = this.tau / this.wheelVenues.length;
 
     ctx.clearRect(0, 0, this.size, this.size);
-
     ctx.save();
     ctx.translate(this.center, this.center);
 
@@ -412,20 +442,14 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
 
     const ctx = this.ctx;
 
-    // Use logical size for clearRect — ctx.scale(dpr, dpr) handles physical pixels
-    ctx.clearRect(0, 0, this.canvasSize, this.canvasSize);
+    ctx.clearRect(0, 0, this.size, this.size);
 
     ctx.save();
     ctx.translate(this.center, this.center);
     ctx.rotate(this.rotation);
 
     if (this.baseWheelCanvas) {
-      // Draw offscreen canvas at logical size; DPR scaling is baked into both contexts
-      ctx.drawImage(
-        this.baseWheelCanvas,
-        -this.center, -this.center,
-        this.size, this.size,
-      );
+      ctx.drawImage(this.baseWheelCanvas, -this.center, -this.center, this.size, this.size);
     }
 
     if (!this.spinning && this.winnerIdx >= 0) {
@@ -548,16 +572,16 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
       const speed = (isMobile ? 2.2 : 3) + Math.random() * (isMobile ? 3.8 : 6);
 
       this.particles.push({
-        x:     cx + (Math.random() - 0.5) * (isMobile ? 70 : 120),
-        y:     cy + (Math.random() - 0.5) * 34,
-        vx:    Math.cos(angle) * speed,
-        vy:    Math.sin(angle) * speed,
-        rot:   Math.random() * this.tau,
-        vrot:  (Math.random() - 0.5) * 0.2,
-        w:     (isMobile ? 4 : 5) + Math.random() * (isMobile ? 5 : 8),
-        h:     2 + Math.random() * 4,
-        color: this.confettiColors[Math.floor(Math.random() * this.confettiColors.length)],
-        alpha: 1,
+        x:      cx + (Math.random() - 0.5) * (isMobile ? 70 : 120),
+        y:      cy + (Math.random() - 0.5) * 34,
+        vx:     Math.cos(angle) * speed,
+        vy:     Math.sin(angle) * speed,
+        rot:    Math.random() * this.tau,
+        vrot:   (Math.random() - 0.5) * 0.2,
+        w:      (isMobile ? 4 : 5) + Math.random() * (isMobile ? 5 : 8),
+        h:      2 + Math.random() * 4,
+        color:  this.confettiColors[Math.floor(Math.random() * this.confettiColors.length)],
+        alpha:  1,
       });
     }
 
@@ -599,11 +623,11 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
         let alive = false;
 
         for (const p of this.particles) {
-          p.x   += p.vx;
-          p.y   += p.vy;
-          p.vy  += isMobile ? 0.075 : 0.085;
-          p.vx  *= 0.986;
-          p.rot += p.vrot;
+          p.x    += p.vx;
+          p.y    += p.vy;
+          p.vy   += isMobile ? 0.075 : 0.085;
+          p.vx   *= 0.986;
+          p.rot  += p.vrot;
           p.alpha -= isMobile ? 0.016 : 0.01;
 
           if (p.alpha <= 0) continue;
