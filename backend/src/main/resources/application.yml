@@ -3,9 +3,9 @@ spring:
     name: gdje-izlazimo
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/gdje_izlazimo}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
 
   jpa:
     hibernate:
@@ -20,24 +20,24 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:8080/realms/gdje-izlazimo}
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
   mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
     username: ${MAIL_USERNAME:}
     password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
-          auth: ${MAIL_SMTP_AUTH}
+          auth: ${MAIL_SMTP_AUTH:false}
           starttls:
-            enable: ${MAIL_SMTP_STARTTLS_ENABLE}
+            enable: ${MAIL_SMTP_STARTTLS_ENABLE:false}
 
 app:
   mail:
-    from: ${APP_MAIL_FROM}
+    from: ${APP_MAIL_FROM:noreply@gdje-izlazimo.local}
 
 server:
   port: ${PORT:8081}
@@ -54,15 +54,15 @@ logging:
         web: ${LOGGING_SPRING_WEB:INFO}
 
 keycloak:
-  server-url: ${KEYCLOAK_SERVER_URL}
-  realm: ${KEYCLOAK_REALM}
-  admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID}
-  admin-client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET}
+  server-url: ${KEYCLOAK_SERVER_URL:http://localhost:8080}
+  realm: ${KEYCLOAK_REALM:gdje-izlazimo}
+  admin-client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:spring-admin-client}
+  admin-client-secret: ${KEYCLOAK_ADMIN_CLIENT_SECRET:}
 
 imagekit:
-  public-key: ${IMAGEKIT_PUBLIC_KEY}
-  private-key: ${IMAGEKIT_PRIVATE_KEY}
-  url-endpoint: ${IMAGEKIT_URL_ENDPOINT}
+  public-key: ${IMAGEKIT_PUBLIC_KEY:}
+  private-key: ${IMAGEKIT_PRIVATE_KEY:}
+  url-endpoint: ${IMAGEKIT_URL_ENDPOINT:}
 
 springdoc:
   api-docs:
