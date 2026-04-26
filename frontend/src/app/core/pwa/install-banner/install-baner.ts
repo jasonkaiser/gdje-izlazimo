@@ -15,16 +15,19 @@ import { InstallPromptService } from '../install-prompt.service';
             <span>Brži pristup, radi i offline</span>
           </div>
         </div>
+
         <div class="install-banner__actions">
-          <button class="install-banner__dismiss" (click)="dismissAndroid()">✕</button>
-          <button class="install-banner__install" (click)="install()">Instaliraj</button>
+          <button class="install-banner__dismiss" type="button" (click)="dismissAndroid()">✕</button>
+          <button class="install-banner__install" type="button" (click)="install()">Instaliraj</button>
         </div>
       </div>
     }
+
     @if (showIosBanner()) {
-      <div class="install-banner ios-banner">
+      <div class="install-banner ios-banner" [class.top]="iosInstruction() === 'gore'">
         <div class="install-banner__content">
           <img src="android-chrome-512x512.png" alt="Gdje Izlazimo" class="install-banner__icon">
+
           <div class="install-banner__text">
             <strong>Dodaj na početni ekran</strong>
             <span>
@@ -34,11 +37,12 @@ import { InstallPromptService } from '../install-prompt.service';
                 <polyline points="16 6 12 2 8 6"/>
                 <line x1="12" y1="2" x2="12" y2="15"/>
               </svg>
-              dole, pa <b>"Dodaj na početni ekran"</b>
+              {{ iosInstruction() }}, pa <b>"Dodaj na početni ekran"</b>
             </span>
           </div>
         </div>
-        <button class="install-banner__dismiss" (click)="dismissIos()">✕</button>
+
+        <button class="install-banner__dismiss" type="button" (click)="dismissIos()">✕</button>
         <div class="ios-arrow"></div>
       </div>
     }
@@ -71,6 +75,14 @@ import { InstallPromptService } from '../install-prompt.service';
       isolation: isolate;
     }
 
+    .ios-banner {
+      bottom: 5rem;
+    }
+
+    .ios-banner.top {
+      bottom: 5rem;
+    }
+
     .ios-arrow {
       position: absolute;
       bottom: -8px;
@@ -83,13 +95,22 @@ import { InstallPromptService } from '../install-prompt.service';
       pointer-events: none;
     }
 
-    .ios-banner {
-      bottom: 5rem;
+    .ios-banner.top .ios-arrow {
+      top: -8px;
+      bottom: auto;
+      transform: translateX(-50%) rotate(180deg);
     }
 
     @keyframes slideUp {
-      from { transform: translateY(130%); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
+      from {
+        transform: translateY(130%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     .install-banner__content {
@@ -193,10 +214,6 @@ import { InstallPromptService } from '../install-prompt.service';
       transform: scale(0.96);
       opacity: 0.85;
     }
-
-    .install-banner__share {
-      background: #007AFF;
-    }
   `]
 })
 export class InstallBannerComponent implements OnInit {
@@ -205,30 +222,36 @@ export class InstallBannerComponent implements OnInit {
 
   readonly showAndroidBanner = signal(false);
   readonly showIosBanner = signal(false);
+  readonly iosInstruction = signal<'gore' | 'dole'>('dole');
 
   ngOnInit() {
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.promptService.init();
 
-    const ua = navigator.userAgent;
-    const isIos = /iphone|ipad|ipod/i.test(ua);
-    const isAndroid = /android/i.test(ua);
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-      || (navigator as any).standalone === true;
+    const ua = navigator.userAgent.toLowerCase();
+    const isIos = /iphone|ipad|ipod/.test(ua);
+    const isAndroid = /android/.test(ua);
+    const isChromeIos = /crios/.test(ua);
+    const isStandalone =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as any).standalone === true;
 
     if (isStandalone) return;
 
     if (isIos) {
+      this.iosInstruction.set(isChromeIos ? 'gore' : 'dole');
+
       if (!sessionStorage.getItem('ios-banner-dismissed')) {
         setTimeout(() => this.showIosBanner.set(true), 2500);
       }
-
     } else if (isAndroid) {
       if (!sessionStorage.getItem('android-banner-dismissed')) {
         let elapsed = 0;
+
         const interval = setInterval(() => {
           elapsed += 500;
+
           if (this.promptService.canInstall()) {
             this.showAndroidBanner.set(true);
             clearInterval(interval);
@@ -242,20 +265,9 @@ export class InstallBannerComponent implements OnInit {
 
   async install() {
     const result = await this.promptService.promptInstall();
+
     if (result === 'accepted') {
       this.showAndroidBanner.set(false);
-    }
-  }
-
-  async shareIos() {
-    if (!navigator.share) return;
-    try {
-      await navigator.share({
-        title: 'Gdje Izlazimo',
-        text: 'Otkrij mjesta i događaje u tvom gradu.',
-        url: window.location.origin
-      });
-    } catch {
     }
   }
 
