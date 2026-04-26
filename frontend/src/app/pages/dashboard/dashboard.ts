@@ -63,27 +63,27 @@ export class Dashboard implements OnInit, OnDestroy {
     {
       id: 1,
       name: 'Viking Pub',
-      imageUrl: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=60&sat=-100',
+      imageUrl: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=60',
     },
     {
       id: 2,
       name: 'Sloga',
-      imageUrl: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1200&q=60&sat=-100',
+      imageUrl: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1200&q=60',
     },
     {
       id: 3,
       name: 'Silver & Smoke',
-      imageUrl: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1200&q=60&sat=-100',
+      imageUrl: 'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1200&q=60',
     },
     {
       id: 4,
       name: 'Underground',
-      imageUrl: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=1200&q=60&sat=-100',
+      imageUrl: 'https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=1200&q=60',
     },
     {
       id: 5,
       name: 'Old Town Bar',
-      imageUrl: 'https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=1200&q=60&sat=-100',
+      imageUrl: 'https://images.unsplash.com/photo-1543007630-9710e4a00a20?auto=format&fit=crop&w=1200&q=60',
     },
   ];
 
@@ -113,8 +113,8 @@ export class Dashboard implements OnInit, OnDestroy {
       label: 'Restoran',
       venueType: VenueCategory.RESTAURANT,
       iconKey: 'restoran',
-      iconColor: 'rgba(251,146,60,0.9)',
-      pillStyle: 'background: linear-gradient(180deg, rgba(0,0,0,0.2) 70%, rgba(255,100,0,0.22) 100%), rgba(255,255,255,0.025); border: 1px solid rgba(255,100,0,0.28);',
+      iconColor: 'rgba(52,211,153,0.9)',
+      pillStyle: 'background: linear-gradient(180deg, rgba(0,0,0,0.2) 70%, rgba(16,185,129,0.22) 100%), rgba(255,255,255,0.025); border: 1px solid rgba(16,185,129,0.28);',
     },
   ];
 
@@ -169,7 +169,8 @@ export class Dashboard implements OnInit, OnDestroy {
       });
   }
 
-  goToVenuesByCategory(venueType: VenueCategory): void {
+  goToVenuesByCategory(venueType: VenueCategory | null): void {
+    if (!venueType) return;
     this.router.navigate(['/venues'], {
       queryParams: {
         venueType,
@@ -224,6 +225,21 @@ export class Dashboard implements OnInit, OnDestroy {
       },
     });
 }
+
+  get vecerasBadge(): CategoryBadge {
+    return {
+      label: 'Večeras',
+      venueType: null,
+      iconKey: 'veceras',
+      iconColor: 'rgba(251,146,60,0.95)',
+      pillStyle: 'background: linear-gradient(180deg, rgba(0,0,0,0.2) 70%, rgba(234,88,12,0.22) 100%), rgba(255,255,255,0.025); border: 1px solid rgba(234,88,12,0.75);',
+      scrollTargetId: 'tonight-events-section',
+    };
+  }
+
+  get hasTonightEvents(): boolean {
+    return this.tonightEvents.length > 0;
+  }
   
   onStatsInView(inView: boolean): void {
     this.statsShown = inView;

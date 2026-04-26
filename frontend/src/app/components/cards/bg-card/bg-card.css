@@ -1,0 +1,5 @@
+
+.card-active {
+  opacity: 1 !important;
+  filter: grayscale(0%) !important;
+}

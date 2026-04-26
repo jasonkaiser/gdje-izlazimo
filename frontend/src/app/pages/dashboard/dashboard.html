@@ -1,5 +1,6 @@
 <!-- Glow blobs — clipped separately so section can be overflow-visible -->
-<div class="absolute inset-0 overflow-visible pointer-events-none z-0">  <div
+<div class="absolute inset-0 overflow-visible pointer-events-none z-0">
+  <div
     class="pointer-events-none absolute z-0
            w-[2800px] h-[2400px]
            -left-[350px] top-[1100px]
@@ -93,10 +94,17 @@
           @for (badge of categoryBadges.slice(3); track badge.label) {
             <app-category-badge [badge]="badge" (clicked)="goToVenuesByCategory($event)" />
           }
+
+          <!-- Večeras badge — only rendered when tonight events exist and loading is done -->
+          @if (!tonightEventsLoading && hasTonightEvents) {
+            <app-category-badge
+              [badge]="vecerasBadge"
+    
+            />
+          }
         </div>
-        
       </div>
-        
+
     </div>
 
     <div class="mt-8 mb-30 relative z-30">
@@ -105,10 +113,10 @@
         (decide)="onOdluciZaMene($event)">
       </app-odluci-za-mene>
     </div>
-      
 
     <!-- Tonight events -->
     <div
+      id="tonight-events-section"
       *ngIf="tonightEvents.length > 0"
       scrollReveal
       srVariant="fade-up"
