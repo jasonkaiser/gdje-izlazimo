@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import java.util.UUID;
-
+//
 @Mapper(componentModel = "spring")
 public interface ActivityLogMapper {
 
