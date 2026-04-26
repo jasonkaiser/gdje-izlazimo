@@ -1,7 +1,7 @@
 {
   "name": "Gdje Izlazimo",
   "short_name": "GdjeIzlazimo",
-  "description": "Otkrij mjesta i događaje u tvojom gradu.",
+  "description": "Otkrij mjesta i događaje u tvom gradu.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -12,19 +12,19 @@
   "dir": "ltr",
   "categories": ["entertainment", "lifestyle", "social"],
   "icons": [
-  {
-    "src": "android-chrome-512x512.png",
-    "sizes": "512x512",
-    "type": "image/png",
-    "purpose": "any maskable"
-  },
-  {
-    "src": "android-chrome-512x512.png",
-    "sizes": "192x192",
-    "type": "image/png",
-    "purpose": "any maskable"
-  }
-],
+    {
+      "src": "android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "android-chrome-512x512.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
   "screenshots": [],
   "shortcuts": [
     {
@@ -32,21 +32,36 @@
       "short_name": "Događaji",
       "description": "Pregledaj sve događaje",
       "url": "/events",
-      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "android-chrome-512x512.png",
+          "sizes": "512x512"
+        }
+      ]
     },
     {
       "name": "Mjesta",
       "short_name": "Mjesta",
       "description": "Pregledaj sva mjesta",
       "url": "/venues",
-      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "android-chrome-512x512.png",
+          "sizes": "512x512"
+        }
+      ]
     },
     {
       "name": "Mapa",
       "short_name": "Mapa",
       "description": "Otvori mapu mjesta",
       "url": "/map",
-      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "android-chrome-512x512.png",
+          "sizes": "512x512"
+        }
+      ]
     }
   ]
 }

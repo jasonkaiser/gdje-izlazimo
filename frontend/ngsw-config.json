@@ -60,33 +60,6 @@
   ],
   "dataGroups": [
     {
-      "name": "api-events-venues",
-      "urls": [
-        "https://gdje-izlazimo-be.onrender.com/events/**",
-        "https://gdje-izlazimo-be.onrender.com/venues/**"
-      ],
-      "cacheConfig": {
-        "maxSize": 100,
-        "maxAge": "1h",
-        "timeout": "10s",
-        "strategy": "freshness"
-      }
-    },
-    {
-      "name": "api-user-sensitive",
-      "urls": [
-        "https://gdje-izlazimo-be.onrender.com/reservations/**",
-        "https://gdje-izlazimo-be.onrender.com/profile/**",
-        "https://gdje-izlazimo-be.onrender.com/admin/**"
-      ],
-      "cacheConfig": {
-        "maxSize": 20,
-        "maxAge": "0s",
-        "timeout": "5s",
-        "strategy": "freshness"
-      }
-    },
-    {
       "name": "imagekit-cdn",
       "urls": [
         "https://ik.imagekit.io/**"
