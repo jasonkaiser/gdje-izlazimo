@@ -1,7 +1,10 @@
+<!-- ─── OVERLAY ─── -->
 <div class="odluci-overlay" [class.active]="overlayActive" (click)="onOverlayClick()"></div>
 
+<!-- ─── CONFETTI ─── -->
 <canvas class="confetti-canvas" #confettiCanvas></canvas>
 
+<!-- ─── SPIN WHEEL MODAL ─── -->
 <div class="wheel-stage" [class.visible]="wheelVisible" [class.hiding]="wheelHiding">
   <div class="wheel-shell">
     <div class="wheel-pointer"></div>
@@ -9,6 +12,7 @@
   </div>
 </div>
 
+<!-- ─── RESULT MODAL ─── -->
 <div class="result-modal" [class.open]="modalOpen" *ngIf="selectedVenue">
   <div class="modal-inner">
     <button class="modal-close" type="button" (click)="onModalClose()">✕</button>
@@ -30,25 +34,44 @@
   </div>
 </div>
 
-<div class="odluci-section">
-  <div class="odluci-bg"></div>
-  <div class="odluci-border-light"></div>
+<!-- ─── HERO SECTION ─── -->
+<!--
+  Desktop: CSS grid with two equal columns.
+    Col 1 → .odluci-content  (text + CTA)
+    Col 2 → .odluci-wheel-col (decorative wheel image)
 
-  <p class="section-label">Ne znaš gdje večeras?</p>
+  Mobile: single column, wheel row comes FIRST (top), text row below.
+  This eliminates the "wheel behind text" problem on mobile entirely.
+-->
+<section class="odluci-section">
 
-     <div class="section-signature">
-        Sarajevo
-      </div>
+  <!-- Ambient glow — contained, no bleed -->
+  <div class="odluci-bg" aria-hidden="true"></div>
 
-  <p class="section-headline mt-2">
-    neka odluči za tebe.
-  </p>
+  <!-- TEXT COLUMN (desktop: left; mobile: bottom row) -->
+  <div class="odluci-content">
+    <p class="section-label">Ne znaš gdje večeras?</p>
 
-  <p class="section-sub">
-    Zavrtimo jedan lokal iz grada — bez dogovaranja, bez razmišljanja.
-  </p>
+    <span class="section-signature mt-3">Sarajevo</span>
 
-  <button class="odluci-btn" type="button" (click)="onTrigger()">
-    Odluči za mene
-  </button>
-</div>
+    <p class="section-headline mt-2">
+      neka odluči za tebe.
+    </p>
+
+    <p class="section-sub">
+      Zavrtimo jedan lokal iz grada — bez dogovaranja, bez razmišljanja.
+    </p>
+
+    <button class="odluci-btn" type="button" (click)="onTrigger()">
+      Odluči za mene
+    </button>
+  </div>
+
+  <!-- WHEEL COLUMN (desktop: right; mobile: top row) -->
+  <div class="odluci-wheel-col">
+    <div class="odluci-wheel-bg" aria-hidden="true">
+      <img src="/assets/lucky-wheel.png" alt="" />
+    </div>
+  </div>
+
+</section>

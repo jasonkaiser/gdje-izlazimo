@@ -14,26 +14,10 @@ public class CacheHeaderInterceptor implements HandlerInterceptor {
                              Object handler) {
 
         String path = request.getRequestURI();
-        String method = request.getMethod();
 
-        if (!"GET".equalsIgnoreCase(method)) {
-            response.setHeader("Cache-Control", "no-store");
-            return true;
-        }
-
-        if (path.startsWith("/events") || path.startsWith("/venues")) {
-            response.setHeader("Cache-Control", "public, max-age=300, stale-while-revalidate=3600");
-
-        } else if (path.startsWith("/reservations")
-                || path.startsWith("/profile")
-                || path.startsWith("/admin")
-                || path.startsWith("/venue-panel")) {
-            response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-            response.setHeader("Pragma", "no-cache");
-
-        } else {
-            response.setHeader("Cache-Control", "no-store");
-        }
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
 
         return true;
     }
