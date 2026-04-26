@@ -10,10 +10,20 @@ import { LoadingBar } from './components/other/loading-bar/loading-bar';
 import { AppFooterComponent } from './core/layout/footer/footer';
 import { InstallBannerComponent } from './core/pwa/install-banner/install-baner';
 
+declare var gtag: Function;
+
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, AuthNavbar, PublicNavbar, ToastHost, LoadingBar, AppFooterComponent, InstallBannerComponent],
+  imports: [
+    RouterOutlet,
+    AuthNavbar,
+    PublicNavbar,
+    ToastHost,
+    LoadingBar,
+    AppFooterComponent,
+    InstallBannerComponent
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -34,6 +44,18 @@ export class App implements OnInit {
   readonly isAdminRoute = computed(() =>
     (this.currentUrl() ?? '').includes('/admin')
   );
+
+  constructor() {
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        if (typeof gtag === 'function') {
+          gtag('config', 'G-J8RREHX1TP', {
+            page_path: event.urlAfterRedirects,
+          });
+        }
+      });
+  }
 
   ngOnInit() {}
 }
