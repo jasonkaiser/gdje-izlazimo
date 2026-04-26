@@ -226,13 +226,14 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
     const start = performance.now();
 
     if (this.animFrame) cancelAnimationFrame(this.animFrame);
-
+    const canvas = this.wheelCanvasRef.nativeElement;
+    this.drawWheel(false);
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / duration);
       const eased = 1 - Math.pow(1 - t, 5);
 
       this.rotation = startRotation + (targetRotation - startRotation) * eased;
-      this.drawWheel();
+      canvas.style.transform = `rotate(${this.rotation}rad) translateZ(0)`;
 
       if (t < 1) {
         this.animFrame = requestAnimationFrame(tick);
@@ -240,8 +241,9 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
       }
 
       this.rotation = targetRotation;
+      canvas.style.transform = `rotate(${this.rotation}rad) translateZ(0)`;
       this.spinning = false;
-      this.drawWheel();
+      this.drawWheel(false);
       this.finishSpin();
     };
 
@@ -286,8 +288,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
 
     tick();
   }
-
-  private drawWheel(): void {
+  private drawWheel(applyRotation = true): void {
     if (!this.ctx || this.wheelVenues.length === 0) return;
 
     const ctx = this.ctx;
@@ -297,7 +298,9 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
 
     ctx.save();
     ctx.translate(this.center, this.center);
-    ctx.rotate(this.rotation);
+    if (applyRotation) {
+      ctx.rotate(this.rotation);
+    }
 
     for (let i = 0; i < this.wheelVenues.length; i++) {
       const start = i * segmentAngle - segmentAngle / 2;
