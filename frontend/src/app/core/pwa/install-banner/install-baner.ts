@@ -252,7 +252,7 @@ export class InstallBannerComponent implements OnInit {
     try {
       await navigator.share({
         title: 'Gdje Izlazimo',
-        text: 'Otkrij mjesta i događaje u tvojom gradu.',
+        text: 'Otkrij mjesta i događaje u tvom gradu.',
         url: window.location.origin
       });
     } catch {
