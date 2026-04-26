@@ -1,157 +1,168 @@
-# gdje-izlazimo.ba — MVP
+<div align="center">
 
-A web application that helps users **discover venues** (clubs, bars, restaurants) and make table reservations without relying on Instagram messages or phone calls.
+<img src="spm/images/venue-landing-page.png" alt="gdje-izlazimo.ba" width="100%" style="border-radius: 12px;" />
 
-This project represents a **real-world MVP**, built to validate the core reservation workflow for both users and venues.
+<br />
+<br />
 
-![Landing Page](spm/images/venue-landing-page.png)
----
+# gdje-izlazimo.ba
 
-## 🎯 Vision
+**The go-to platform for venue discovery and table reservations in Bosnia & Herzegovina.**
 
-Young people often struggle to discover venues and make reservations due to fragmented communication channels.  
-**gdje-izlazimo.ba** centralizes venue discovery, reservations, and basic management into one simple platform.
+Ditch the Instagram DMs and phone calls — discover venues, check availability, and book your spot in seconds.
 
----
+<br />
 
-## 👥 Target Users
+[![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io/)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Keycloak](https://img.shields.io/badge/Keycloak-4D4D4D?style=for-the-badge&logo=keycloak&logoColor=white)](https://www.keycloak.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-- Young adults and students (ages 16–30)
-- Urban, socially active, tech-savvy users
-- Venue owners who need a simple reservation system
-
----
-
-## 🧱 MVP Scope
-
-The MVP focuses on validating the core reservation flow with real users and venues.
-
-**Key goals:**
-- Clear reservation rules
-- Manual approval by venues
-- Transparent reservation status
-- Minimal automation to reduce complexity
+</div>
 
 ---
 
-## 👤 User Roles (MVP)
+## 📖 Overview
 
-- **USER**
-  - Browse venues
-  - Create and track reservations
-- **VENUE OWNER**
-  - Accept or reject reservations manually
-  - View basic reservation statistics
-- **ADMIN**
-  - Manage venues
-  - Monitor platform activity
+**gdje-izlazimo.ba** (lit. *"where are we going out"*) is a full-stack web platform designed for young, socially active people in Bosnia & Herzegovina who want to discover clubs, bars, and restaurants — and actually book a table without the friction.
+
+> Built using Scrum methodology, sprint planning, and iterative delivery.
 
 ---
 
-## ✅ Core MVP Features
+## ✨ Features
 
-### Authentication
-- Email-based registration and login
-- Mandatory authentication for reservations
-- Role-based access control (JWT)
+### 🔐 Authentication
+Secure, role-based access powered by **Keycloak** with JWT tokens. Three distinct roles keep the platform structured: **User**, **Venue Owner**, and **Admin**.
 
-### Venue Discovery
-- Paginated venue list
-- Search by venue name
-- Category filtering
-- Venue detail page with:
-  - Images
-  - Description
-  - Opening hours
-  - Table types with pricing and capacity
+### 🏛️ Venue Discovery
+Browse a curated list of venues with rich detail pages — images, descriptions, opening hours, table types, and pricing. Filter by category, search by name, and explore an **interactive map** with live venue pins across the city.
 
-### Reservation System
-- Reservation request with:
-  - Date and time (within opening hours)
-  - Table type
-  - Number of people
-- Reservation status flow:
-  - **PENDING → ACCEPTED / REJECTED / CANCELLED**
-- Business rules:
-  - One reservation per user per venue per day
-  - Cancellation allowed up to 2 hours before reservation time
+### 🗺️ Interactive Venue Map
+A full modern map view with pinned locations for every registered venue. Tap any pin to preview the venue and jump straight to its detail page.
 
-### Dashboards
-- **User Dashboard**
-  - View and cancel reservations
-  - Clear status indicators
-- **Venue Owner Dashboard**
-  - Manage incoming reservations
-  - Mandatory rejection reasons
-  - Basic daily overview
+### 🔍 Search & Filtering
+Find exactly what you're looking for with real-time search by venue name and category-based filtering — all paginated for smooth browsing.
 
-### Notifications
-- Email notifications for:
-  - New reservations
-  - Reservation accepted or rejected
-  - Reservation cancelled
+### 📅 Reservation System
+A complete reservation flow with transparent status tracking:
 
----
+```
+PENDING → ACCEPTED / REJECTED / CANCELLED
+```
 
-## 🏗 Tech Stack
+- Choose date, time, table type, and party size
+- One reservation per user per venue per day
+- Cancel up to 2 hours before your booking
+- Mandatory rejection reasons from venues
 
-**Frontend**
-- Angular
-- Tailwind CSS
+### ❤️ Favorites
+Save your go-to spots and build a personal list of favourite venues for quick access.
 
-**Backend**
-- Spring Boot
-- REST API
-- JPA / Hibernate
+### 🎟️ Events System
+Venues can publish events — from themed nights to live music — so users never miss what's happening nearby.
 
-**Authentication**
-- Keycloak (JWT-based)
+### ⭐ Ratings & Reviews
+Users can rate and review venues after their visit, helping others make better decisions and giving venue owners valuable feedback.
 
-**Database**
-- PostgreSQL
+### 📊 Venue Owner Dashboard
+A clean management interface for venue owners to:
+- Accept or reject reservations with required reasoning
+- View a daily reservation overview
+- Monitor ratings and event performance
+- Add table quantity and table types to the venue
+- Add images
+- Add events
+- Manage working operating hours / days
+
+### 🛡️ Admin Panel
+Platform-level control for administrators to manage venues, monitor activity, and ensure quality across the board.
+
+### 📧 Email Notifications
+Automated emails keep everyone in the loop:
+- Reservation received
+- Reservation accepted or rejected
+- Reservation cancelled
 
 ---
 
-## 📌 Project Context
+## 🏗️ Architecture
 
-- **Development Methodology:** Scrum  
-- **Work Mode:** Solo development  
-- **Delivery:** Planned and executed in sprint-based iterations  
+```
+┌─────────────────────────────────────────────────┐
+│                   Angular Frontend              │
+│              Tailwind CSS · SPA                 │
+└────────────────────┬────────────────────────────┘
+                     │ REST API
+┌────────────────────▼────────────────────────────┐
+│              Spring Boot Backend                │
+│            JPA / Hibernate · REST               │
+└──────┬──────────────────────────┬───────────────┘
+       │                          │
+┌──────▼──────┐          ┌────────▼────────┐
+│  PostgreSQL │          │    Keycloak     │
+│  Database   │          │  Auth Server    │
+└─────────────┘          └─────────────────┘
+```
+
+**Frontend** → Angular SPA styled with Tailwind CSS  
+**Backend** → Spring Boot REST API with JPA/Hibernate  
+**Auth** → Keycloak (JWT-based, role-aware)  
+**Database** → PostgreSQL
 
 ---
 
-## 🧠 Architecture Overview
+## 👥 User Roles
 
-The application follows a client–server architecture.  
-Angular handles the frontend UI and communicates with a secured Spring Boot REST API.  
-Authentication and authorization are handled via Keycloak using JWT tokens.
-
----
-
-## 📊 MVP Success Metrics
-
-The MVP is considered successful if it achieves:
-- 80+ active users
-- 10+ registered venues
-- 100+ processed reservations
+| Role | Capabilities |
+|------|-------------|
+| **User** | Browse venues, make & track reservations, manage favourites, write reviews, view events |
+| **Venue Owner** | Manage reservations, publish events, view dashboard stats |
+| **Admin** | Full platform management, venue approval, activity monitoring |
 
 ---
 
-## 🚀 Post-MVP / Planned Features
+## 🎯 MVP Success Metrics
 
-- Online payments
-- Venue promotions and featured listings
-- Real-time availability
-- Push notifications
-- QR-based check-in
-- Advanced analytics for venues
-- Mobile application (iOS / Android)
+| Metric | Target |
+|--------|--------|
+| Active users | 80+ |
+| Registered venues | 10+ |
+| Processed reservations | 100+ |
+
+---
+
+## 🚀 Roadmap
+
+- [ ] Featured venue listings & promotions
+- [ ] QR-based check-in
+- [ ] Advanced venue analytics
+- [ ] Mobile app (iOS & Android)
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Angular, Tailwind CSS |
+| Backend | Spring Boot, REST API |
+| ORM | JPA / Hibernate |
+| Auth | Keycloak (JWT) |
+| Database | PostgreSQL |
+| Methodology | Scrum · Solo Development |
 
 ---
 
 ## 👨‍💻 Author
 
 **Alexander Jason Kaiser**  
-Software Developer & UI Designer  
+Software Developer & UI Designer
 
-Built as a solo project using Scrum methodology, sprint planning, and iterative delivery.
+Built end-to-end as a solo project — from product design and sprint planning to implementation and delivery.
+
+<div align="center">
+
+
+</div>
