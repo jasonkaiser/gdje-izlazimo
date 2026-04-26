@@ -2,8 +2,6 @@ import { ApplicationConfig, inject } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideAppInitializer } from '@angular/core';
 import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
-import { provideServiceWorker } from '@angular/service-worker';
-import { isDevMode } from '@angular/core';
 import { routes } from './app.routes';
 import { AuthService } from './core/auth/auth.service';
 import { authInterceptor } from './core/http/interceptors/auth.interceptor';
@@ -26,10 +24,6 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => {
       const authService = inject(AuthService);
       return authService.init();
-    }),
-    provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      registrationStrategy: 'registerWhenStable:30000',
     }),
   ],
 };
