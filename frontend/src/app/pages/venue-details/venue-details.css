@@ -109,6 +109,12 @@
   will-change: transform, opacity;
 }
 
+.slider-swipe {
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .accordion-body,
   .accordion-body > div,

@@ -136,6 +136,8 @@ export class VenueDetails {
   private readonly router = inject(Router);
 
   private lastVm: Vm | null = null;
+  private touchStartX = 0;
+  private touchStartY = 0;
 
   sliderIndex = 0;
   openId: string | null = null;
@@ -364,6 +366,19 @@ export class VenueDetails {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  onTouchStart(e: TouchEvent): void {
+    this.touchStartX = e.touches[0].clientX;
+    this.touchStartY = e.touches[0].clientY;
+  }
+
+  onTouchEnd(e: TouchEvent, imageCount: number): void {
+    const dx = e.changedTouches[0].clientX - this.touchStartX;
+    const dy = e.changedTouches[0].clientY - this.touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      dx < 0 ? this.nextImage(imageCount) : this.prevImage(imageCount);
+    }
   }
 
   toggleFavorite(vm: Vm): void {

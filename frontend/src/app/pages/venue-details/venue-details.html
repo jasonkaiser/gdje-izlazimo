@@ -127,7 +127,9 @@
           [style.opacity]="sliderShown ? '1' : '0'"
           [style.transform]="sliderShown ? 'translateY(0)' : 'translateY(32px)'"
         >
-          <div class="relative overflow-hidden rounded-[28px] border border-white/[0.06] group shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
+          <div class="relative overflow-hidden rounded-[28px] border border-white/[0.06] group shadow-[0_32px_80px_rgba(0,0,0,0.6)] slider-swipe"
+               (touchstart)="onTouchStart($event)"
+     (touchend)="onTouchEnd($event, vm.images.length)">
             <div
               class="h-[240px] sm:h-[390px] lg:h-[540px] w-full bg-cover bg-center transition-all duration-700 ease-in-out"
               [style.backgroundImage]="
