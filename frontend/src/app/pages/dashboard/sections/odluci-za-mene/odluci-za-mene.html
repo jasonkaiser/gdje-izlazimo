@@ -34,17 +34,7 @@
   </div>
 </div>
 
-<!-- ─── HERO SECTION ─── -->
-<!--
-  Desktop: CSS grid with two equal columns.
-    Col 1 → .odluci-content  (text + CTA)
-    Col 2 → .odluci-wheel-col (decorative wheel image)
-
-  Mobile: single column, wheel row comes FIRST (top), text row below.
-  This eliminates the "wheel behind text" problem on mobile entirely.
--->
-<section class="odluci-section">
-
+<section class="odluci-section" [class.is-spinning-open]="overlayActive || wheelVisible || modalOpen">
   <!-- Ambient glow — contained, no bleed -->
   <div class="odluci-bg" aria-hidden="true"></div>
 

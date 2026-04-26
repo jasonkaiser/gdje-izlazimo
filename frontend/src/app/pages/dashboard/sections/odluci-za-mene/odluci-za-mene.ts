@@ -221,7 +221,8 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
     const extraSpins = this.tau * (5 + Math.floor(Math.random() * 3));
     const startRotation = this.rotation;
     const targetRotation = startRotation + extraSpins + neededDelta;
-    const duration = 4200;
+    const isMobile = window.innerWidth <= 640;
+    const duration = isMobile ? 3200 : 4200;
     const start = performance.now();
 
     if (this.animFrame) cancelAnimationFrame(this.animFrame);
@@ -415,7 +416,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
   private fireConfetti(): void {
     const canvas = this.confettiCanvasRef.nativeElement;
     const isMobile = window.innerWidth <= 640;
-    const count = isMobile ? 58 : 100;
+    const count = isMobile ? 28 : 100;
     const cx = window.innerWidth / 2;
     const cy = window.innerHeight * 0.38;
 
@@ -456,7 +457,7 @@ export class OdluciZaMeneComponent implements AfterViewInit, OnDestroy, OnChange
       Math.min(1, this.particles.reduce((max, p) => Math.max(max, p.alpha), 0))
     );
 
-    if (glowAlpha > 0) {
+    if (glowAlpha > 0 && !isMobile) {
       const gradient = ctx.createRadialGradient(
         width / 2,
         height * 0.18,
