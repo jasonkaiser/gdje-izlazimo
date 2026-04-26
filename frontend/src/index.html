@@ -57,12 +57,12 @@
 <body>
   <app-root></app-root>
 
-  <!-- Inline SW registration: only in browser, after app boots -->
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/ngsw-worker.js', { scope: '/' })
-          .catch(err => console.warn('[SW] Registration failed:', err));
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        for (let reg of registrations) {
+          reg.unregister();
+        }
       });
     }
   </script>
