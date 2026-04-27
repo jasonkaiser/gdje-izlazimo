@@ -1,4 +1,30 @@
 <#import "template.ftl" as layout>
+
+<#-- ─────────────────────────────────────────────────────────────────
+     Helper macro: translates any Keycloak error string into Bosnian.
+     Covers both old-style message keys and new User Profile validator
+     messages that come through as raw English strings.
+     ───────────────────────────────────────────────────────────────── -->
+<#macro bsError msg>
+  <#if msg?contains("invalid character") || msg?contains("prohibited") || msg?contains("TRAP_INVALID") || msg?contains("TRAP_FORBIDDEN") || msg?contains("TRAP_PROHIBITED") || msg?contains("TRAP_USERNAME")>
+    Korisničko ime sadrži nedozvoljene znakove.
+  <#elseif msg?contains("doesn't match") || msg?contains("do not match") || msg?contains("confirmation") || msg?contains("TRAP_CONFIRM") || msg?contains("TRAP_MISMATCH") || msg?contains("TRAP_NOT_MATCH")>
+    Lozinke se ne podudaraju.
+  <#elseif msg?contains("already exists") && msg?contains("username")>
+    Korisničko ime je već zauzeto.
+  <#elseif msg?contains("already exists") && msg?contains("email")>
+    Email adresa je već registrovana.
+  <#elseif msg?contains("required") || msg?contains("missing") || msg?contains("blank")>
+    Ovo polje je obavezno.
+  <#elseif msg?contains("invalid email") || msg?contains("Email address")>
+    Email adresa nije ispravna.
+  <#elseif msg?contains("minimum length") || msg?contains("too short")>
+    Vrijednost je prekratka.
+  <#else>
+    ${msg}
+  </#if>
+</#macro>
+
 <@layout.registrationLayout; section>
 <#if section = "form">
 
@@ -50,11 +76,9 @@
           </span>
         </div>
         <#if messagesPerField?? && messagesPerField.existsError('username')>
-          <span class="gi-field-error">${messagesPerField.getFirstError('username')}</span>
+          <span class="gi-field-error"><@bsError msg=messagesPerField.getFirstError('username')/></span>
         </#if>
       </div>
-
-
 
       <!-- Email -->
       <div class="gi-field">
@@ -77,7 +101,7 @@
           </span>
         </div>
         <#if messagesPerField?? && messagesPerField.existsError('email')>
-          <span class="gi-field-error">${messagesPerField.getFirstError('email')}</span>
+          <span class="gi-field-error"><@bsError msg=messagesPerField.getFirstError('email')/></span>
         </#if>
       </div>
 
@@ -103,7 +127,7 @@
           </span>
         </div>
         <#if messagesPerField?? && messagesPerField.existsError('user.attributes.phone')>
-          <span class="gi-field-error">${messagesPerField.getFirstError('user.attributes.phone')}</span>
+          <span class="gi-field-error"><@bsError msg=messagesPerField.getFirstError('user.attributes.phone')/></span>
         </#if>
       </div>
 
@@ -128,7 +152,7 @@
           </button>
         </div>
         <#if messagesPerField?? && messagesPerField.existsError('password')>
-          <span class="gi-field-error">${messagesPerField.getFirstError('password')}</span>
+          <span class="gi-field-error"><@bsError msg=messagesPerField.getFirstError('password')/></span>
         </#if>
       </div>
 
@@ -153,7 +177,7 @@
           </button>
         </div>
         <#if messagesPerField?? && messagesPerField.existsError('password-confirm')>
-          <span class="gi-field-error">${messagesPerField.getFirstError('password-confirm')}</span>
+          <span class="gi-field-error"><@bsError msg=messagesPerField.getFirstError('password-confirm')/></span>
         </#if>
       </div>
 
@@ -171,30 +195,22 @@
   </div>
 
   <script>
-    // Phone input — allow only digits, +, spaces
     (function() {
       var ph = document.getElementById('user.attributes.phone');
       if (!ph) return;
       ph.addEventListener('input', function() {
-        // strip anything that isn't digit, +, or space
         var pos = this.selectionStart;
         var oldLen = this.value.length;
         this.value = this.value.replace(/[^0-9+\s]/g, '');
-        // keep + only at position 0
         this.value = this.value.replace(/(?!^)\+/g, '');
-        // restore cursor
         var diff = oldLen - this.value.length;
         this.setSelectionRange(pos - diff, pos - diff);
       });
       ph.addEventListener('keydown', function(e) {
-        // allow: backspace, delete, tab, escape, enter, arrows, home, end
         var allowed = [8,9,13,27,46,37,38,39,40,35,36];
         if (allowed.indexOf(e.keyCode) !== -1) return;
-        // allow + only as first char
         if (e.key === '+' && this.selectionStart === 0 && this.value.indexOf('+') === -1) return;
-        // allow digits
         if (e.key >= '0' && e.key <= '9') return;
-        // allow space
         if (e.key === ' ') return;
         e.preventDefault();
       });
