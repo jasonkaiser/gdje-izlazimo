@@ -68,6 +68,13 @@ public class EventController {
         return ResponseEntity.ok(eventService.recordViewAndFind(id, ip));
     }
 
+    @Operation(summary = "Upcoming events", description = "Get upcoming events (future dates only)")
+    @GetMapping("/upcoming")
+    @PermitAll
+    public ResponseEntity<List<EventResponse>> getUpcoming() {
+        return ResponseEntity.ok(eventService.findUpcomingEvents());
+    }
+
     @Operation(summary = "Trending events", description = "Get trending events")
     @GetMapping("/trending")
     @PermitAll

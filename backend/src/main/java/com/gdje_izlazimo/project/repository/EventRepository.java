@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -73,8 +74,14 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
         """)
     Optional<Event> findByIdWithDetails(@Param("id") UUID id);
 
-
+    @Query("""
+        SELECT e FROM Event e
+        JOIN FETCH e.venue v
+        JOIN FETCH v.venueOwner
+        WHERE e.eventDateTime > :now
+        ORDER BY e.eventDateTime ASC
+        """)
+    List<Event> findUpcomingEvents(@Param("now") LocalDateTime now);
 
     boolean existsByIdAndVenue_VenueOwner_Id(UUID eventId, UUID ownerId);
-
 }

@@ -128,7 +128,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadPopularVenues();
-    this.loadPopularEvents();
+    this.loadUpcomingEvents();
     this.loadTonightEvents();
     this.loadWheelVenues();
   }
@@ -153,9 +153,9 @@ export class Dashboard implements OnInit, OnDestroy {
       });
   }
 
-  private loadPopularEvents(): void {
+  private loadUpcomingEvents(): void {
     this.eventService
-      .getEvents({ pageNo: 1, pageSize: 8, sortBy: 'eventDateTime', sortDir: 'ASC' })
+      .getUpcomingEvents()
       .subscribe({
         next: (events) => {
           this.events = events;
@@ -207,24 +207,24 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   private loadWheelVenues(): void {
-  this.venueService
-    .getVenues({
-      pageNo: 1,
-      pageSize: 30,
-      sortBy: 'name',
-      sortDir: 'ASC',
-    })
-    .subscribe({
-      next: (venues) => {
-        this.wheelVenues = venues;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.wheelVenues = [];
-        this.cdr.detectChanges();
-      },
-    });
-}
+    this.venueService
+      .getVenues({
+        pageNo: 1,
+        pageSize: 30,
+        sortBy: 'name',
+        sortDir: 'ASC',
+      })
+      .subscribe({
+        next: (venues) => {
+          this.wheelVenues = venues;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.wheelVenues = [];
+          this.cdr.detectChanges();
+        },
+      });
+  }
 
   get vecerasBadge(): CategoryBadge {
     return {
@@ -240,7 +240,7 @@ export class Dashboard implements OnInit, OnDestroy {
   get hasTonightEvents(): boolean {
     return this.tonightEvents.length > 0;
   }
-  
+
   onStatsInView(inView: boolean): void {
     this.statsShown = inView;
 
@@ -296,7 +296,6 @@ export class Dashboard implements OnInit, OnDestroy {
     if (type === 'res') this.resRaf = id;
     else this.venRaf = id;
   }
-
 
   goToVenues(e: { query: string; venueType: VenueCategory | null; sort: 'name_asc' | 'name_desc' }): void {
     this.router.navigate(['/venues'], {

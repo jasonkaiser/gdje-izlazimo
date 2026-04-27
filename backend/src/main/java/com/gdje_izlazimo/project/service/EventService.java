@@ -82,6 +82,11 @@ public class EventService {
         return enrichWithStats(events);
     }
 
+    public List<EventResponse> findUpcomingEvents() {
+        List<Event> events = eventRepository.findUpcomingEvents(LocalDateTime.now());
+        return enrichWithStats(events);
+    }
+
     @Transactional
     public EventResponse recordViewAndFind(UUID id, String clientIp) {
         Event event = eventRepository.findByIdWithDetails(id)

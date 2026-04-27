@@ -35,6 +35,10 @@ export class EventService {
     });
   }
 
+  getUpcomingEvents(): Observable<EventResponseDto[]> {
+    return this.http.get<EventResponseDto[]>(`${this.baseUrl}/upcoming`);
+  }
+
   searchEvents(params: {
     query?: string;
     dateFrom?: string;

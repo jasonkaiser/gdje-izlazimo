@@ -87,11 +87,7 @@
         <a href="${url.registrationUrl}" class="gi-register-link">Registruj se</a>
       </p>
     </#if>
-    <#if realm.resetPasswordAllowed>
-      <p class="gi-register" style="margin-top: 10px;">
-        <a href="${url.loginResetCredentialsUrl}" class="gi-register-link">Zaboravili ste lozinku?</a>
-      </p>
-    </#if>
+
   </div>
 
   <script>

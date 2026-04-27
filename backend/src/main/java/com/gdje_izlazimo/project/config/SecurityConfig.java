@@ -11,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,9 +24,11 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthConverter jwtAuthConverter;
+    private final UserSyncFilter userSyncFilter;
 
-    public SecurityConfig(JwtAuthConverter jwtAuthConverter) {
+    public SecurityConfig(JwtAuthConverter jwtAuthConverter, UserSyncFilter userSyncFilter) {
         this.jwtAuthConverter = jwtAuthConverter;
+        this.userSyncFilter = userSyncFilter;
     }
 
     @Bean
@@ -56,8 +59,8 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
-
+                )
+                .addFilterAfter(userSyncFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

@@ -33,9 +33,9 @@ export class AppFooterComponent implements AfterViewInit {
 
   navigationLinks: NavLink[] = [
     { name: 'Pocetna', href: '/' },
-    { name: 'Rezervacije', href: '/rezervacije' },
-    { name: 'Lokali', href: '/lokali' },
-    { name: 'Profil', href: '/profil' },
+    { name: 'Rezervacije', href: '/reservations' },
+    { name: 'Lokali', href: '/venues' },
+    { name: 'Profil', href: '/profile' },
   ];
 
   ngAfterViewInit(): void {
