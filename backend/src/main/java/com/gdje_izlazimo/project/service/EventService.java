@@ -132,10 +132,12 @@ public class EventService {
         boolean isAdmin = roles != null && roles.contains("admin");
 
         if (!isAdmin) {
-            Venue venue = venueRepository.findById(dto.venueId())
+            Venue venue = venueRepository.findByIdWithOwner(dto.venueId())
                     .orElseThrow(() -> new VenueNotFoundException("Venue not found"));
+
             UUID requesterId = UUID.fromString(keycloakSub);
-            if (!venue.getVenueOwner().getId().equals(requesterId)) {
+            if (venue.getVenueOwner() == null ||
+                    !venue.getVenueOwner().getId().equals(requesterId)) {
                 throw new ReservationAccessDeniedException("You can only create events for your own venue");
             }
         }

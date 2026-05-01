@@ -1,0 +1,368 @@
+<!-- admin-events.html -->
+
+<div class="space-y-5">
+
+  <!-- ═══════════════════════════════════════════
+       HEADER BAR
+  ════════════════════════════════════════════ -->
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
+
+    <!-- Search -->
+    <div class="relative flex-1">
+      <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+        <svg class="h-4 w-4 text-white/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+        </svg>
+      </div>
+      <input
+        type="text"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+        placeholder="Pretraži događaje, lokale…"
+        class="h-11 w-full rounded-xl border border-white/[0.08] bg-white/[0.04] pl-11 pr-4 font-dm text-[13px] text-white/85 placeholder-white/25
+               transition duration-200 hover:border-white/[0.13] hover:bg-white/[0.06]
+               focus:border-violet-500/50 focus:bg-white/[0.06] focus:outline-none focus:ring-1 focus:ring-violet-500/20"
+      />
+    </div>
+
+    <!-- Venue Filter -->
+    <div class="w-full sm:w-auto sm:min-w-[200px]">
+      <app-dropdown
+        placeholder="Svi lokali"
+        [options]="venueFilterOptions"
+        [(ngModel)]="venueFilter"
+        (ngModelChange)="onFilterChange()"
+      />
+    </div>
+
+    <!-- Period Filter -->
+    <div class="w-full sm:w-auto sm:min-w-[160px]">
+      <app-dropdown
+        placeholder="Svi događaji"
+        [options]="periodFilterOptions"
+        [(ngModel)]="periodFilter"
+        (ngModelChange)="onFilterChange()"
+      />
+    </div>
+
+    <!-- Add Button -->
+    <button
+      (click)="openCreateModal()"
+      class="flex h-11 items-center gap-2 whitespace-nowrap rounded-xl
+             border border-violet-500/40 bg-violet-500/[0.12] px-5
+             font-dm text-[12px] tracking-[0.07em] uppercase text-violet-300
+             transition duration-200 hover:border-violet-400/60 hover:bg-violet-500/[0.2] hover:text-violet-200
+             active:scale-[0.97]"
+    >
+      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+      </svg>
+      Dodaj događaj
+    </button>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       STAT CARDS
+  ════════════════════════════════════════════ -->
+  <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+
+    <div class="group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.03] px-5 py-4
+                transition duration-300 hover:border-white/[0.12] hover:bg-white/[0.05]">
+      <div class="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent"></div>
+      <p class="mb-2 font-dm text-[10px] tracking-[0.14em] uppercase text-white/40">Ukupno</p>
+      <p class="font-sora text-[28px] font-semibold leading-none text-white/90">{{ (stats$ | async)?.total ?? 0 }}</p>
+      <div class="mt-3 h-px w-full bg-gradient-to-r from-white/10 to-transparent"></div>
+    </div>
+
+    <div class="group relative overflow-hidden rounded-2xl border border-violet-500/20 bg-violet-500/[0.05] px-5 py-4
+                transition duration-300 hover:border-violet-500/30 hover:bg-violet-500/[0.08]">
+      <div class="absolute inset-0 bg-gradient-to-br from-violet-500/[0.06] to-transparent"></div>
+      <p class="mb-2 font-dm text-[10px] tracking-[0.14em] uppercase text-violet-400/60">Nadolazeći</p>
+      <p class="font-sora text-[28px] font-semibold leading-none text-violet-400">{{ (stats$ | async)?.upcoming ?? 0 }}</p>
+      <div class="mt-3 h-px w-full bg-gradient-to-r from-violet-500/20 to-transparent"></div>
+    </div>
+
+    <div class="group relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.03] px-5 py-4
+                transition duration-300 hover:border-white/[0.12] hover:bg-white/[0.05]">
+      <div class="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent"></div>
+      <p class="mb-2 font-dm text-[10px] tracking-[0.14em] uppercase text-white/40">Prošli</p>
+      <p class="font-sora text-[28px] font-semibold leading-none text-white/50">{{ (stats$ | async)?.past ?? 0 }}</p>
+      <div class="mt-3 h-px w-full bg-gradient-to-r from-white/10 to-transparent"></div>
+    </div>
+
+    <div class="group relative overflow-hidden rounded-2xl border border-amber-500/20 bg-amber-500/[0.05] px-5 py-4
+                transition duration-300 hover:border-amber-500/30 hover:bg-amber-500/[0.08]">
+      <div class="absolute inset-0 bg-gradient-to-br from-amber-500/[0.06] to-transparent"></div>
+      <p class="mb-2 font-dm text-[10px] tracking-[0.14em] uppercase text-amber-400/60">Trending</p>
+      <p class="font-sora text-[28px] font-semibold leading-none text-amber-400">{{ (stats$ | async)?.trending ?? 0 }}</p>
+      <div class="mt-3 h-px w-full bg-gradient-to-r from-amber-500/20 to-transparent"></div>
+    </div>
+
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════
+       CONTENT AREA
+  ════════════════════════════════════════════ -->
+  @if (vm$ | async; as vm) {
+
+    <!-- Loading -->
+    @if (vm.loading) {
+      <div class="overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02]">
+        <div class="space-y-px p-4">
+          @for (i of [1,2,3,4,5]; track i) {
+            <div class="h-16 animate-pulse rounded-xl bg-white/[0.04]"></div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Error -->
+    @else if (vm.errorMsg) {
+      <div class="flex flex-col items-center gap-3 rounded-2xl border border-rose-500/20 bg-rose-500/[0.04] py-14 text-center">
+        <div class="flex h-12 w-12 items-center justify-center rounded-full border border-rose-500/20 bg-rose-500/10">
+          <svg class="h-6 w-6 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
+          </svg>
+        </div>
+        <p class="font-dm text-[14px] text-rose-400/90">{{ vm.errorMsg }}</p>
+      </div>
+    }
+
+    <!-- Empty -->
+    @else if (vm.items.length === 0) {
+      <div class="flex flex-col items-center gap-3 rounded-2xl border border-white/[0.07] bg-white/[0.02] py-20 text-center">
+        <div class="flex h-14 w-14 items-center justify-center rounded-full border border-white/[0.09] bg-white/[0.04]">
+          <svg class="h-7 w-7 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <p class="font-sora text-[17px] font-medium text-white/40">Nema događaja</p>
+        <p class="font-dm text-[13px] text-white/25">Pokušajte promijeniti filter ili dodajte novi događaj.</p>
+      </div>
+    }
+
+    @else {
+
+      <!-- ─── MOBILE CARDS (< lg) ─── -->
+      <div class="flex flex-col gap-2.5 lg:hidden">
+        @for (event of vm.items; track event.id) {
+          <div class="group rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4
+                      transition duration-200 hover:border-white/[0.13] hover:bg-white/[0.05]">
+
+            <div class="flex items-start gap-3.5">
+              <!-- Image or icon -->
+              @if (event.imageUrl) {
+                <img [src]="event.imageUrl" [alt]="event.name"
+                  class="h-11 w-11 flex-shrink-0 rounded-xl object-cover border border-white/10"/>
+              } @else {
+                <div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl
+                            border border-violet-500/25 bg-violet-500/[0.1]">
+                  <svg class="h-5 w-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                </div>
+              }
+
+              <div class="min-w-0 flex-1">
+                <div class="mb-1 flex items-center gap-2">
+                  <h3 class="truncate font-dm text-[14px] font-semibold text-white/90">{{ event.name }}</h3>
+                  @if (event.trending) {
+                    <span class="inline-flex items-center rounded-md border border-amber-500/25 bg-amber-500/[0.1] px-1.5 py-0.5 font-dm text-[9px] tracking-wide text-amber-400">
+                      Trending
+                    </span>
+                  }
+                </div>
+                <p class="font-dm text-[12px] text-violet-300/70 truncate mb-1.5">{{ event.venueName }}</p>
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span class="inline-flex items-center gap-1 rounded-md px-2 py-0.5 font-dm text-[10px]"
+                    [class.border]="true"
+                    [class.border-violet-500\/25]="isUpcoming(event)"
+                    [class.bg-violet-500\/\[0\.08\]]="isUpcoming(event)"
+                    [class.text-violet-400]="isUpcoming(event)"
+                    [class.border-white\/10]="!isUpcoming(event)"
+                    [class.bg-white\/\[0\.04\]]="!isUpcoming(event)"
+                    [class.text-white\/35]="!isUpcoming(event)"
+                  >
+                    {{ isUpcoming(event) ? 'Nadolazeći' : 'Prošli' }}
+                  </span>
+                  <span class="font-dm text-[11px] text-white/40">{{ formatDateTime(event.eventDateTime) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 flex items-center gap-2 border-t border-white/[0.06] pt-3.5">
+              <button (click)="editEvent(event)"
+                class="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-white/[0.08] bg-white/[0.04]
+                       px-3 py-2 font-dm text-[11px] tracking-[0.07em] uppercase text-white/50
+                       transition duration-150 hover:bg-white/[0.08] hover:text-white/80">
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                Uredi
+              </button>
+              <button (click)="deleteEvent(event)"
+                class="flex h-9 w-9 items-center justify-center rounded-lg border border-rose-500/20 bg-rose-500/[0.06]
+                       text-rose-400/70 transition duration-150 hover:border-rose-500/35 hover:bg-rose-500/[0.12] hover:text-rose-400">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+
+      <!-- ─── DESKTOP TABLE (>= lg) ─── -->
+      <div class="hidden overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] lg:block">
+
+        <!-- Header -->
+        <div class="border-b border-white/[0.07] bg-white/[0.02]">
+          <div class="grid grid-cols-[2.5fr_1.8fr_1.8fr_1fr_1fr_auto] items-center gap-4 px-5 py-3">
+            <span class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/35">Događaj</span>
+            <span class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/35">Lokal</span>
+            <span class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/35">Datum & Vrijeme</span>
+            <span class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/35">Status</span>
+            <span class="font-dm text-[10px] tracking-[0.14em] uppercase text-white/35">Pregledi</span>
+            <span class="w-[80px] font-dm text-[10px] tracking-[0.14em] uppercase text-white/35 text-right">Akcije</span>
+          </div>
+        </div>
+
+        <!-- Rows -->
+        <div class="divide-y divide-white/[0.05]">
+          @for (event of vm.items; track event.id) {
+            <div class="group grid grid-cols-[2.5fr_1.8fr_1.8fr_1fr_1fr_auto] items-center gap-4 px-5 py-3.5
+                        transition duration-150 hover:bg-white/[0.035]">
+
+              <!-- Event name + image -->
+              <div class="flex items-center gap-3 min-w-0">
+                @if (event.imageUrl) {
+                  <img [src]="event.imageUrl" [alt]="event.name"
+                    class="h-10 w-10 flex-shrink-0 rounded-xl object-cover border border-white/10"/>
+                } @else {
+                  <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl
+                              border border-violet-500/25 bg-violet-500/[0.1]
+                              transition duration-200 group-hover:border-violet-500/40 group-hover:bg-violet-500/[0.15]">
+                    <svg class="h-4.5 w-4.5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                  </div>
+                }
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p class="truncate font-dm text-[13.5px] font-semibold text-white/88 group-hover:text-white/95 transition-colors">{{ event.name }}</p>
+                    @if (event.trending) {
+                      <span class="flex-shrink-0 inline-flex items-center rounded-md border border-amber-500/25 bg-amber-500/[0.1] px-1.5 py-0.5 font-dm text-[9px] text-amber-400">
+                        🔥
+                      </span>
+                    }
+                  </div>
+                  <p class="font-dm text-[11px] text-white/30">{{ event.id.substring(0, 8) }}…</p>
+                </div>
+              </div>
+
+              <!-- Venue -->
+              <div class="min-w-0">
+                <p class="truncate font-dm text-[13px] text-violet-300/80">{{ event.venueName }}</p>
+                <p class="truncate font-dm text-[11px] text-white/30">{{ event.venueAddress }}</p>
+              </div>
+
+              <!-- Date & time -->
+              <div>
+                <span class="font-dm text-[13px] tabular-nums text-white/60">{{ formatDateTime(event.eventDateTime) }}</span>
+              </div>
+
+              <!-- Status -->
+              <div>
+                <span class="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 font-dm text-[11px]"
+                  [class.border]="true"
+                  [class.border-violet-500\/25]="isUpcoming(event)"
+                  [class.bg-violet-500\/\[0\.08\]]="isUpcoming(event)"
+                  [class.text-violet-400]="isUpcoming(event)"
+                  [class.border-white\/10]="!isUpcoming(event)"
+                  [class.bg-white\/\[0\.04\]]="!isUpcoming(event)"
+                  [class.text-white\/35]="!isUpcoming(event)"
+                >
+                  <span class="h-1.5 w-1.5 rounded-full"
+                    [class.bg-violet-500]="isUpcoming(event)"
+                    [class.bg-white\/25]="!isUpcoming(event)">
+                  </span>
+                  {{ isUpcoming(event) ? 'Nadolazeći' : 'Prošli' }}
+                </span>
+              </div>
+
+              <!-- View count -->
+              <div>
+                <span class="font-dm text-[13px] tabular-nums text-white/50">{{ event.viewCount ?? 0 }}</span>
+              </div>
+
+              <!-- Actions -->
+              <div class="flex w-[80px] items-center justify-end gap-1.5">
+                <button (click)="editEvent(event)" title="Uredi"
+                  class="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-transparent
+                         text-white/35 transition duration-150 hover:border-white/[0.15] hover:bg-white/[0.07] hover:text-white/70">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                </button>
+                <button (click)="deleteEvent(event)" title="Obriši"
+                  class="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-500/20 bg-rose-500/[0.05]
+                         text-rose-400/60 transition duration-150 hover:border-rose-500/40 hover:bg-rose-500/[0.12] hover:text-rose-400">
+                  <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+
+            </div>
+          }
+        </div>
+
+        <!-- Footer -->
+        <div class="border-t border-white/[0.06] bg-white/[0.01] px-5 py-2.5">
+          <p class="font-dm text-[11px] text-white/25">
+            Prikazano {{ vm.items.length }} događaja — stranica {{ vm.pageNo }}
+          </p>
+        </div>
+      </div>
+
+
+      <!-- ─── PAGINATION ─── -->
+      @if (vm.pageNo > 1 || vm.hasMore) {
+        <div class="flex items-center justify-center gap-3">
+          <button (click)="prevPage()" [disabled]="vm.pageNo <= 1"
+            class="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-5 py-2.5
+                   font-dm text-[11px] tracking-[0.1em] uppercase text-white/50
+                   transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.07] hover:text-white/80
+                   disabled:cursor-not-allowed disabled:opacity-30">
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Prethodna
+          </button>
+
+          <div class="flex h-9 min-w-[36px] items-center justify-center rounded-xl
+                      border border-violet-500/30 bg-violet-500/[0.1] px-3
+                      font-dm text-[12px] font-semibold text-violet-300">
+            {{ vm.pageNo }}
+          </div>
+
+          <button (click)="nextPage()" [disabled]="!vm.hasMore"
+            class="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-5 py-2.5
+                   font-dm text-[11px] tracking-[0.1em] uppercase text-white/50
+                   transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.07] hover:text-white/80
+                   disabled:cursor-not-allowed disabled:opacity-30">
+            Sljedeća
+            <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      }
+
+    }
+  }
+
+</div>

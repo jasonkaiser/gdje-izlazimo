@@ -19,7 +19,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     @Query(value = """
     SELECT e FROM Event e
     JOIN FETCH e.venue v
-    JOIN FETCH v.venueOwner
+    LEFT JOIN FETCH v.venueOwner
     ORDER BY e.eventDateTime ASC
     """,
             countQuery = "SELECT COUNT(e) FROM Event e")
@@ -28,7 +28,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
     @Query(value = """
     SELECT e FROM Event e
     JOIN FETCH e.venue v
-    JOIN FETCH v.venueOwner
+    LEFT JOIN FETCH v.venueOwner
     WHERE v.id = :venueId
     ORDER BY e.eventDateTime ASC
     """,
@@ -37,7 +37,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 
     @Query(value = "SELECT e FROM Event e " +
             "JOIN FETCH e.venue v " +
-            "JOIN FETCH v.venueOwner " +
+            "LEFT JOIN FETCH v.venueOwner " +
             "WHERE (CAST(:dateFrom AS java.time.LocalDateTime) IS NULL OR e.eventDateTime >= :dateFrom) " +
             "AND (CAST(:dateTo AS java.time.LocalDateTime) IS NULL OR e.eventDateTime <= :dateTo)",
             countQuery = "SELECT COUNT(e) FROM Event e " +
@@ -51,7 +51,7 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
 
     @Query(value = "SELECT e FROM Event e " +
             "JOIN FETCH e.venue v " +
-            "JOIN FETCH v.venueOwner " +
+            "LEFT JOIN FETCH v.venueOwner " +
             "WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "AND (CAST(:dateFrom AS java.time.LocalDateTime) IS NULL OR e.eventDateTime >= :dateFrom) " +
             "AND (CAST(:dateTo AS java.time.LocalDateTime) IS NULL OR e.eventDateTime <= :dateTo)",
@@ -66,18 +66,17 @@ public interface EventRepository extends JpaRepository<Event, UUID> {
             Pageable pageable
     );
 
-    @Query("""
-        SELECT e FROM Event e
-        JOIN FETCH e.venue v
-        JOIN FETCH v.venueOwner
-        WHERE e.id = :id
-        """)
+
+    @Query("SELECT e FROM Event e " +
+            "JOIN FETCH e.venue v " +
+            "LEFT JOIN FETCH v.venueOwner " +
+            "WHERE e.id = :id")
     Optional<Event> findByIdWithDetails(@Param("id") UUID id);
 
     @Query("""
         SELECT e FROM Event e
         JOIN FETCH e.venue v
-        JOIN FETCH v.venueOwner
+        LEFT JOIN FETCH v.venueOwner
         WHERE e.eventDateTime > :now
         ORDER BY e.eventDateTime ASC
         """)

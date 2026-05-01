@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -41,10 +42,14 @@ public class EventController {
         this.eventService = eventService;
     }
 
+    private List<String> extractRoles(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(a -> a.getAuthority().replace("ROLE_", ""))
+                .toList();
+    }
+
     @Operation(summary = "Get all events", description = "Returns a paginated list of all events. Public endpoint.")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Events retrieved successfully")
-    })
+    @ApiResponses({@ApiResponse(responseCode = "200", description = "Events retrieved successfully")})
     @PermitAll
     @GetMapping
     public ResponseEntity<List<EventResponse>> findAllEvents(
@@ -82,7 +87,6 @@ public class EventController {
         return ResponseEntity.ok(eventService.findTrendingEvents());
     }
 
-
     @Operation(summary = "Search events", description = "Search events by query with pagination. Public endpoint.")
     @PermitAll
     @GetMapping("/search")
@@ -93,11 +97,10 @@ public class EventController {
             @RequestParam(defaultValue = "eventDateTime") String sortBy,
             @RequestParam(defaultValue = "ASC") String sortDir,
             @RequestParam(defaultValue = "1") int pageNo,
-            @RequestParam(defaultValue = "8") int pageSize
-    ){
+            @RequestParam(defaultValue = "8") int pageSize) {
 
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.Direction.fromString(sortDir), sortBy);
-        return ResponseEntity.ok(eventService.searchEvents(query, dateFrom, dateTo,pageable));
+        return ResponseEntity.ok(eventService.searchEvents(query, dateFrom, dateTo, pageable));
     }
 
     @Operation(summary = "Get event by ID", description = "Returns a single event by its UUID. Public endpoint.")
@@ -141,9 +144,9 @@ public class EventController {
     @PostMapping
     public ResponseEntity<EventResponse> createEvent(
             @AuthenticationPrincipal Jwt jwt,
+            Authentication authentication,
             @Valid @RequestBody CreateEventRequest entity) {
-        List<String> roles = jwt.getClaimAsStringList("roles");
-        return ResponseEntity.ok(eventService.createEvent(entity, jwt.getSubject(), roles));
+        return ResponseEntity.ok(eventService.createEvent(entity, jwt.getSubject(), extractRoles(authentication)));
     }
 
     @PostMapping("/{id}/image")
@@ -151,10 +154,10 @@ public class EventController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<EventResponse> uploadEventImage(
             @AuthenticationPrincipal Jwt jwt,
+            Authentication authentication,
             @PathVariable UUID id,
             @RequestParam("file") MultipartFile file) {
-        List<String> roles = jwt.getClaimAsStringList("roles");
-        return ResponseEntity.ok(eventService.uploadEventImage(id, file, jwt.getSubject(), roles));
+        return ResponseEntity.ok(eventService.uploadEventImage(id, file, jwt.getSubject(), extractRoles(authentication)));
     }
 
     @DeleteMapping("/{id}/image")
@@ -162,9 +165,9 @@ public class EventController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<EventResponse> deleteEventImage(
             @AuthenticationPrincipal Jwt jwt,
+            Authentication authentication,
             @PathVariable UUID id) {
-        List<String> roles = jwt.getClaimAsStringList("roles");
-        return ResponseEntity.ok(eventService.deleteEventImage(id, jwt.getSubject(), roles));
+        return ResponseEntity.ok(eventService.deleteEventImage(id, jwt.getSubject(), extractRoles(authentication)));
     }
 
     @Operation(summary = "Update an event", description = "Updates an existing event. venue_owner may only update their own venue's events.")
@@ -179,10 +182,10 @@ public class EventController {
     @PutMapping("/{id}")
     public ResponseEntity<EventResponse> updateEvent(
             @AuthenticationPrincipal Jwt jwt,
+            Authentication authentication,
             @Parameter(description = "Event UUID") @PathVariable UUID id,
             @Valid @RequestBody UpdateEventRequest request) {
-        List<String> roles = jwt.getClaimAsStringList("roles");
-        return ResponseEntity.ok(eventService.updateEvent(request, id, jwt.getSubject(), roles));
+        return ResponseEntity.ok(eventService.updateEvent(request, id, jwt.getSubject(), extractRoles(authentication)));
     }
 
     @Operation(summary = "Delete an event", description = "Permanently deletes an event. venue_owner may only delete their own venue's events.")
@@ -196,9 +199,9 @@ public class EventController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(
             @AuthenticationPrincipal Jwt jwt,
+            Authentication authentication,
             @Parameter(description = "Event UUID") @PathVariable UUID id) {
-        List<String> roles = jwt.getClaimAsStringList("roles");
-        eventService.deleteEvent(id, jwt.getSubject(), roles);
+        eventService.deleteEvent(id, jwt.getSubject(), extractRoles(authentication));
         return ResponseEntity.noContent().build();
     }
 }

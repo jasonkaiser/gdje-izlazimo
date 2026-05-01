@@ -31,8 +31,9 @@ import { AdminReservationsComponent } from './sections/admin-reservations/admin-
 import { AdminTableTypesComponent } from './sections/admin-table-types/admin-table-types';
 import { AdminSettingsComponent } from './sections/admin-settings/admin-settings';
 import { AuthService } from '../../core/auth/auth.service';
+import { AdminEventsComponent } from './sections/admin-events/admin-events';
 
-export type AdminView = 'dashboard' | 'users' | 'venues' | 'reservations' | 'table-types' | 'settings';
+export type AdminView = 'dashboard' | 'users' | 'venues' | 'events'| 'reservations' | 'table-types' | 'settings';
 
 @Component({
   selector: 'app-admin-panel',
@@ -45,6 +46,7 @@ export type AdminView = 'dashboard' | 'users' | 'venues' | 'reservations' | 'tab
     AdminVenuesComponent,
     AdminReservationsComponent,
     AdminTableTypesComponent,
+    AdminEventsComponent,
     AdminSettingsComponent
   ],
   templateUrl: './admin-panel.html',
@@ -140,6 +142,7 @@ export class AdminPanelComponent implements OnInit {
       dashboard: 'Dashboard',
       users: 'Korisnici',
       venues: 'Lokali',
+      events: 'Događaji',
       reservations: 'Rezervacije',
       'table-types': 'Tipovi Stolova',
       settings: 'Postavke'

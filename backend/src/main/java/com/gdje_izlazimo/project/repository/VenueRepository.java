@@ -55,6 +55,9 @@ public interface VenueRepository extends JpaRepository<Venue, UUID> {
             "WHERE v.id IN :ids GROUP BY v.id")
     List<RatingStatsProjection> findRatingStatsByVenueIds(@Param("ids") List<UUID> ids);
 
+    @Query("SELECT v FROM Venue v LEFT JOIN FETCH v.venueOwner WHERE v.id = :id")
+    Optional<Venue> findByIdWithOwner(@Param("id") UUID id);
+
     interface RatingStatsProjection {
         UUID getVenueId();
         Double getAverageRating();
