@@ -18,7 +18,7 @@ export class VenueMapPage implements OnInit {
   loading = true;
 
   ngOnInit(): void {
-    this.venueService.getVenues().subscribe({
+    this.venueService.getVenues( {pageSize: 1000 }).subscribe({
       next: (venues) => {
         this.venues = venues
           .filter(v => v.latitude && v.longitude)
