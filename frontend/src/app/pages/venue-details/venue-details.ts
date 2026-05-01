@@ -287,7 +287,7 @@ export class VenueDetails {
                 venueName: venue.name ?? '',
                 category: venue.venueType ?? '',
                 address: venue.addressName ?? '',
-                phone: venue.phone ?? '',
+                phone: (venue.phone && venue.phone !== '0') ? venue.phone : '',
                 instagram: venue.instagram ?? '',
                 description: venue.description ?? 'Dobrodošli u naš lokal!',
                 images: sortedImages.length

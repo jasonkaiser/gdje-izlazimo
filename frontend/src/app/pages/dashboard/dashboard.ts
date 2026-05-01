@@ -96,7 +96,7 @@ export class Dashboard implements OnInit, OnDestroy {
       pillStyle: 'background: linear-gradient(180deg, rgba(0,0,0,0.2) 70%, rgba(124,58,237,0.22) 100%), rgba(255,255,255,0.025); border: 1px solid rgba(124,58,237,0.28);',
     },
     {
-      label: 'Shisha',
+      label: 'Lounge',
       venueType: VenueCategory.LOUNGE,
       iconKey: 'shisha',
       iconColor: 'rgba(96,165,250,0.9)',
