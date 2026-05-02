@@ -68,7 +68,9 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:4200",
-                "https://gdje-izlazimo.onrender.com"
+                "https://gdje-izlazimo.onrender.com",
+                "https://gdje-izlazimo.ba",
+                "https://www.gdje-izlazimo.ba",
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
