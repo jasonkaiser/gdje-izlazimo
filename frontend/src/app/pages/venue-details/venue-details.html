@@ -225,6 +225,21 @@
               }
             </div>
           </div>
+
+          <!-- ── PHOTO DISCLAIMER ──────────────────────────────────────── -->
+          @if (vm.images.length > 0) {
+            <p class="mt-2.5 text-center font-dm text-[10px] tracking-[0.04em] text-white/20 leading-relaxed px-2">
+              Fotografije preuzete s javno dostupnih izvora (Instagram, Google) isključivo u svrhu prikaza lokala.
+              Sva prava na fotografijama pripadaju njihovim vlasnicima.
+              Ukoliko ste vlasnik fotografije i ne želite da bude prikazana, kontaktirajte nas na
+              <a href="mailto:info@gdjeizelazimo.ba"
+                 class="text-white/35 hover:text-white/60 underline underline-offset-2 transition-colors duration-200">
+                info@gdjeizelazimo.ba
+              </a>.
+            </p>
+          }
+          <!-- ── END PHOTO DISCLAIMER ─────────────────────────────────── -->
+
         </div>
 
         <!-- ══════════════════════════════════════════════════════════════
@@ -948,14 +963,27 @@
           </div>
         }
 
-        <!-- NON-PARTNER DISCLAIMER -->
-        @if (!vm.isPartner) {
-          <div class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 mb-4 max-w-[1280px]">
-            <p class="text-center font-dm text-[11px] text-white/20 tracking-[0.06em]">
+        <!-- ── BOTTOM DISCLAIMER ──────────────────────────────────────────── -->
+        <div class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 mb-4 max-w-[1280px]">
+          @if (!vm.isPartner) {
+            <p class="text-center font-dm text-[11px] text-white/20 tracking-[0.06em] mb-3">
               Nije partnerski lokal · Informacije preuzete s interneta · Podaci mogu biti nepotpuni ili zastarjeli
             </p>
-          </div>
-        }
+          }
+          <p class="text-center font-dm text-[10px] text-white/15 tracking-[0.04em] leading-relaxed">
+            Fotografije prikazane na ovoj stranici preuzete su s javno dostupnih izvora (Instagram, Google i sl.)
+            isključivo u svrhu informativnog prikaza lokala i nisu korištene u komercijalne svrhe.
+            Sva autorska prava na fotografijama ostaju vlasništvo originalnih autora.
+            Ukoliko ste nositelj prava i ne želite da vaša fotografija bude prikazana,
+            molimo kontaktirajte nas na
+            <a href="mailto:info@gdjeizelazimo.ba"
+               class="text-white/30 hover:text-white/55 underline underline-offset-2 transition-colors duration-200">
+              info@gdjeizelazimo.ba
+            </a>
+            i fotografija će biti uklonjena u najkraćem mogućem roku.
+          </p>
+        </div>
+        <!-- ── END BOTTOM DISCLAIMER ─────────────────────────────────────── -->
 
         <!-- MODALS -->
         @if (reservationModalShown && vm.isPartner) {
