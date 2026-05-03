@@ -135,6 +135,7 @@
 
     <!-- Trending venues -->
     <div
+      *ngIf="events.length > 0"
       scrollReveal
       srVariant="fade-up"
       [srDistance]="80"
@@ -142,11 +143,11 @@
       [srDuration]="700"
       [srThreshold]="0.08"
     >
-      <app-popular-venues
-        [title]="'Trending lokali'"
-        [subtitle]="'Najtraženiji ove sedmice'"
-        [venues]="popularVenues"
-      ></app-popular-venues>
+      <app-popular-events
+        [events]="events"
+        title="Nadolazeći dogadjaji"
+        subtitle="Ova i iduca sedmica"
+      />
     </div>
 
     <!-- Upcoming events -->
