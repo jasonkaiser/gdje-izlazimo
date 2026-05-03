@@ -4,7 +4,7 @@
          border border-white/[0.07] bg-[#09090a] cursor-pointer
          transition-all duration-300
          hover:border-violet-500/40 hover:bg-[#0f0f14]
-         sm:h-[108px]"
+         min-h-[90px] sm:h-[108px]"
   style="overflow:hidden;"
 >
 
@@ -14,24 +14,6 @@
            opacity-0 group-hover:opacity-100 transition-opacity duration-300"
     style="z-index:10; border-radius:0;"
   ></div>
-
-  <!-- MOBILE atmospheric bg: rendered via a wrapper that is FIRST in DOM
-       but pushed behind everything else with a negative z-index.
-       No stacking context on parent = this actually works. -->
-  <div
-    class="sm:hidden absolute inset-0 pointer-events-none"
-    style="z-index:-1;"
-  >
-    <img
-      [src]="imageUrl"
-      [alt]="title"
-      class="w-full h-full object-cover opacity-20"
-    />
-    <div
-      class="absolute inset-0"
-      style="background:linear-gradient(105deg,#09090a 40%,rgba(9,9,10,0.9) 62%,rgba(9,9,10,0.45) 100%);"
-    ></div>
-  </div>
 
   <!-- DATE COLUMN -->
   <div
@@ -48,33 +30,30 @@
     >
       {{ day }}
     </span>
-    <span class="text-violet-600 text-[9px] uppercase tracking-[0.2em] mt-[5px] font-semibold">
+    <span class="text-violet-400 text-[9px] uppercase tracking-[0.2em] mt-[5px] font-semibold">
       {{ month }}
     </span>
   </div>
 
-  <!-- MAIN CONTENT — no position:relative, no z-index, no stacking context.
-       Normal flow elements always paint above z-index:-1 backgrounds. -->
+  <!-- MAIN CONTENT -->
   <div
     class="flex flex-1 flex-col justify-center
            px-[14px] sm:px-4 min-w-0
-           py-[16px] sm:py-0 gap-[8px]"
+           py-[16px] sm:py-0 gap-[6px]"
   >
 
     <!-- MOBILE layout -->
-    <div class="flex flex-col gap-[7px] sm:hidden">
+    <div class="flex flex-col gap-[6px] sm:hidden">
 
       <h3
-        class="text-[#f5f3ff] font-semibold text-[18px] leading-snug line-clamp-2
+        class="text-[#f5f3ff] font-semibold text-[15px] leading-snug line-clamp-2
                group-hover:text-white transition-colors duration-200"
       >
         {{ title }}
       </h3>
 
-      
-
-      <!-- badges -->
-      <div class="flex flex-wrap items-center gap-[5px]">
+      <!-- badges — reserved height so badgeless cards don't collapse -->
+      <div class="flex flex-wrap items-center gap-[5px] min-h-[22px]">
 
         @if (trending) {
           <span
@@ -123,7 +102,7 @@
           </svg>
           {{ venueName }}
         </span>
-        <span class="w-[2px] h-[2px] rounded-full bg-white/20 shrink-0"></span>
+        <span class="w-[2px] h-[2px] rounded-full bg-white/35 shrink-0"></span>
         <span class="inline-flex items-center gap-[4px] text-white/40 text-[11px]">
           <svg class="w-[10px] h-[10px] shrink-0 text-violet-500/60" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
@@ -194,14 +173,14 @@
           </svg>
           <span class="max-w-[120px] truncate">{{ venueName }}</span>
         </span>
-        <span class="w-[3px] h-[3px] rounded-full bg-white/15 mx-2 shrink-0"></span>
+        <span class="w-[3px] h-[3px] rounded-full bg-white/35 mx-2 shrink-0"></span>
         <span class="inline-flex items-center gap-[4px] text-white/40 text-[11.5px]">
           <svg class="w-[10px] h-[10px] shrink-0 text-violet-500/60" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
           </svg>
           <span class="max-w-[140px] truncate">{{ venueAddress }}</span>
         </span>
-        <span class="w-[3px] h-[3px] rounded-full bg-white/15 mx-2 shrink-0"></span>
+        <span class="w-[3px] h-[3px] rounded-full bg-white/35 mx-2 shrink-0"></span>
         <span class="inline-flex items-center gap-[4px] text-white/30 text-[11px]">
           <svg class="w-[10px] h-[10px]" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
@@ -211,21 +190,6 @@
       </div>
 
     </div>
-  </div>
-
-  <!-- MOBILE CTA -->
-  <div class="sm:hidden flex items-center pr-[14px] shrink-0">
-    <button
-      (click)="onViewDetails($event); $event.stopPropagation()"
-      class="w-[36px] h-[36px] rounded-full flex items-center justify-center
-             border border-violet-500/40 bg-violet-500/10 text-violet-400
-             transition-all duration-200 active:scale-90"
-      aria-label="Pogledaj događaj"
-    >
-      <svg class="w-[14px] h-[14px]" viewBox="0 0 20 20" fill="currentColor">
-        <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
-      </svg>
-    </button>
   </div>
 
   <!-- DESKTOP CTA -->
@@ -240,8 +204,10 @@
     </app-button-component>
   </div>
 
-  <!-- DESKTOP image -->
-  <div class="hidden sm:block relative w-[110px] shrink-0 overflow-hidden">
+  <!-- IMAGE — mobile: 80px right thumb, desktop: 110px panel -->
+  <div class="relative shrink-0 overflow-hidden
+              w-[80px] rounded-r-[13px]
+              sm:w-[110px] sm:rounded-none">
     <img
       [src]="imageUrl"
       [alt]="title"
@@ -250,7 +216,7 @@
     />
     <div
       class="absolute inset-0"
-      style="background:linear-gradient(to right,#09090a 0%,rgba(9,9,10,0.15) 55%,transparent 100%)"
+      style="background:linear-gradient(to right,#09090a 0%,rgba(9,9,10,0.35) 45%,transparent 100%)"
     ></div>
   </div>
 
