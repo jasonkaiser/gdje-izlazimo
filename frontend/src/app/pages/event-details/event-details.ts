@@ -108,6 +108,21 @@ readonly vm$ = this.retry$.pipe(
 
   retry(): void { this.retry$.next(); }
 
+  copied = false;
+
+  share(eventName: string): void {
+    const url = window.location.href;
+    if (navigator.share) {
+      navigator.share({ title: eventName, url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        this.copied = true;
+        this.cdr.markForCheck();
+        setTimeout(() => { this.copied = false; this.cdr.markForCheck(); }, 2000);
+      }).catch(() => {});
+    }
+  }
+
   onHeroInView(v: boolean):   void { if (v) this.heroShown   = true; }
   onDetailInView(v: boolean): void { if (v) this.detailShown = true; }
 

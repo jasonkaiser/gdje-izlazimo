@@ -262,26 +262,44 @@
 
                 </div>
 
-                <!-- CTA -->
-                <a [routerLink]="['/venues', vm.event.venueId]"
-                  class="group relative mt-6 w-full inline-flex items-center justify-center gap-2.5
-                         px-6 py-4 rounded-2xl overflow-hidden
-                         font-dm font-semibold text-[14px] text-white
-                         transition-all duration-300 hover:scale-[1.015] active:scale-[0.98]"
-                  style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
-                         box-shadow: 0 4px 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);">
-                  <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none"
-                       stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
-                  </svg>
-                  <span class="relative z-10">Rezerviši Sto u Lokalu</span>
-                  <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);"></div>
-                </a>
+            <a [routerLink]="['/venues', vm.event.venueId]"
+              class="group relative mt-6 w-full inline-flex items-center justify-center gap-2.5
+                    px-6 py-4 rounded-2xl overflow-hidden
+                    font-dm font-semibold text-[14px] text-white
+                    transition-all duration-300 hover:scale-[1.015] active:scale-[0.98]"
+              style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
+                    box-shadow: 0 4px 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);">
+              <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
+              </svg>
+              <span class="relative z-10">Rezerviši mjesto</span>
+              <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);"></div>
+            </a>
 
-                <p class="font-dm text-[11px] text-white/20 text-center mt-3 leading-relaxed">
-                  Rezervacije se vrše direktno kroz stranicu lokala
-                </p>
+            <!-- Share button -->
+            <button type="button" (click)="share(vm.event.name)"
+              class="group mt-3 w-full inline-flex items-center justify-center gap-2
+                    px-6 py-3 rounded-2xl
+                    font-dm text-[12px] tracking-[0.1em] uppercase
+                    text-white/40 hover:text-white/70
+                    border border-white/[0.07] hover:border-white/[0.15]
+                    bg-white/[0.03] hover:bg-white/[0.05]
+                    transition-all duration-200">
+              <svg class="h-3.5 w-3.5 transition-transform duration-200 group-hover:-translate-y-0.5"
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+              {{ copied ? 'Kopirano!' : 'Podijeli događaj' }}
+            </button>
+
+            <p class="font-dm text-[11px] text-white/20 text-center mt-3 leading-relaxed">
+              Rezervacije se vrše direktno kroz stranicu lokala
+            </p>
               </div>
             </div>
 
