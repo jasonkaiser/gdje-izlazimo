@@ -38,28 +38,28 @@ export class EventCard {
     return isNaN(d.getTime()) ? null : d;
   }
 
-  get day(): string {
-    const d = this.date;
-    return d ? d.getUTCDate().toString().padStart(2, '0') : '--';
-  }
-
-  get month(): string {
-    const d = this.date;
-    return d ? MONTHS_BS[d.getUTCMonth()] : '---';
-  }
-
-  get dayName(): string {
-    const d = this.date;
-    return d ? DAYS_BS[d.getUTCDay()] : '';
-  }
-
-  get time(): string {
+get time(): string {
     const d = this.date;
     if (!d) return '';
-    const h = d.getUTCHours().toString().padStart(2, '0');
-    const m = d.getUTCMinutes().toString().padStart(2, '0');
+    const h = d.getHours().toString().padStart(2, '0');
+    const m = d.getMinutes().toString().padStart(2, '0');
     return `${h}:${m}`;
-  }
+}
+
+get day(): string {
+    const d = this.date;
+    return d ? d.getDate().toString().padStart(2, '0') : '--';
+}
+
+get month(): string {
+    const d = this.date;
+    return d ? MONTHS_BS[d.getMonth()] : '---';
+}
+
+get dayName(): string {
+    const d = this.date;
+    return d ? DAYS_BS[d.getDay()] : '';
+}
 
 get timingBadge(): null | 'tonight' | number {
   const d = this.date;
