@@ -61,23 +61,23 @@ export class EventCard {
     return `${h}:${m}`;
   }
 
-   get timingBadge(): null | 'tonight' | number {
-    const d = this.date;
-    if (!d) return null;
+get timingBadge(): null | 'tonight' | number {
+  const d = this.date;
+  if (!d) return null;
 
-    const now = new Date();
-    const diffMs = d.getTime() - now.getTime();
-    if (diffMs < 0) return null; 
+  const now = new Date();
+  const diffMs = d.getTime() - now.getTime();
+  if (diffMs < 0) return null;
 
-    const diffH = diffMs / 3_600_000;
+  const diffH = diffMs / 3_600_000;
 
-    const sameDay = d.getUTCFullYear() === now.getUTCFullYear()
-      && d.getUTCMonth() === now.getUTCMonth()
-      && d.getUTCDate() === now.getUTCDate();
+  const sameDay = d.getFullYear() === now.getFullYear()
+    && d.getMonth() === now.getMonth()
+    && d.getDate() === now.getDate();
 
-    if (!sameDay) return null;
-    return diffH > 6 ? 'tonight' : Math.ceil(diffH);
-  }
+  if (!sameDay) return null;
+  return diffH > 6 ? 'tonight' : Math.ceil(diffH);
+}
 
   get isTonight(): boolean { return this.timingBadge === 'tonight'; }
   get hoursUntil(): number | null {

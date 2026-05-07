@@ -14,18 +14,16 @@ import java.util.UUID;
 @Repository
 public interface EventViewRepository extends JpaRepository<EventView, UUID> {
 
-    @Query("""
-        SELECT e FROM Event e
-        JOIN FETCH e.venue v
-        JOIN FETCH v.venueOwner
-        WHERE e.id IN (
-            SELECT ev.event.id FROM EventView ev
-            WHERE ev.viewedAt >= :since
-            GROUP BY ev.event.id
-            ORDER BY COUNT(ev.id) DESC
-            LIMIT :limit
-        )
-        """)
+    @Query(value = """
+    SELECT e.* FROM events e
+    WHERE e.id IN (
+        SELECT ev.event_id FROM event_views ev
+        WHERE ev.viewed_at >= :since
+        GROUP BY ev.event_id
+        ORDER BY COUNT(ev.id) DESC
+        LIMIT :limit
+    )
+    """, nativeQuery = true)
     List<Event> findTrendingEvents(
             @Param("since") LocalDateTime since,
             @Param("limit") int limit
