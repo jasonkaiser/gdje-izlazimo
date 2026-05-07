@@ -34,7 +34,7 @@ type EventCardVm = {
 })
 export class PopularEventsCarouselComponent implements AfterViewInit, OnDestroy {
   @Input({ required: true }) set events(raw: EventResponseDto[]) {
-    this._events = raw.map((e) => this.toCardVm(e));
+    this._events = this.shuffle(raw.map((e) => this.toCardVm(e)));
     if (this.isBrowser) {
       setTimeout(() => this.refreshNav(), 0);
       setTimeout(() => this.refreshNav(), 250);
@@ -197,6 +197,15 @@ export class PopularEventsCarouselComponent implements AfterViewInit, OnDestroy 
 
   private getCards(el: HTMLElement): HTMLElement[] {
     return Array.from(el.querySelectorAll<HTMLElement>('[data-card]'));
+  }
+
+  private shuffle<T>(arr: T[]): T[] {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
   }
 
   private toCardVm(e: EventResponseDto): EventCardVm {
