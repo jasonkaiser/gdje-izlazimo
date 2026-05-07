@@ -33,33 +33,22 @@ export class EventCard {
 
   private get date(): Date | null {
     if (!this.eventDateTime) return null;
-
-    const d = new Date(this.eventDateTime);
+    const normalized = this.eventDateTime.endsWith('Z') || this.eventDateTime.includes('+') 
+      ? this.eventDateTime 
+      : this.eventDateTime + 'Z';
+    const d = new Date(normalized);
     return isNaN(d.getTime()) ? null : d;
   }
 
 get time(): string {
-    const d = this.date;
-    if (!d) return '';
-    const h = d.getHours().toString().padStart(2, '0');
-    const m = d.getMinutes().toString().padStart(2, '0');
-    return `${h}:${m}`;
+  const d = this.date;
+  if (!d) return '';
+  return `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`;
 }
 
-get day(): string {
-    const d = this.date;
-    return d ? d.getDate().toString().padStart(2, '0') : '--';
-}
-
-get month(): string {
-    const d = this.date;
-    return d ? MONTHS_BS[d.getMonth()] : '---';
-}
-
-get dayName(): string {
-    const d = this.date;
-    return d ? DAYS_BS[d.getDay()] : '';
-}
+get day(): string { return this.date ? this.date.getUTCDate().toString().padStart(2, '0') : '--'; }
+get month(): string { return this.date ? MONTHS_BS[this.date.getUTCMonth()] : '---'; }
+get dayName(): string { return this.date ? DAYS_BS[this.date.getUTCDay()] : ''; }
 
 get timingBadge(): null | 'tonight' | number {
   const d = this.date;
@@ -71,9 +60,9 @@ get timingBadge(): null | 'tonight' | number {
 
   const diffH = diffMs / 3_600_000;
 
-  const sameDay = d.getFullYear() === now.getFullYear()
-    && d.getMonth() === now.getMonth()
-    && d.getDate() === now.getDate();
+  const sameDay = d.getUTCFullYear() === now.getUTCFullYear()
+    && d.getUTCMonth() === now.getUTCMonth()
+    && d.getUTCDate() === now.getUTCDate();
 
   if (!sameDay) return null;
   return diffH > 6 ? 'tonight' : Math.ceil(diffH);
