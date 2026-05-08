@@ -37,6 +37,7 @@ public class EventService {
     private final EventMapper eventMapper;
     private final ImageKitService imageKitService;
     private final EventViewRepository eventViewRepository;
+
     private static final int TRENDING_COUNT = 5;
     private static final Duration TRENDING_WINDOW = Duration.ofDays(7);
 
@@ -54,19 +55,26 @@ public class EventService {
         this.eventViewRepository = eventViewRepository;
     }
 
-    public List<EventResponse> searchEvents(String query, LocalDateTime dateFrom, LocalDateTime dateTo, Pageable pageable) {
+    public List<EventResponse> searchEvents(
+            String query,
+            LocalDateTime dateFrom,
+            LocalDateTime dateTo,
+            Pageable pageable
+    ) {
+        LocalDateTime effectiveDateFrom = (dateFrom != null) ? dateFrom : LocalDateTime.now();
+
         boolean hasQuery = query != null && !query.isBlank();
         List<Event> events = hasQuery
-                ? eventRepository.searchByQuery(query, dateFrom, dateTo, pageable).getContent()
-                : eventRepository.findAllFiltered(dateFrom, dateTo, pageable).getContent();
+                ? eventRepository.searchByQuery(query, effectiveDateFrom, dateTo, pageable).getContent()
+                : eventRepository.findAllFiltered(effectiveDateFrom, dateTo, pageable).getContent();
+
         return enrichWithStats(events);
     }
 
     public List<EventResponse> findAllEvents(Pageable pageable) {
-        List<Event> events = eventRepository.findAllWithDetails(pageable).getContent();
+        List<Event> events = eventRepository.findAllWithDetails(LocalDateTime.now(), pageable).getContent();
         return enrichWithStats(events);
     }
-
 
     public EventResponse findEventById(UUID id) {
         Event event = eventRepository.findByIdWithDetails(id)
@@ -78,7 +86,9 @@ public class EventService {
     }
 
     public List<EventResponse> findEventsByVenueId(UUID venueId, Pageable pageable) {
-        List<Event> events = eventRepository.findByVenueIdWithDetails(venueId, pageable).getContent();
+        List<Event> events = eventRepository
+                .findByVenueIdWithDetails(venueId, LocalDateTime.now(), pageable)
+                .getContent();
         return enrichWithStats(events);
     }
 
@@ -115,15 +125,17 @@ public class EventService {
                 .map(e -> {
                     long count = eventViewRepository.countByEventId(e.getId());
                     return eventMapper.toResponse(e, count, trendingIds.contains(e.getId()));
-                }).toList();
+                })
+                .toList();
     }
-
 
     @Cacheable("trendingIds")
     public Set<UUID> getTrendingIds() {
         LocalDateTime since = LocalDateTime.now().minus(TRENDING_WINDOW);
         return eventViewRepository.findTrendingEvents(since, TRENDING_COUNT)
-                .stream().map(Event::getId).collect(Collectors.toSet());
+                .stream()
+                .map(Event::getId)
+                .collect(Collectors.toSet());
     }
 
     @Transactional
@@ -153,9 +165,11 @@ public class EventService {
 
         boolean isAdmin = roles != null && roles.contains("admin");
         if (!isAdmin) {
-            if (!event.getVenue().getVenueOwner().getId().equals(UUID.fromString(keycloakSub)))
+            if (!event.getVenue().getVenueOwner().getId().equals(UUID.fromString(keycloakSub))) {
                 throw new ReservationAccessDeniedException("Access denied");
+            }
         }
+
         if (event.getImageFileId() != null) {
             imageKitService.deleteImage(event.getImageFileId());
         }
@@ -174,8 +188,9 @@ public class EventService {
 
         boolean isAdmin = roles != null && roles.contains("admin");
         if (!isAdmin) {
-            if (!event.getVenue().getVenueOwner().getId().equals(UUID.fromString(keycloakSub)))
+            if (!event.getVenue().getVenueOwner().getId().equals(UUID.fromString(keycloakSub))) {
                 throw new ReservationAccessDeniedException("Access denied");
+            }
         }
 
         if (event.getImageFileId() != null) {
@@ -194,7 +209,6 @@ public class EventService {
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
         boolean isAdmin = roles != null && roles.contains("admin");
-
         if (!isAdmin) {
             UUID requesterId = UUID.fromString(keycloakSub);
             if (!event.getVenue().getVenueOwner().getId().equals(requesterId)) {
@@ -213,7 +227,6 @@ public class EventService {
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
         boolean isAdmin = roles != null && roles.contains("admin");
-
         if (!isAdmin) {
             UUID requesterId = UUID.fromString(keycloakSub);
             if (!event.getVenue().getVenueOwner().getId().equals(requesterId)) {
@@ -232,8 +245,8 @@ public class EventService {
         Map<UUID, Long> counts = eventViewRepository.countByEventIds(ids)
                 .stream()
                 .collect(Collectors.toMap(
-                        row -> (UUID)  row[0],
-                        row -> (Long)  row[1]
+                        row -> (UUID) row[0],
+                        row -> (Long) row[1]
                 ));
 
         Set<UUID> trendingIds = getTrendingIds();

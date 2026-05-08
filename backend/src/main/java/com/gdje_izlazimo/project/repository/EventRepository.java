@@ -17,60 +17,79 @@ import java.util.UUID;
 public interface EventRepository extends JpaRepository<Event, UUID> {
 
     @Query(value = """
-    SELECT e FROM Event e
-    JOIN FETCH e.venue v
-    LEFT JOIN FETCH v.venueOwner
-    ORDER BY e.eventDateTime ASC
-    """,
-            countQuery = "SELECT COUNT(e) FROM Event e")
-    Page<Event> findAllWithDetails(Pageable pageable);
+        SELECT e FROM Event e
+        JOIN FETCH e.venue v
+        LEFT JOIN FETCH v.venueOwner
+        WHERE e.eventDateTime >= :now
+        ORDER BY e.eventDateTime ASC
+        """,
+            countQuery = "SELECT COUNT(e) FROM Event e WHERE e.eventDateTime >= :now")
+    Page<Event> findAllWithDetails(
+            @Param("now") LocalDateTime now,
+            Pageable pageable);
+
+    @Query(value = """
+        SELECT e FROM Event e
+        JOIN FETCH e.venue v
+        LEFT JOIN FETCH v.venueOwner
+        WHERE e.venue.id = :venueId
+          AND e.eventDateTime >= :now
+        ORDER BY e.eventDateTime ASC
+        """,
+            countQuery = """
+        SELECT COUNT(e) FROM Event e
+        WHERE e.venue.id = :venueId
+          AND e.eventDateTime >= :now
+        """)
+    Page<Event> findByVenueIdWithDetails(
+            @Param("venueId") UUID venueId,
+            @Param("now") LocalDateTime now,
+            Pageable pageable);
+
 
     @Query(value = """
     SELECT e FROM Event e
     JOIN FETCH e.venue v
     LEFT JOIN FETCH v.venueOwner
-    WHERE v.id = :venueId
-    ORDER BY e.eventDateTime ASC
+    WHERE e.eventDateTime >= :dateFrom
+      AND (CAST(:dateTo AS java.time.LocalDateTime) IS NULL OR e.eventDateTime <= :dateTo)
     """,
-            countQuery = "SELECT COUNT(e) FROM Event e WHERE e.venue.id = :venueId")
-    Page<Event> findByVenueIdWithDetails(@Param("venueId") UUID venueId, Pageable pageable);
-
-    @Query(value = "SELECT e FROM Event e " +
-            "JOIN FETCH e.venue v " +
-            "LEFT JOIN FETCH v.venueOwner " +
-            "WHERE (CAST(:dateFrom AS java.time.LocalDateTime) IS NULL OR e.eventDateTime >= :dateFrom) " +
-            "AND (CAST(:dateTo AS java.time.LocalDateTime) IS NULL OR e.eventDateTime <= :dateTo)",
-            countQuery = "SELECT COUNT(e) FROM Event e " +
-                    "WHERE (CAST(:dateFrom AS java.time.LocalDateTime) IS NULL OR e.eventDateTime >= :dateFrom) " +
-                    "AND (CAST(:dateTo AS java.time.LocalDateTime) IS NULL OR e.eventDateTime <= :dateTo)")
+            countQuery = """
+    SELECT COUNT(e) FROM Event e
+    WHERE e.eventDateTime >= :dateFrom
+      AND (CAST(:dateTo AS java.time.LocalDateTime) IS NULL OR e.eventDateTime <= :dateTo)
+    """)
     Page<Event> findAllFiltered(
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo")   LocalDateTime dateTo,
-            Pageable pageable
-    );
+            Pageable pageable);
 
-    @Query(value = "SELECT e FROM Event e " +
-            "JOIN FETCH e.venue v " +
-            "LEFT JOIN FETCH v.venueOwner " +
-            "WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "AND (CAST(:dateFrom AS java.time.LocalDateTime) IS NULL OR e.eventDateTime >= :dateFrom) " +
-            "AND (CAST(:dateTo AS java.time.LocalDateTime) IS NULL OR e.eventDateTime <= :dateTo)",
-            countQuery = "SELECT COUNT(e) FROM Event e " +
-                    "WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
-                    "AND (CAST(:dateFrom AS java.time.LocalDateTime) IS NULL OR e.eventDateTime >= :dateFrom) " +
-                    "AND (CAST(:dateTo AS java.time.LocalDateTime) IS NULL OR e.eventDateTime <= :dateTo)")
+    @Query(value = """
+    SELECT e FROM Event e
+    JOIN FETCH e.venue v
+    LEFT JOIN FETCH v.venueOwner
+    WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :query, '%'))
+      AND e.eventDateTime >= :dateFrom
+      AND (CAST(:dateTo AS java.time.LocalDateTime) IS NULL OR e.eventDateTime <= :dateTo)
+    """,
+            countQuery = """
+    SELECT COUNT(e) FROM Event e
+    WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :query, '%'))
+      AND e.eventDateTime >= :dateFrom
+      AND (CAST(:dateTo AS java.time.LocalDateTime) IS NULL OR e.eventDateTime <= :dateTo)
+    """)
     Page<Event> searchByQuery(
             @Param("query")    String query,
             @Param("dateFrom") LocalDateTime dateFrom,
             @Param("dateTo")   LocalDateTime dateTo,
-            Pageable pageable
-    );
+            Pageable pageable);
 
-
-    @Query("SELECT e FROM Event e " +
-            "JOIN FETCH e.venue v " +
-            "LEFT JOIN FETCH v.venueOwner " +
-            "WHERE e.id = :id")
+    @Query("""
+        SELECT e FROM Event e
+        JOIN FETCH e.venue v
+        LEFT JOIN FETCH v.venueOwner
+        WHERE e.id = :id
+        """)
     Optional<Event> findByIdWithDetails(@Param("id") UUID id);
 
     @Query("""
