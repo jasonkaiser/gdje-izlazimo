@@ -33,47 +33,44 @@ export class EventCard {
 
   private get date(): Date | null {
     if (!this.eventDateTime) return null;
-    const normalized = this.eventDateTime.endsWith('Z') || this.eventDateTime.includes('+') 
-      ? this.eventDateTime 
-      : this.eventDateTime + 'Z';
-    const d = new Date(normalized);
+
+    const d = new Date(this.eventDateTime);
     return isNaN(d.getTime()) ? null : d;
   }
 
-get time(): string {
-  const d = this.date;
-  if (!d) return '';
-  return `${d.getUTCHours().toString().padStart(2, '0')}:${d.getUTCMinutes().toString().padStart(2, '0')}`;
-}
+  get time(): string {
+    const d = this.date;
+    if (!d) return '';
+    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+  }
 
-get day(): string { return this.date ? this.date.getUTCDate().toString().padStart(2, '0') : '--'; }
-get month(): string { return this.date ? MONTHS_BS[this.date.getUTCMonth()] : '---'; }
-get dayName(): string { return this.date ? DAYS_BS[this.date.getUTCDay()] : ''; }
+  get day(): string { return this.date ? this.date.getDate().toString().padStart(2, '0') : '--'; }
+  get month(): string { return this.date ? MONTHS_BS[this.date.getMonth()] : '---'; }
+  get dayName(): string { return this.date ? DAYS_BS[this.date.getDay()] : ''; }
 
-get timingBadge(): null | 'tonight' | number {
-  const d = this.date;
-  if (!d) return null;
+  get timingBadge(): null | 'tonight' | number {
+    const d = this.date;
+    if (!d) return null;
 
-  const now = new Date();
-  const diffMs = d.getTime() - now.getTime();
-  if (diffMs < 0) return null;
+    const now = new Date();
+    const diffMs = d.getTime() - now.getTime();
+    if (diffMs < 0) return null;
 
-  const diffH = diffMs / 3_600_000;
+    const diffH = diffMs / 3_600_000;
 
-  const sameDay = d.getUTCFullYear() === now.getUTCFullYear()
-    && d.getUTCMonth() === now.getUTCMonth()
-    && d.getUTCDate() === now.getUTCDate();
+    const sameDay = d.getFullYear() === now.getFullYear()
+      && d.getMonth() === now.getMonth()
+      && d.getDate() === now.getDate();
 
-  if (!sameDay) return null;
-  return diffH > 6 ? 'tonight' : Math.ceil(diffH);
-}
+    if (!sameDay) return null;
+    return diffH > 6 ? 'tonight' : Math.ceil(diffH);
+  }
 
   get isTonight(): boolean { return this.timingBadge === 'tonight'; }
   get hoursUntil(): number | null {
     const b = this.timingBadge;
     return typeof b === 'number' ? b : null;
   }
-
 
   onViewDetails(event?: MouseEvent): void {
     if (event) event.stopPropagation();

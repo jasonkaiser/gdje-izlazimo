@@ -4,5 +4,5 @@ export const environment = {
   keycloakUrl: 'http://localhost:8080',
   realm: 'gdje-izlazimo',
   clientId: 'gdje-izlazimo',
-  enableAuth: true,
+  enableAuth: false,
 };
