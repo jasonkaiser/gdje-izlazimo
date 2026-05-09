@@ -102,13 +102,18 @@ export class VenuesComponent {
       venueType: params.venueType ?? undefined,
       venueKind: params.venueKind ?? undefined,
       sortBy:    'name',
-      sortDir:   params.sortDir,
-      pageNo,
-      pageSize,
+      sortDir:   'ASC',
+      pageNo:    1,
+      pageSize:  200,
     }).pipe(
       map((venues: VenueResponseDto[]) => {
-        this.pageCache.set(pageNo, venues.map((v) => this.toCardVm(v)));
-        this.hasMoreCache.set(pageNo, venues.length === pageSize);
+        const sorted = [...venues].sort((a, b) => (b.averageRating ?? 0) - (a.averageRating ?? 0));
+        const pageStart = (pageNo - 1) * pageSize;
+        const pageItems = sorted.slice(pageStart, pageStart + pageSize);
+        const hasMore   = pageStart + pageSize < sorted.length;
+
+        this.pageCache.set(pageNo, pageItems.map((v) => this.toCardVm(v)));
+        this.hasMoreCache.set(pageNo, hasMore);
         return this.buildVm(pageNo);
       }),
       catchError((err) => {

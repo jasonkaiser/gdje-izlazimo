@@ -251,7 +251,7 @@ export class VenueDetails {
               } satisfies TableTypeVm));
 
               const mappedRatings: RatingVm[] = ratings
-                .slice(0, 10)
+                .slice(0, 3)
                 .map(r => ({
                   id:              r.id,
                   userName:        r.userName,
@@ -511,7 +511,15 @@ export class VenueDetails {
     const start = dayMap[oh.startDay] ?? oh.startDay;
     const end   = dayMap[oh.endDay]   ?? oh.endDay;
     const trim  = (t: string) => t?.slice(0, 5) ?? '';
-    return `${start}–${end}   ${trim(oh.openTime)} – ${trim(oh.closedTime)}`;
+
+    const openNormalized  = trim(oh.openTime);
+    const closeNormalized = trim(oh.closedTime);
+
+    if (openNormalized === '00:00' && closeNormalized === '12:00') {
+      return `${start}–${end}   24H OTVORENO`;
+    }
+
+    return `${start}–${end}   ${openNormalized} – ${closeNormalized}`;
   }
 
   private getDefaultVenueImages(type: string): string[] {

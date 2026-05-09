@@ -139,10 +139,10 @@ export class Dashboard implements OnInit, OnDestroy {
 
   private loadPopularVenues(): void {
     this.venueService
-      .getVenues({ pageNo: 1, pageSize: 5, sortBy: 'name', sortDir: 'ASC' })
+      .getVenues({ pageNo: 1, pageSize: 20, sortBy: 'name', sortDir: 'ASC' })
       .subscribe({
         next: (venues) => {
-          this.popularVenues = venues;
+          this.popularVenues = [...venues].sort((a, b) => (b.averageRating ?? 0) - (a.averageRating ?? 0)).slice(0, 5);
           this.popularVenuesLoading = false;
           this.cdr.detectChanges();
         },
