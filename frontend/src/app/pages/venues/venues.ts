@@ -101,7 +101,7 @@ export class VenuesComponent {
       query:     params.query || undefined,
       venueType: params.venueType ?? undefined,
       venueKind: params.venueKind ?? undefined,
-      sortBy:    'name',
+      sortBy:    'id',
       sortDir:   'ASC',
       pageNo:    1,
       pageSize:  200,

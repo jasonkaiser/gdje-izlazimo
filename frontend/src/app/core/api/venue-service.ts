@@ -58,7 +58,7 @@ export class VenueService {
 
       params = params.set('pageNo', String(options.pageNo ?? 1));
       params = params.set('pageSize', String(options.pageSize ?? 6));
-      params = params.set('sortBy', options.sortBy ?? 'name');
+      params = params.set('sortBy', options.sortBy ?? 'id');
       params = params.set('sortDir', options.sortDir ?? 'ASC');
 
       return this.http.get<VenueResponseDto[]>(`${this.baseUrl}/search`, { params });
