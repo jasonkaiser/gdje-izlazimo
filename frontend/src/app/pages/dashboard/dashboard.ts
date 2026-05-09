@@ -142,7 +142,11 @@ export class Dashboard implements OnInit, OnDestroy {
       .getVenues({ pageNo: 1, pageSize: 20, sortBy: 'id', sortDir: 'ASC' })
       .subscribe({
         next: (venues) => {
-          this.popularVenues = [...venues].sort((a, b) => (b.averageRating ?? 0) - (a.averageRating ?? 0));
+          this.popularVenues = [...venues].sort((a, b) => {
+            const diff = (b.averageRating ?? 0) - (a.averageRating ?? 0);
+            if (diff !== 0) return diff;
+            return Math.random() - 0.5;
+          });
           this.popularVenuesLoading = false;
           this.cdr.detectChanges();
         },

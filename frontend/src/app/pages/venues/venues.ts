@@ -107,7 +107,11 @@ export class VenuesComponent {
       pageSize:  200,
     }).pipe(
       map((venues: VenueResponseDto[]) => {
-        const sorted = [...venues].sort((a, b) => (b.averageRating ?? 0) - (a.averageRating ?? 0));
+        const sorted = [...venues].sort((a, b) => {
+            const diff = (b.averageRating ?? 0) - (a.averageRating ?? 0);
+            if (diff !== 0) return diff;
+            return Math.random() - 0.5;
+          });
         const pageStart = (pageNo - 1) * pageSize;
         const pageItems = sorted.slice(pageStart, pageStart + pageSize);
         const hasMore   = pageStart + pageSize < sorted.length;
