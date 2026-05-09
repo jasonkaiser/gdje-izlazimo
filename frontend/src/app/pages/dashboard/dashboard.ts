@@ -139,13 +139,13 @@ export class Dashboard implements OnInit, OnDestroy {
 
   private loadPopularVenues(): void {
     this.venueService
-      .getVenues({ pageNo: 1, pageSize: 20, sortBy: 'id', sortDir: 'ASC' })
+      .getVenues({ pageNo: 1, pageSize: 5, sortBy: 'id', sortDir: 'ASC' })
       .subscribe({
         next: (venues) => {
           this.popularVenues = [...venues].sort((a, b) => {
-            const diff = (b.averageRating ?? 0) - (a.averageRating ?? 0);
+            const diff = (b.totalRatings ?? 0) - (a.totalRatings ?? 0);
             if (diff !== 0) return diff;
-            return Math.random() - 0.5;
+            return (b.averageRating ?? 0) - (a.averageRating ?? 0);
           });
           this.popularVenuesLoading = false;
           this.cdr.detectChanges();
