@@ -137,25 +137,27 @@ export class Dashboard implements OnInit, OnDestroy {
     this.stopCountUp();
   }
 
-  private loadPopularVenues(): void {
-    this.venueService
-      .getVenues({ pageNo: 1, pageSize: 5, sortBy: 'id', sortDir: 'ASC' })
-      .subscribe({
-        next: (venues) => {
-          this.popularVenues = [...venues].sort((a, b) => {
+private loadPopularVenues(): void {
+  this.venueService
+    .getVenues({ pageNo: 1, pageSize: 50, sortBy: 'id', sortDir: 'ASC' }) 
+    .subscribe({
+      next: (venues) => {
+        this.popularVenues = [...venues]
+          .sort((a, b) => {
             const diff = (b.totalRatings ?? 0) - (a.totalRatings ?? 0);
             if (diff !== 0) return diff;
             return (b.averageRating ?? 0) - (a.averageRating ?? 0);
-          });
-          this.popularVenuesLoading = false;
-          this.cdr.detectChanges();
-        },
-        error: () => {
-          this.popularVenuesLoading = false;
-          this.cdr.detectChanges();
-        },
-      });
-  }
+          })
+          .slice(0, 5); 
+        this.popularVenuesLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.popularVenuesLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
+}
 
   private loadUpcomingEvents(): void {
     this.eventService
