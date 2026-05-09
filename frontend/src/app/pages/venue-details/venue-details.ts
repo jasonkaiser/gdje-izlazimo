@@ -33,6 +33,8 @@ import { EventService } from '../../core/api/event-service';
 import { EventResponseDto } from '../../core/models/events/event-response.dto';
 import { EventCard } from '../../components/cards/event-card/event-card';
 import { Router } from '@angular/router';
+import { VenueImageService } from '../../core/api/venue-image-service';
+import { VenueImageResponseDto } from '../../core/models/venue-images/venue-image-response';
 
 
 type TableTypeVm = {
@@ -134,6 +136,7 @@ export class VenueDetails {
   private readonly ratingService = inject(RatingService);
   private readonly eventService = inject(EventService);
   private readonly router = inject(Router);
+  private readonly venueImageService = inject(VenueImageService);
 
   private lastVm: Vm | null = null;
   private touchStartX = 0;
@@ -238,8 +241,11 @@ export class VenueDetails {
             events: this.eventService.getEventsByVenue(venueId, { pageSize: 6, sortDir: 'ASC' }).pipe(
               catchError(() => of([] as EventResponseDto[]))
             ),
+            images: this.venueImageService.getByVenueId(venueId).pipe(
+              catchError(() => of([] as VenueImageResponseDto[]))
+            ),
           }).pipe(
-            map(({ operatingHours, tableTypes, favorites, stats, ratings, hasRated, events }) => {
+            map(({ operatingHours, tableTypes, favorites, stats, ratings, hasRated, events, images }) => {
               this.alreadyRated = hasRated;
 
               const mappedTableTypes = tableTypes.map((vtt) => ({
@@ -274,7 +280,7 @@ export class VenueDetails {
                 this.openId = mappedTableTypes[0].id;
               }
 
-              const sortedImages = [...(venue.images ?? [])].sort((a, b) =>
+              const sortedImages = [...images].sort((a, b) =>
                 a.isPrimary === b.isPrimary ? 0 : a.isPrimary ? -1 : 1
               );
 
@@ -465,10 +471,10 @@ export class VenueDetails {
     }
   }
 
-    scrollToReviews(): void {
+  scrollToReviews(): void {
     const el = document.getElementById('venue-reviews');
     if (!el) return;
-    const offset = 80; 
+    const offset = 80;
     const top = el.getBoundingClientRect().top + window.scrollY - offset;
     window.scrollTo({ top, behavior: 'smooth' });
   }
