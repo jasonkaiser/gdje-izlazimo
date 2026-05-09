@@ -35,7 +35,9 @@ type VenueCardVm = {
 })
 export class PopularVenuesCarouselComponent implements AfterViewInit, OnDestroy {
   @Input({ required: true }) set venues(raw: VenueResponseDto[]) {
-    this._venues = raw.map((v) => this.toCardVm(v));
+    this._venues = [...raw]
+      .sort((a, b) => (b.averageRating ?? 0) - (a.averageRating ?? 0))
+      .map((v) => this.toCardVm(v));
   }
   @Input() title = '';
   @Input() subtitle = '';
