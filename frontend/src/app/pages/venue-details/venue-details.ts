@@ -50,8 +50,15 @@ type EventVm = {
   title: string;
   venueName: string;
   venueAddress: string;
+  locationName: string;
+  locationAddress: string;
+  venueId: string | null;
+  eventType: string | null;
   imageUrl: string;
   eventDateTime: string;
+  viewCount: number;
+  trending: boolean;
+  featured: boolean;
 };
 
 type Vm = {
@@ -268,12 +275,19 @@ export class VenueDetails {
                 }));
 
               const mappedEvents: EventVm[] = events.map(e => ({
-                id: e.id,
-                title: e.name,
-                venueName: e.venueName ?? venue.name ?? '',
-                venueAddress: e.venueAddress ?? venue.addressName ?? '',
-                imageUrl: e.imageUrl ?? '',
-                eventDateTime: e.eventDateTime,
+                  id:              e.id,
+                  title:           e.name,
+                  venueName:       e.venueName ?? '',
+                  venueAddress:    e.venueAddress ?? '',
+                  locationName:    e.locationName ?? '',
+                  locationAddress: e.locationAddress ?? '',
+                  venueId:         e.venueId ?? null,
+                  eventType:       e.eventType ?? null,
+                  imageUrl:        e.imageUrl ?? '',
+                  eventDateTime:   e.eventDateTime,
+                  viewCount:       e.viewCount,
+                  trending:        e.trending,
+                  featured:        e.featured ?? false,
               }));
 
               if (!this.openId && mappedTableTypes.length > 0) {

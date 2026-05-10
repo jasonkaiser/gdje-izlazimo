@@ -1,348 +1,376 @@
-<section class="relative overflow-hidden min-h-screen">
+<section class="ev-root">
 
-  <!-- ── BACKGROUND GLOWS ─────────────────────────────────────────────── -->
-  <div class="pointer-events-none fixed inset-0 z-5 overflow-hidden">
-    <div class="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-25"
-      style="background: radial-gradient(circle, rgba(124,58,237,0.35) 0%, rgba(109,40,217,0.12) 20%, transparent 70%);
-             filter: blur(60px);"></div>
-    <div class="absolute top-0 right-0 w-[400px] h-[400px] rounded-full opacity-30"
-      style="background: radial-gradient(circle, rgba(255,255,255,0.10) 10%, transparent 65%);
-             filter: blur(50px);"></div>
+  <!-- ═══════════════════════════════════════════════════════
+       AMBIENT BACKGROUND GLOWS
+  ════════════════════════════════════════════════════════ -->
+  <div class="ev-glows" aria-hidden="true">
+    <div class="ev-glow ev-glow--top"></div>
+    <div class="ev-glow ev-glow--mid"></div>
+    <div class="ev-glow ev-glow--right"></div>
   </div>
-  <div class="absolute bottom-40 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] rounded-full opacity-35"
-    style="background: radial-gradient(ellipse, rgba(91,33,182,0.45) 0%, transparent 50%);
-           filter: blur(80px);"></div>
 
-  <div class="relative z-10">
+  <div class="ev-content">
     @if (vm$ | async; as vm) {
 
-      <!-- ── LOADING ─────────────────────────────────────────────────── -->
+      <!-- ══ LOADING ══════════════════════════════════════════ -->
       @if (vm.loading) {
-        <div class="mx-auto max-w-[900px] px-4 sm:px-8 pt-24 space-y-5">
-          <div class="h-5 w-24 rounded-xl bg-white/[0.04] animate-pulse"></div>
-          <div class="h-14 w-3/4 rounded-2xl bg-white/[0.04] animate-pulse"></div>
-          <div class="h-[320px] sm:h-[460px] rounded-3xl bg-white/[0.03] animate-pulse"></div>
-          <div class="grid grid-cols-3 gap-3">
-            @for (i of [1,2,3]; track i) {
-              <div class="h-24 rounded-2xl bg-white/[0.03] animate-pulse"></div>
-            }
+        <div class="ev-skeleton">
+          <div class="sk-pill"></div>
+          <div class="sk-title"></div>
+          <div class="sk-hero"></div>
+          <div class="sk-bar">
+            <div class="sk-bar-item" *ngFor="let i of [1,2,3]"></div>
           </div>
         </div>
       }
 
-      <!-- ── ERROR ──────────────────────────────────────────────────── -->
+      <!-- ══ ERROR ════════════════════════════════════════════ -->
       @if (!vm.loading && vm.errorMsg) {
-        <div class="mx-auto max-w-[900px] px-4 sm:px-8 pt-32 flex justify-center">
-          <div class="inline-flex flex-col items-center gap-5 rounded-3xl border border-red-500/15
-                      bg-red-500/[0.04] backdrop-blur-sm px-10 py-8 max-w-sm w-full text-center">
-            <div class="h-12 w-12 rounded-2xl border border-red-500/20 bg-red-500/10
-                        flex items-center justify-center">
-              <svg class="h-5 w-5 text-red-400" viewBox="0 0 24 24" fill="none"
-                   stroke="currentColor" stroke-width="1.5">
+        <div class="ev-error-wrap">
+          <div class="ev-error-card">
+            <div class="ev-error-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/>
               </svg>
             </div>
-            <p class="font-dm text-[13px] text-red-300/80 leading-relaxed">{{ vm.errorMsg }}</p>
-            <button type="button" (click)="retry()"
-              class="inline-flex items-center gap-2 rounded-full border border-white/[0.08]
-                     bg-white/[0.04] px-5 py-2.5 font-dm text-[11px] tracking-[0.14em]
-                     uppercase text-white/50 hover:text-white/80 hover:bg-white/[0.07]
-                     transition-all duration-200">
+            <p class="ev-error-msg">{{ vm.errorMsg }}</p>
+            <button type="button" (click)="retry()" class="ev-retry-btn">
               Pokušaj ponovo
             </button>
           </div>
         </div>
       }
 
+      <!-- ══ MAIN CONTENT ══════════════════════════════════════ -->
       @if (!vm.loading && !vm.errorMsg && vm.event) {
+        <div class="ev-layout"
+             [class.is-visible]="heroShown"
+             inView (inViewChange)="onHeroInView($event)">
 
-        <!-- ── BACK NAV ────────────────────────────────────────────── -->
-        <div class="mx-auto max-w-[900px] px-4 sm:px-8 pt-6 sm:pt-8">
-          <button type="button" (click)="goBack()"
-            class="inline-flex items-center gap-2 font-dm text-[12px] tracking-[0.08em]
-                  text-white/30 hover:text-white/70 transition-colors duration-200 group">
-            <svg class="h-3.5 w-3.5 transition-transform duration-200 group-hover:-translate-x-0.5"
-                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                stroke-linecap="round" stroke-linejoin="round">
-              <path d="M19 12H5M12 5l-7 7 7-7"/>
-            </svg>
-            Nazad
-          </button>
-        </div>
+          <!-- ── HERO SECTION ─────────────────────────────────── -->
+          <div class="ev-hero">
 
-        <!-- ── HERO ───────────────────────────────────────────────── -->
-        <div
-          inView (inViewChange)="onHeroInView($event)"
-          class="mx-auto max-w-[900px] px-4 sm:px-8 pt-6 pb-0
-                 transition-all duration-700 ease-out"
-          [style.opacity]="heroShown ? '1' : '0'"
-          [style.transform]="heroShown ? 'translateY(0)' : 'translateY(24px)'"
-        >
+            <!-- Back nav + breadcrumb pill row -->
+            <div class="ev-topbar">
+              <button type="button" (click)="goBack()" class="ev-back-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 12H5M12 5l-7 7 7-7"/>
+                </svg>
+                Nazad
+              </button>
 
-          <!-- Venue breadcrumb pill -->
-          <div class="flex items-center gap-2 mb-5 flex-wrap">
-            <a [routerLink]="['/venues', vm.event.venueId]"
-              class="inline-flex items-center gap-1.5 rounded-full border border-violet-400/20
-                     bg-violet-500/[0.07] backdrop-blur-sm px-3.5 py-1.5
-                     font-dm text-[10px] tracking-[0.18em] uppercase text-violet-300/80
-                     hover:border-violet-400/40 hover:bg-violet-500/[0.12]
-                     transition-all duration-200">
-              <span class="h-1.5 w-1.5 rounded-full bg-violet-400 animate-pulse"></span>
-              {{ vm.event.venueType }}
-            </a>
-            <span class="font-dm text-[11px] text-white/20">·</span>
-            <span class="font-dm text-[11px] text-white/30">{{ vm.event.venueName }}</span>
-          </div>
+              @if (vm.event.venueId) {
+                <a [routerLink]="['/venues', vm.event.venueId]" class="ev-type-pill ev-type-pill--venue">
+                  <span class="ev-pill-dot"></span>
+                  {{ vm.event.venueType }}
+                  <span class="ev-pill-divider">·</span>
+                  {{ vm.event.venueName }}
+                </a>
+              } @else {
+                <span class="ev-type-pill ev-type-pill--external">
+                  <span class="ev-pill-dot ev-pill-dot--emerald"></span>
+                  {{ vm.eventTypeLabel }}
+                  @if (vm.event.externalOrganizerName) {
+                    <span class="ev-pill-divider">·</span>
+                    {{ vm.event.externalOrganizerName }}
+                  }
+                </span>
+              }
+            </div>
 
-          <!-- Title -->
-          <h1 class="font-sora font-semibold text-[32px] sm:text-[48px] lg:text-[56px]
-                     tracking-[-0.03em] leading-[1.05] hero-title
-                     bg-gradient-to-br from-white via-white/90 to-white/50
-                     bg-clip-text text-transparent mb-6">
-            {{ vm.event.name }}
-          </h1>
+            <!-- Title -->
+            <h1 class="ev-title">{{ vm.event.name }}</h1>
 
-          <!-- Hero image -->
-          <div class="relative overflow-hidden rounded-3xl border border-white/[0.06]
-                      shadow-[0_32px_80px_rgba(0,0,0,0.6)] group">
-            @if (vm.event.imageUrl) {
-            <div class="relative w-full transition-transform duration-700 ease-out group-hover:scale-[1.02]">
-              <img [src]="vm.event.imageUrl" 
-                  [alt]="vm.event.name"
-                  class="w-full h-auto block" />
-              <div class="absolute inset-0 pointer-events-none"
-                style="background: linear-gradient(to bottom, rgba(8,7,15,0.0) 35%, rgba(8,7,15,0.92) 100%);">
+            <!-- Hero image with floating date badge -->
+            <div class="ev-img-wrap">
+              @if (vm.event.imageUrl) {
+                <img [src]="vm.event.imageUrl" [alt]="vm.event.name" class="ev-img" />
+              } @else {
+                <div class="ev-img-placeholder">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2
+                             1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2
+                             1.343-2 3-2 3 .895 3 2zM9 10l12-3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              }
+              <!-- Gradient overlay -->
+              <div class="ev-img-overlay" aria-hidden="true"></div>
+
+              <!-- Floating date badge – overlaps image bottom-left -->
+              <div class="ev-date-badge">
+                <span class="ev-date-badge__day">{{ vm.day }}</span>
+                <div class="ev-date-badge__meta">
+                  <span class="ev-date-badge__month">{{ vm.month }}</span>
+                  <span class="ev-date-badge__year">{{ vm.year }}</span>
+                </div>
+              </div>
+
+              <!-- Share button overlapping image bottom-right -->
+              <button type="button" (click)="share(vm.event.name)" class="ev-share-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                  <polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+                {{ copied ? 'Kopirano!' : 'Podijeli' }}
+              </button>
+            </div>
+
+          </div><!-- /ev-hero -->
+
+          <!-- ── INFO BAR (full-width horizontal strip) ─────────── -->
+          <div class="ev-infobar-wrap"
+               inView (inViewChange)="onDetailInView($event)"
+               [class.is-visible]="detailShown">
+          <div class="ev-infobar">
+
+            <!-- Time -->
+            <div class="ev-infobar__item">
+              <div class="ev-infobar__icon ev-infobar__icon--clock">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <p class="ev-infobar__label">Početak</p>
+                <p class="ev-infobar__value">
+                  {{ vm.time }}h
+                  @if (vm.endTime) {
+                    <span class="ev-infobar__sub">— {{ vm.endTime }}h</span>
+                  }
+                </p>
               </div>
             </div>
-            } @else {
-              <div class="h-[240px] sm:h-[380px] lg:h-[460px] w-full flex items-center justify-center"
-                style="background: linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(8,7,15,0.8) 100%);">
-                <svg class="h-16 w-16 text-white/10" viewBox="0 0 24 24" fill="none"
-                     stroke="currentColor" stroke-width="1">
-                  <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2
-                           1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2
-                           1.343-2 3-2 3 .895 3 2zM9 10l12-3" stroke-linecap="round" stroke-linejoin="round"/>
+
+            <div class="ev-infobar__sep" aria-hidden="true"></div>
+
+            <!-- Day of week -->
+            <div class="ev-infobar__item">
+              <div class="ev-infobar__icon ev-infobar__icon--cal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"
+                        stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
+              </div>
+              <div>
+                <p class="ev-infobar__label">Dan</p>
+                <p class="ev-infobar__value">{{ vm.dayName }}</p>
+              </div>
+            </div>
+
+            <div class="ev-infobar__sep" aria-hidden="true"></div>
+
+            <!-- Location -->
+            <div class="ev-infobar__item ev-infobar__item--location">
+              <div class="ev-infobar__icon ev-infobar__icon--pin">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 22c3.7-3.2 8-7.6 8-12.2A8 8 0 1 0 4 9.8C4 14.4 8.3 18.8 12 22Z"
+                        stroke-linecap="round"/>
+                  <circle cx="12" cy="10" r="2.5"/>
+                </svg>
+              </div>
+              <div class="ev-infobar__location-text">
+                <p class="ev-infobar__label">Lokacija</p>
+                @if (vm.event.venueId) {
+                  <p class="ev-infobar__value">{{ vm.event.venueName }}</p>
+                  <p class="ev-infobar__sub ev-infobar__sub--addr">{{ vm.event.venueAddress }}</p>
+                } @else {
+                  <p class="ev-infobar__value">{{ vm.event.locationName }}</p>
+                  @if (vm.event.locationAddress) {
+                    <p class="ev-infobar__sub ev-infobar__sub--addr">{{ vm.event.locationAddress }}</p>
+                  }
+                }
+              </div>
+            </div>
+
+            <!-- CTA -->
+            @if (vm.event.venueId) {
+              <div class="ev-infobar__cta">
+                <a [routerLink]="['/venues', vm.event.venueId]" class="ev-reserve-btn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
+                  </svg>
+                  Rezerviši mjesto
+                </a>
               </div>
             }
 
+          </div><!-- /ev-infobar -->
+          </div><!-- /ev-infobar-wrap -->
 
+          <!-- ── BODY SECTIONS ────────────────────────────────── -->
+          <div class="ev-body">
 
-          </div>
-        </div>
-
-        <!-- ── DETAIL GRID ─────────────────────────────────────────── -->
-        <div
-          inView (inViewChange)="onDetailInView($event)"
-          class="mx-auto max-w-[900px] px-4 sm:px-8 mt-5 pb-32
-                 transition-all duration-700 ease-out delay-100"
-          [style.opacity]="detailShown ? '1' : '0'"
-          [style.transform]="detailShown ? 'translateY(0)' : 'translateY(20px)'"
-        >
-          <div class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-5 items-start">
-
-            <!-- ── LEFT: sticky date/time summary card ────────────── -->
-            <div class="lg:sticky lg:top-8">
-              <div class="relative overflow-hidden rounded-3xl p-6 sm:p-7"
-                style="border: 1px solid rgba(124,58,237,0.22);
-                       background: linear-gradient(135deg, rgba(109,40,217,0.14) 0%, rgba(8,7,15,0.85) 100%);
-                       box-shadow: 0 0 48px rgba(124,58,237,0.10), inset 0 0 32px rgba(124,58,237,0.05);">
-
-                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px"
-                  style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.55), transparent);"></div>
-                <div class="absolute -top-16 -right-16 w-40 h-40 rounded-full pointer-events-none"
-                  style="background: radial-gradient(circle, rgba(124,58,237,0.14) 0%, transparent 70%);"></div>
-
-                <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-5">
-                  Detalji Događaja
-                </p>
-
-                <!-- Big date display -->
-                <div class="flex items-end gap-3 mb-6 pb-6"
-                  style="border-bottom: 1px solid rgba(255,255,255,0.06);">
-                  <span class="font-sora text-[56px] sm:text-[64px] font-bold text-white
-                               leading-none tabular-nums">
-                    {{ vm.day }}
-                  </span>
-                  <div class="flex flex-col mb-2">
-                    <span class="font-sora text-[22px] font-semibold text-violet-300 leading-none">
-                      {{ vm.month }}
-                    </span>
-                    <span class="font-dm text-[13px] text-white/30 mt-1">{{ vm.year }}</span>
-                  </div>
-                </div>
-
-                <!-- Info rows -->
-                <div class="space-y-3.5">
-
-                  <div class="flex items-center gap-3">
-                    <div class="flex-shrink-0 h-8 w-8 rounded-xl flex items-center justify-center"
-                      style="background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25);">
-                      <svg class="h-3.5 w-3.5 text-violet-400" viewBox="0 0 24 24" fill="none"
-                           stroke="currentColor" stroke-width="1.8">
-                        <circle cx="12" cy="12" r="9"/>
-                        <path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-dm text-[10px] tracking-[0.1em] uppercase text-white/25">Početak</p>
-                      <p class="font-sora text-[16px] font-semibold text-white leading-none mt-0.5">
-                        {{ vm.time }}h
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-3">
-                    <div class="flex-shrink-0 h-8 w-8 rounded-xl flex items-center justify-center"
-                      style="background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25);">
-                      <svg class="h-3.5 w-3.5 text-violet-400" viewBox="0 0 24 24" fill="none"
-                           stroke="currentColor" stroke-width="1.8">
-                        <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"
-                              stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                    </div>
-                    <div>
-                      <p class="font-dm text-[10px] tracking-[0.1em] uppercase text-white/25">Dan</p>
-                      <p class="font-dm text-[14px] font-semibold text-white/80 leading-none mt-0.5">
-                        {{ vm.dayName }}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-3">
-                    <div class="flex-shrink-0 h-8 w-8 rounded-xl flex items-center justify-center"
-                      style="background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.25);">
-                      <svg class="h-3.5 w-3.5 text-violet-400" viewBox="0 0 24 24" fill="none"
-                           stroke="currentColor" stroke-width="1.8">
-                        <path d="M12 22c3.7-3.2 8-7.6 8-12.2A8 8 0 1 0 4 9.8C4 14.4 8.3 18.8 12 22Z"
-                              stroke-linecap="round"/>
-                        <circle cx="12" cy="10" r="2.5"/>
-                      </svg>
-                    </div>
-                    <div class="min-w-0">
-                      <p class="font-dm text-[10px] tracking-[0.1em] uppercase text-white/25">Adresa</p>
-                      <p class="font-dm text-[13px] text-white/60 leading-snug mt-0.5 truncate">
-                        {{ vm.event.venueAddress }}
-                      </p>
-                    </div>
-                  </div>
-
-                </div>
-
-            <a [routerLink]="['/venues', vm.event.venueId]"
-              class="group relative mt-6 w-full inline-flex items-center justify-center gap-2.5
-                    px-6 py-4 rounded-2xl overflow-hidden
-                    font-dm font-semibold text-[14px] text-white
-                    transition-all duration-300 hover:scale-[1.015] active:scale-[0.98]"
-              style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
-                    box-shadow: 0 4px 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);">
-              <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
-              </svg>
-              <span class="relative z-10">Rezerviši mjesto</span>
-              <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);"></div>
-            </a>
-
-            <!-- Share button -->
-            <button type="button" (click)="share(vm.event.name)"
-              class="group mt-3 w-full inline-flex items-center justify-center gap-2
-                    px-6 py-3 rounded-2xl
-                    font-dm text-[12px] tracking-[0.1em] uppercase
-                    text-white/40 hover:text-white/70
-                    border border-white/[0.07] hover:border-white/[0.15]
-                    bg-white/[0.03] hover:bg-white/[0.05]
-                    transition-all duration-200">
-              <svg class="h-3.5 w-3.5 transition-transform duration-200 group-hover:-translate-y-0.5"
-                  viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                <polyline points="16 6 12 2 8 6"/>
-                <line x1="12" y1="2" x2="12" y2="15"/>
-              </svg>
-              {{ copied ? 'Kopirano!' : 'Podijeli događaj' }}
-            </button>
-
-            <p class="font-dm text-[11px] text-white/20 text-center mt-3 leading-relaxed">
-              Rezervacije se vrše direktno kroz stranicu lokala
-            </p>
-              </div>
-            </div>
-
-            <!-- ── RIGHT: description + venue info ─────────────────── -->
-            <div class="space-y-4">
-
-              <!-- Description card -->
-              @if (vm.event.description) {
-                <div class="relative overflow-hidden rounded-3xl border border-white/[0.07]
-                            bg-white/[0.02] p-6 sm:p-7">
-                  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
-                    style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.4), transparent);"></div>
-                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-4">
-                    O Događaju
-                  </p>
-                  <p class="font-dm text-[14px] font-light leading-[1.85] text-white/55 italic">
-                    {{ vm.event.description }}
-                  </p>
-                </div>
-              }
-
-              <!-- Venue info card -->
-              <div class="relative overflow-hidden rounded-3xl border border-white/[0.07]
-                          bg-white/[0.02] p-6 sm:p-7">
-                <div class="absolute -top-20 -right-20 w-48 h-48 rounded-full pointer-events-none"
-                  style="background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);"></div>
-                <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-5">
-                  Lokacija
-                </p>
-                <a [routerLink]="['/venues', vm.event.venueId]"
-                  class="flex items-center gap-3 group/venue mb-5">
-                  <div class="flex-shrink-0 h-10 w-10 rounded-2xl flex items-center justify-center
-                              border border-violet-500/30 bg-violet-500/[0.10]
-                              group-hover/venue:border-violet-400/50 group-hover/venue:bg-violet-500/[0.18]
-                              transition-all duration-200">
-                    <svg class="h-4 w-4 text-violet-400" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="1.8">
-                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+            <!-- TICKETS ──────────────────────────────────────── -->
+            @if (vm.event.hasTickets && vm.event.ticketTypes?.length) {
+              <section class="ev-section ev-section--tickets">
+                <div class="ev-section-header">
+                  <div class="ev-section-icon ev-section-icon--ticket">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
                             stroke-linecap="round" stroke-linejoin="round"/>
-                      <polyline points="9 22 9 12 15 12 15 22" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </div>
-                  <div class="min-w-0">
-                    <p class="font-dm text-[14px] font-semibold text-white/80
-                               group-hover/venue:text-white transition-colors duration-200 truncate">
-                      {{ vm.event.venueName }}
-                    </p>
-                    <p class="font-dm text-[11px] text-violet-400/60
-                               group-hover/venue:text-violet-300/80 transition-colors duration-200 mt-0.5">
-                      Pogledaj lokal →
-                    </p>
+                  <h2 class="ev-section-title">Karte</h2>
+                </div>
+
+                <div class="ev-ticket-list">
+                  @for (ticket of vm.event.ticketTypes; track ticket.id) {
+                    <div class="ev-ticket-row"
+                         [class.is-open]="isTicketOpen(ticket.id)"
+                         [class.has-desc]="!!ticket.description">
+
+                      <button type="button"
+                              class="ev-ticket-trigger"
+                              [attr.aria-expanded]="isTicketOpen(ticket.id)"
+                              (click)="ticket.description ? toggleTicket(ticket.id) : null">
+
+                        <div class="ev-ticket-info">
+                          <p class="ev-ticket-name">{{ ticket.name }}</p>
+                          @if (ticket.description) {
+                            <p class="ev-ticket-hint">Prikaži detalje</p>
+                          }
+                        </div>
+
+                        <div class="ev-ticket-right">
+                          @if (ticket.price != null) {
+                            <p class="ev-ticket-price">
+                              {{ ticket.price | number:'1.2-2' }}
+                              <span class="ev-ticket-currency">{{ ticket.currency ?? 'BAM' }}</span>
+                            </p>
+                          } @else {
+                            <p class="ev-ticket-price ev-ticket-price--unknown">Na prodajnom mjestu</p>
+                          }
+
+                          <a [href]="ticket.purchaseUrl"
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             class="ev-buy-btn"
+                             (click)="$event.stopPropagation()">
+                            <svg viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
+                              <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
+                            </svg>
+                            Kupi
+                          </a>
+
+                          @if (ticket.description) {
+                            <div class="ev-ticket-chevron" aria-hidden="true">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                   stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 9l6 6 6-6"/>
+                              </svg>
+                            </div>
+                          }
+                        </div>
+                      </button>
+
+                      @if (ticket.description) {
+                        <div class="ev-ticket-body">
+                          <div class="ev-ticket-body__inner">
+                            <p class="ev-ticket-desc">{{ ticket.description }}</p>
+                          </div>
+                        </div>
+                      }
+
+                    </div>
+                  }
+                </div>
+              </section>
+            }
+
+            <!-- DESCRIPTION ───────────────────────────────────── -->
+            @if (vm.event.description) {
+              <section class="ev-section ev-section--desc">
+                <div class="ev-section-header">
+                  <div class="ev-section-icon ev-section-icon--info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <circle cx="12" cy="12" r="9"/>
+                      <path d="M12 8h.01M12 12v4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                   </div>
-                </a>
-                <div class="flex items-center gap-3">
-                  <div class="flex-shrink-0 h-8 w-8 rounded-xl flex items-center justify-center
-                              border border-white/[0.06] bg-white/[0.03]">
-                    <svg class="h-3.5 w-3.5 text-white/30" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="1.8">
+                  <h2 class="ev-section-title">O događaju</h2>
+                </div>
+                <p class="ev-desc-text">{{ vm.event.description }}</p>
+              </section>
+            }
+
+            <!-- VENUE — linked venue event ─────────────────────── -->
+            @if (vm.event.venueId) {
+              <section class="ev-section ev-section--venue">
+                <div class="ev-section-header">
+                  <div class="ev-section-icon ev-section-icon--pin">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                       <path d="M12 22c3.7-3.2 8-7.6 8-12.2A8 8 0 1 0 4 9.8C4 14.4 8.3 18.8 12 22Z"
                             stroke-linecap="round"/>
                       <circle cx="12" cy="10" r="2.5"/>
                     </svg>
                   </div>
-                  <span class="font-dm text-[13px] text-white/45">
-                    {{ vm.event.venueAddress }}
-                  </span>
+                  <h2 class="ev-section-title">Lokacija</h2>
                 </div>
-              </div>
 
-            </div>
+                <a [routerLink]="['/venues', vm.event.venueId]" class="ev-venue-card">
+                  <div class="ev-venue-card__icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                            stroke-linecap="round" stroke-linejoin="round"/>
+                      <polyline points="9 22 9 12 15 12 15 22" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="ev-venue-card__body">
+                    <p class="ev-venue-card__name">{{ vm.event.venueName }}</p>
+                    <p class="ev-venue-card__addr">{{ vm.event.venueAddress }}</p>
+                  </div>
+                  <div class="ev-venue-card__arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                  </div>
+                </a>
+              </section>
+            }
 
-          </div>
-        </div>
+            <!-- LOCATION — non-venue event ─────────────────────── -->
+            @if (!vm.event.venueId && vm.event.locationName) {
+              @if (vm.event.latitude && vm.event.longitude) {
+                <app-venue-map
+                  [lat]="vm.event.latitude"
+                  [lng]="vm.event.longitude"
+                  [venueName]="vm.event.locationName ?? ''"
+                  [address]="vm.event.locationAddress ?? ''"
+                />
+              } @else {
+                <section class="ev-section ev-section--location">
+                  <div class="ev-section-header">
+                    <div class="ev-section-icon ev-section-icon--pin">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M12 22c3.7-3.2 8-7.6 8-12.2A8 8 0 1 0 4 9.8C4 14.4 8.3 18.8 12 22Z"
+                              stroke-linecap="round"/>
+                        <circle cx="12" cy="10" r="2.5"/>
+                      </svg>
+                    </div>
+                    <h2 class="ev-section-title">Lokacija</h2>
+                  </div>
+                  <div class="ev-location-block">
+                    <p class="ev-location-name">{{ vm.event.locationName }}</p>
+                    @if (vm.event.locationAddress) {
+                      <p class="ev-location-addr">{{ vm.event.locationAddress }}</p>
+                    }
+                  </div>
+                </section>
+              }
+            }
 
+          </div><!-- /ev-body -->
+
+        </div><!-- /ev-layout -->
       }
     }
-  </div>
+  </div><!-- /ev-content -->
 
 </section>

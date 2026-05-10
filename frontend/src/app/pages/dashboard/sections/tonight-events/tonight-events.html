@@ -102,11 +102,17 @@
             <app-event-card
               [id]="e.id"
               [title]="e.title"
-              [venueName]="e.venueName"
-              [venueAddress]="e.venueAddress"
-              [imageUrl]="e.imageUrl"
+              [venueName]="e.venueName ?? ''"
+              [venueAddress]="e.venueAddress ?? ''"
+              [locationName]="e.locationName ?? ''"
+              [locationAddress]="e.locationAddress ?? ''"
+              [venueId]="e.venueId ?? null"
+              [eventType]="e.eventType ?? null"
+              [imageUrl]="e.imageUrl ?? ''"
               [eventDateTime]="e.eventDateTime"
+              [viewCount]="e.viewCount"
               [trending]="e.trending"
+              [featured]="e.featured ?? false"
             />
           }
         </div>
@@ -130,6 +136,7 @@
           [imageUrl]="e.imageUrl"
           [eventDateTime]="e.eventDateTime"
           [trending]="e.trending"
+          [featured]="e.featured ?? false"
         />
       }
     }

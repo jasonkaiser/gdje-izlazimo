@@ -884,10 +884,18 @@
                   <app-event-card
                     [id]="event.id"
                     [title]="event.title"
-                    [venueName]="event.venueName"
-                    [venueAddress]="event.venueAddress"
-                    [imageUrl]="event.imageUrl"
+                    [venueName]="event.venueName ?? ''"
+                    [venueAddress]="event.venueAddress ?? ''"
+                    [locationName]="event.locationName ?? ''"
+                    [locationAddress]="event.locationAddress ?? ''"
+                    [venueId]="event.venueId ?? null"
+                    [eventType]="event.eventType ?? null"
+                    [imageUrl]="event.imageUrl ?? ''"
                     [eventDateTime]="event.eventDateTime"
+                    [viewCount]="event.viewCount"
+                    [trending]="event.trending"
+                    [featured]="event.featured ?? false"
+
                   />
                 }
               </div>

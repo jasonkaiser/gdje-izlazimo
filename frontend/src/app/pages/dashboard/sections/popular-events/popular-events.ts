@@ -19,10 +19,16 @@ type EventCardVm = {
   id: string;
   title: string;
   venueName: string;
-  venueAddress: string;    
+  venueAddress: string;
+  locationName: string;
+  locationAddress: string;
+  venueId: string | null;
+  eventType: string | null;
   imageUrl: string;
   eventDateTime: string;
+  viewCount: number;
   trending: boolean;
+  featured: boolean;
 };
 
 @Component({
@@ -210,13 +216,19 @@ export class PopularEventsCarouselComponent implements AfterViewInit, OnDestroy 
 
   private toCardVm(e: EventResponseDto): EventCardVm {
     return {
-      id:           e.id,
-      title:        e.name        ?? '',
-      venueName:    e.venueName   ?? '',
-      venueAddress: e.venueAddress ?? '',
-      imageUrl:     e.imageUrl    ?? this.getFallbackImage(),
-      eventDateTime: e.eventDateTime ?? '',
-      trending:     e.trending    ?? false
+                  id:              e.id,
+                  title:           e.name,
+                  venueName:       e.venueName ?? '',
+                  venueAddress:    e.venueAddress ?? '',
+                  locationName:    e.locationName ?? '',
+                  locationAddress: e.locationAddress ?? '',
+                  venueId:         e.venueId ?? null,
+                  eventType:       e.eventType ?? null,
+                  imageUrl:        e.imageUrl ?? '',
+                  eventDateTime:   e.eventDateTime,
+                  viewCount:       e.viewCount,
+                  trending:        e.trending,
+                  featured:        e.featured ?? false,
     };
   }
 

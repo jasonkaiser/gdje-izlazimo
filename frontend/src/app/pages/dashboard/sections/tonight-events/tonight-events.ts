@@ -22,8 +22,14 @@ type EventCardVm = {
   title: string;
   venueName: string;
   venueAddress: string;
+  locationName: string;
+  locationAddress: string;
+  venueId: string | null;
+  eventType: string | null;
   imageUrl: string;
   eventDateTime: string;
+  viewCount: number;
+  featured: boolean;
   trending: boolean;
 };
 
@@ -209,13 +215,19 @@ export class TonightEventsCarouselComponent implements AfterViewInit, OnDestroy 
   }
   private toCardVm(e: EventResponseDto): EventCardVm {
     return {
-      id:            e.id,
-      title:         e.name         ?? '',
-      venueName:     e.venueName    ?? '',
-      venueAddress:  e.venueAddress ?? '',
-      imageUrl:      e.imageUrl     ?? this.getFallbackImage(),
-      eventDateTime: e.eventDateTime ?? '',
-      trending:      e.trending     ?? false,
+                  id:              e.id,
+                  title:           e.name,
+                  venueName:       e.venueName ?? '',
+                  venueAddress:    e.venueAddress ?? '',
+                  locationName:    e.locationName ?? '',
+                  locationAddress: e.locationAddress ?? '',
+                  venueId:         e.venueId ?? null,
+                  eventType:       e.eventType ?? null,
+                  imageUrl:        e.imageUrl ?? '',
+                  eventDateTime:   e.eventDateTime,
+                  viewCount:       e.viewCount,
+                  featured:        e.featured ?? false,
+                  trending:        e.trending,
     };
   }
 

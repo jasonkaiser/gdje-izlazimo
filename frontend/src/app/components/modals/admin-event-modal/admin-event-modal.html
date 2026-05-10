@@ -1,5 +1,3 @@
-<!-- admin-event-modal.html -->
-
 <div class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
      (click)="onClose()">
   <div class="relative w-full max-w-lg rounded-2xl bg-[#0A0A0A] border border-white/10 shadow-2xl animate-slide-down max-h-[90vh] flex flex-col"
@@ -26,136 +24,254 @@
     <form (ngSubmit)="onSubmit()" class="flex-1 overflow-y-auto flex flex-col">
       <div class="p-6 space-y-5 flex-1">
 
-        <!-- ── VENUE PICKER (create mode: required; edit mode: read-only info) -->
+        <!-- ── EVENT TYPE ─────────────────────────────────────────────── -->
         <div>
           <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
-            Lokal *
+            Tip Događaja *
           </label>
-
-          @if (mode === 'create') {
-
-            <!-- Selected venue chip -->
-            @if (selectedVenue) {
-              <div class="flex items-center gap-3 rounded-xl border border-violet-500/35 bg-violet-500/[0.08] px-4 py-3 mb-2">
-                <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-violet-500/30 bg-violet-500/15">
-                  <svg class="h-3.5 w-3.5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                  </svg>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="font-dm text-[13px] font-semibold text-white/90 truncate">{{ selectedVenue.name }}</p>
-                  <p class="font-dm text-[11px] text-white/40 truncate">{{ selectedVenue.addressName }}</p>
-                </div>
-                <button type="button" (click)="clearVenue()"
-                  class="flex-shrink-0 h-7 w-7 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center
-                         text-white/40 hover:text-white/70 hover:bg-white/10 transition-all duration-150">
-                  <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                  </svg>
-                </button>
-              </div>
+          <select
+            [(ngModel)]="formData.eventType"
+            name="eventType"
+            (ngModelChange)="onEventTypeChange()"
+            class="modal-input"
+          >
+            @for (type of eventTypes; track type.value) {
+              <option [value]="type.value">{{ type.label }}</option>
             }
+          </select>
+        </div>
 
-            <!-- Search + dropdown trigger -->
-            @if (!selectedVenue) {
-              <div class="relative">
-                <div class="relative">
-                  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
-                    @if (venuesLoading) {
-                      <svg class="h-4 w-4 text-white/30 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                      </svg>
-                    } @else {
-                      <svg class="h-4 w-4 text-white/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
-                      </svg>
-                    }
+        <!-- ── VENUE PICKER — only for VENUE_EVENT ────────────────────── -->
+        @if (isVenueEvent) {
+          <div>
+            <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">
+              Lokal *
+            </label>
+
+            @if (mode === 'create') {
+              @if (selectedVenue) {
+                <div class="flex items-center gap-3 rounded-xl border border-violet-500/35 bg-violet-500/[0.08] px-4 py-3 mb-2">
+                  <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-violet-500/30 bg-violet-500/15">
+                    <svg class="h-3.5 w-3.5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
                   </div>
-                  <input
-                    type="text"
-                    [(ngModel)]="venueSearchQuery"
-                    name="venueSearch"
-                    placeholder="Pretraži lokal po imenu ili adresi…"
-                    (focus)="venueDropdownOpen = true"
-                    [disabled]="venuesLoading"
-                    class="modal-input pl-11 pr-10"
-                  />
-                  <!-- Clear search -->
-                  @if (venueSearchQuery) {
-                    <button type="button" (click)="venueSearchQuery = ''"
-                      class="absolute inset-y-0 right-0 flex items-center pr-3 text-white/30 hover:text-white/60 transition-colors">
-                      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                      </svg>
-                    </button>
-                  }
+                  <div class="flex-1 min-w-0">
+                    <p class="font-dm text-[13px] font-semibold text-white/90 truncate">{{ selectedVenue.name }}</p>
+                    <p class="font-dm text-[11px] text-white/40 truncate">{{ selectedVenue.addressName }}</p>
+                  </div>
+                  <button type="button" (click)="clearVenue()"
+                    class="flex-shrink-0 h-7 w-7 rounded-lg border border-white/10 bg-white/5 flex items-center justify-center
+                           text-white/40 hover:text-white/70 hover:bg-white/10 transition-all duration-150">
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
                 </div>
+              }
 
-                <!-- Dropdown list -->
-                @if (venueDropdownOpen && !venuesLoading) {
-                  <!-- Backdrop to close -->
-                  <div class="fixed inset-0 z-10" (click)="closeVenueDropdown()"></div>
-
-                  <div class="absolute top-full left-0 right-0 mt-1.5 z-20 max-h-56 overflow-y-auto
-                              rounded-xl border border-white/10 bg-[#111] shadow-2xl
-                              scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
-
-                    @if (filteredVenues.length === 0) {
-                      <div class="flex flex-col items-center gap-2 py-8 text-center">
-                        <p class="font-dm text-[13px] text-white/35">Nema rezultata za "{{ venueSearchQuery }}"</p>
-                      </div>
-                    }
-
-                    @for (venue of filteredVenues; track venue.id) {
-                      <button type="button" (click)="selectVenue(venue)"
-                        class="w-full flex items-center gap-3 px-4 py-3 text-left
-                               transition duration-100 hover:bg-white/[0.05]
-                               border-b border-white/[0.04] last:border-b-0">
-                        <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg
-                                    border border-violet-500/20 bg-violet-500/[0.08]">
-                          <svg class="h-3.5 w-3.5 text-violet-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                          </svg>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                          <p class="font-dm text-[13px] font-medium text-white/85 truncate">{{ venue.name }}</p>
-                          <p class="font-dm text-[11px] text-white/35 truncate">{{ venue.addressName }}</p>
-                        </div>
-                        @if (venue.venueKind === 'PARTNER') {
-                          <span class="flex-shrink-0 rounded-md border border-violet-500/25 bg-violet-500/10
-                                       px-1.5 py-0.5 font-dm text-[9px] text-violet-400">
-                            Partner
-                          </span>
-                        }
+              @if (!selectedVenue) {
+                <div class="relative">
+                  <div class="relative">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                      @if (venuesLoading) {
+                        <svg class="h-4 w-4 text-white/30 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                      } @else {
+                        <svg class="h-4 w-4 text-white/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+                        </svg>
+                      }
+                    </div>
+                    <input
+                      type="text"
+                      [(ngModel)]="venueSearchQuery"
+                      name="venueSearch"
+                      placeholder="Pretraži lokal po imenu ili adresi…"
+                      (focus)="venueDropdownOpen = true"
+                      [disabled]="venuesLoading"
+                      class="modal-input pl-11 pr-10"
+                    />
+                    @if (venueSearchQuery) {
+                      <button type="button" (click)="venueSearchQuery = ''"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-white/30 hover:text-white/60 transition-colors">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
                       </button>
                     }
                   </div>
-                }
-              </div>
-            }
 
-          } @else {
-            <!-- Edit mode: show current venue as read-only -->
-            @if (selectedVenue) {
-              <div class="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3">
-                <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05]">
-                  <svg class="h-3.5 w-3.5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                  </svg>
+                  @if (venueDropdownOpen && !venuesLoading) {
+                    <div class="fixed inset-0 z-10" (click)="closeVenueDropdown()"></div>
+                    <div class="absolute top-full left-0 right-0 mt-1.5 z-20 max-h-56 overflow-y-auto
+                                rounded-xl border border-white/10 bg-[#111] shadow-2xl
+                                scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10">
+                      @if (filteredVenues.length === 0) {
+                        <div class="flex flex-col items-center gap-2 py-8 text-center">
+                          <p class="font-dm text-[13px] text-white/35">Nema rezultata za "{{ venueSearchQuery }}"</p>
+                        </div>
+                      }
+                      @for (venue of filteredVenues; track venue.id) {
+                        <button type="button" (click)="selectVenue(venue)"
+                          class="w-full flex items-center gap-3 px-4 py-3 text-left
+                                 transition duration-100 hover:bg-white/[0.05]
+                                 border-b border-white/[0.04] last:border-b-0">
+                          <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg
+                                      border border-violet-500/20 bg-violet-500/[0.08]">
+                            <svg class="h-3.5 w-3.5 text-violet-400/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <p class="font-dm text-[13px] font-medium text-white/85 truncate">{{ venue.name }}</p>
+                            <p class="font-dm text-[11px] text-white/35 truncate">{{ venue.addressName }}</p>
+                          </div>
+                          @if (venue.venueKind === 'PARTNER') {
+                            <span class="flex-shrink-0 rounded-md border border-violet-500/25 bg-violet-500/10
+                                         px-1.5 py-0.5 font-dm text-[9px] text-violet-400">
+                              Partner
+                            </span>
+                          }
+                        </button>
+                      }
+                    </div>
+                  }
                 </div>
-                <div class="min-w-0">
-                  <p class="font-dm text-[13px] text-white/70 truncate">{{ selectedVenue.name }}</p>
-                  <p class="font-dm text-[11px] text-white/35 truncate">{{ selectedVenue.addressName }}</p>
-                </div>
-              </div>
+              }
+
             } @else {
-              <p class="font-dm text-[13px] text-white/30 italic">Lokal nije pronađen</p>
+              @if (selectedVenue) {
+                <div class="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 py-3">
+                  <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05]">
+                    <svg class="h-3.5 w-3.5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-dm text-[13px] text-white/70 truncate">{{ selectedVenue.name }}</p>
+                    <p class="font-dm text-[11px] text-white/35 truncate">{{ selectedVenue.addressName }}</p>
+                  </div>
+                </div>
+              } @else {
+                <p class="font-dm text-[13px] text-white/30 italic">Lokal nije pronađen</p>
+              }
             }
-          }
-        </div>
+          </div>
+        }
 
-        <!-- ── Name ───────────────────────────────────────────────────── -->
+        <!-- ── OPTIONAL PIN OVERRIDE — venue events ───────────────────────── -->
+      @if (isVenueEvent) {
+        <div class="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
+          <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/30">
+            Pin lokacije — opciono (preuzima se od lokala ako se ostavi prazno)
+          </p>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/40 mb-2 block">Širina (Lat)</label>
+              <input
+                type="number"
+                [(ngModel)]="formData.latitude"
+                name="latitude"
+                placeholder="npr. 43.8563"
+                step="0.000001"
+                class="modal-input"
+              />
+            </div>
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/40 mb-2 block">Dužina (Lng)</label>
+              <input
+                type="number"
+                [(ngModel)]="formData.longitude"
+                name="longitude"
+                placeholder="npr. 18.4131"
+                step="0.000001"
+                class="modal-input"
+              />
+            </div>
+          </div>
+        </div>
+      }
+
+        <!-- ── EXTERNAL LOCATION — non-venue events ───────────────────── -->
+        @if (!isVenueEvent) {
+          <div class="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-4 space-y-4">
+            <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-emerald-400/60">Lokacija događaja</p>
+
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/50 mb-2 block">Naziv lokacije</label>
+              <input
+                type="text"
+                [(ngModel)]="formData.locationName"
+                name="locationName"
+                placeholder="npr. Toplik Village Resort"
+                class="modal-input"
+              />
+            </div>
+
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/50 mb-2 block">Adresa</label>
+              <input
+                type="text"
+                [(ngModel)]="formData.locationAddress"
+                name="locationAddress"
+                placeholder="npr. Toplik, Istočno Sarajevo"
+                class="modal-input"
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/50 mb-2 block">Širina (Lat)</label>
+              <input
+                type="number"
+                [(ngModel)]="formData.latitude"
+                name="latitude"
+                placeholder="npr. 43.8563"
+                step="0.000001"
+                class="modal-input"
+              />
+            </div>
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/50 mb-2 block">Dužina (Lng)</label>
+              <input
+                type="number"
+                [(ngModel)]="formData.longitude"
+                name="longitude"
+                placeholder="npr. 18.4131"
+                step="0.000001"
+                class="modal-input"
+              />
+            </div>
+          </div>
+
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/50 mb-2 block">Organizator</label>
+              <input
+                type="text"
+                [(ngModel)]="formData.externalOrganizerName"
+                name="externalOrganizerName"
+                placeholder="Ime organizatora"
+                class="modal-input"
+              />
+            </div>
+
+            <div>
+              <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/50 mb-2 block">Instagram organizatora</label>
+              <input
+                type="text"
+                [(ngModel)]="formData.externalOrganizerInstagram"
+                name="externalOrganizerInstagram"
+                placeholder="@username"
+                class="modal-input"
+              />
+            </div>
+          </div>
+        }
+
+        <!-- ── NAME ───────────────────────────────────────────────────── -->
         <div>
           <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Naziv Događaja *</label>
           <input
@@ -163,12 +279,12 @@
             [(ngModel)]="formData.name"
             name="name"
             required
-            placeholder="npr. DJ Night, Live Band..."
+            placeholder="npr. DJ Night, Toplik Gastro Festival..."
             class="modal-input"
           />
         </div>
 
-        <!-- ── Description ────────────────────────────────────────────── -->
+        <!-- ── DESCRIPTION ────────────────────────────────────────────── -->
         <div>
           <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Opis</label>
           <textarea
@@ -180,19 +296,142 @@
           ></textarea>
         </div>
 
-        <!-- ── Date & Time ────────────────────────────────────────────── -->
-        <div>
-          <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Datum i Vrijeme *</label>
-          <input
-            type="datetime-local"
-            [(ngModel)]="formData.eventDateTime"
-            name="eventDateTime"
-            required
-            class="modal-input modal-input--time"
-          />
+        <!-- ── DATES ──────────────────────────────────────────────────── -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Početak *</label>
+            <input
+              type="datetime-local"
+              [(ngModel)]="formData.eventDateTime"
+              name="eventDateTime"
+              required
+              class="modal-input modal-input--time"
+            />
+          </div>
+          <div>
+            <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Kraj</label>
+            <input
+              type="datetime-local"
+              [(ngModel)]="formData.eventEndDateTime"
+              name="eventEndDateTime"
+              class="modal-input modal-input--time"
+            />
+          </div>
         </div>
 
-        <!-- ── Image ──────────────────────────────────────────────────── -->
+        <!-- ── FEATURED ───────────────────────────────────────────────── -->
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            (click)="formData.featured = !formData.featured"
+            class="relative inline-flex h-5 w-9 flex-shrink-0 rounded-full border-2 border-transparent
+                   transition-colors duration-200 focus:outline-none"
+            [class.bg-violet-600]="formData.featured"
+            [class.bg-white\/15]="!formData.featured"
+          >
+            <span
+              class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow
+                     transition duration-200"
+              [class.translate-x-4]="formData.featured"
+              [class.translate-x-0]="!formData.featured"
+            ></span>
+          </button>
+          <span class="font-dm text-[13px] text-white/55">Istaknuti događaj</span>
+        </div>
+
+        <!-- ── TICKET TYPES ───────────────────────────────────────────── -->
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60">Karte</label>
+            <button
+              type="button"
+              (click)="addTicket()"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                     border border-emerald-500/25 bg-emerald-500/[0.07]
+                     font-dm text-[10px] tracking-[0.1em] uppercase text-emerald-400
+                     hover:bg-emerald-500/[0.14] hover:border-emerald-400/40
+                     transition-all duration-150">
+              <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+              </svg>
+              Dodaj kartu
+            </button>
+          </div>
+
+          @if (tickets.length === 0) {
+            <div class="flex items-center justify-center h-16 rounded-xl border border-dashed border-white/10">
+              <p class="font-dm text-[12px] text-white/20">Nema karata — opciono</p>
+            </div>
+          }
+
+          <div class="space-y-3">
+            @for (ticket of tickets; track trackByIndex($index)) {
+              <div class="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-4 space-y-3">
+
+                <div class="flex items-center justify-between gap-2">
+                  <span class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/30">
+                    Karta {{ $index + 1 }}
+                  </span>
+                  <button type="button" (click)="removeTicket($index)"
+                    class="h-6 w-6 rounded-lg border border-red-500/20 bg-red-500/5
+                           flex items-center justify-center text-red-400/60
+                           hover:text-red-400 hover:bg-red-500/10 transition-all duration-150">
+                    <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                  </button>
+                </div>
+
+                <input
+                  type="text"
+                  [(ngModel)]="ticket.name"
+                  [name]="'ticketName' + $index"
+                  placeholder="Naziv karte *"
+                  class="modal-input"
+                />
+
+                <textarea
+                  [(ngModel)]="ticket.description"
+                  [name]="'ticketDesc' + $index"
+                  rows="2"
+                  placeholder="Opis (opciono)"
+                  class="modal-input resize-none"
+                ></textarea>
+
+                <div class="grid grid-cols-2 gap-2">
+                  <input
+                    type="number"
+                    [(ngModel)]="ticket.price"
+                    [name]="'ticketPrice' + $index"
+                    placeholder="Cijena (opciono)"
+                    min="0"
+                    step="0.01"
+                    class="modal-input"
+                  />
+                  <select
+                    [(ngModel)]="ticket.currency"
+                    [name]="'ticketCurrency' + $index"
+                    class="modal-input"
+                  >
+                    <option value="BAM">BAM</option>
+                    <option value="EUR">EUR</option>
+                    <option value="USD">USD</option>
+                  </select>
+                </div>
+
+                <input
+                  type="url"
+                  [(ngModel)]="ticket.purchaseUrl"
+                  [name]="'ticketUrl' + $index"
+                  placeholder="Link za kupovinu *"
+                  class="modal-input"
+                />
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- ── IMAGE ──────────────────────────────────────────────────── -->
         <div>
           <label class="font-dm text-[12px] tracking-[0.08em] uppercase text-white/60 mb-2 block">Slika događaja</label>
 

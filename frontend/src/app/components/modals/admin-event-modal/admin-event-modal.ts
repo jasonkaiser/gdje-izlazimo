@@ -17,13 +17,31 @@ import { VenueService } from '../../../core/api/venue-service';
 import { ToastService } from '../../../core/ui/toast';
 import { EventResponseDto } from '../../../core/models/events/event-response.dto';
 import { VenueResponseDto } from '../../../core/models/venues/venue-response.dto';
-import { CreateEventDto } from '../../../core/models/events/create-event.request';
+import { CreateEventDto, EventTicketTypeRequest } from '../../../core/models/events/create-event.request';
 import { UpdateEventDto } from '../../../core/models/events/update-event.request';
 
 interface AdminEventModalData {
   mode: 'create' | 'edit';
   event?: EventResponseDto;
 }
+
+interface TicketFormRow {
+  name: string;
+  description: string;
+  price: string;
+  currency: string;
+  purchaseUrl: string;
+  displayOrder: number;
+  active: boolean;
+}
+
+const EVENT_TYPES = [
+  { value: 'VENUE_EVENT', label: 'Događaj u lokalu' },
+  { value: 'FESTIVAL',    label: 'Festival' },
+  { value: 'CONCERT',     label: 'Koncert' },
+  { value: 'PARTY',       label: 'Žurka' },
+  { value: 'OTHER',       label: 'Ostalo' },
+];
 
 @Component({
   selector: 'app-admin-event-modal',
@@ -42,14 +60,16 @@ export class AdminEventModalComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly cdr          = inject(ChangeDetectorRef);
 
+  readonly eventTypes = EVENT_TYPES;
+
   mode: 'create' | 'edit' = 'create';
   eventId: string | null   = null;
   isSubmitting             = false;
   venuesLoading            = true;
 
-  venues: VenueResponseDto[]       = [];
-  venueSearchQuery                 = '';
-  venueDropdownOpen                = false;
+  venues: VenueResponseDto[]            = [];
+  venueSearchQuery                      = '';
+  venueDropdownOpen                     = false;
   selectedVenue: VenueResponseDto | null = null;
 
   selectedFile: File | null        = null;
@@ -60,17 +80,32 @@ export class AdminEventModalComponent implements OnInit {
   isDragOver                       = false;
 
   formData = {
-    name:          '',
-    description:   '',
-    eventDateTime: '',
-    imageUrl:      '',
+    name:                     '',
+    description:              '',
+    eventDateTime:            '',
+    eventEndDateTime:         '',
+    eventType:                'VENUE_EVENT',
+    locationName:             '',
+    locationAddress:          '',
+    externalOrganizerName:    '',
+    externalOrganizerInstagram: '',
+    featured:               false,
+    imageUrl:                 '',
+    latitude:                   null as number | null,
+    longitude:                  null as number | null,
   };
+
+  tickets: TicketFormRow[] = [];
+
+  get isVenueEvent(): boolean {
+    return this.formData.eventType === 'VENUE_EVENT';
+  }
 
   get canSave(): boolean {
     return !!(
       this.formData.name?.trim() &&
       this.formData.eventDateTime &&
-      (this.mode === 'edit' || this.selectedVenue)
+      (!this.isVenueEvent || this.selectedVenue)
     );
   }
 
@@ -90,11 +125,29 @@ export class AdminEventModalComponent implements OnInit {
       const ev = this.data.event;
       this.eventId = ev.id;
       this.formData = {
-        name:          ev.name,
-        description:   ev.description ?? '',
-        eventDateTime: this.toDateTimeLocal(ev.eventDateTime),
-        imageUrl:      ev.imageUrl ?? '',
+        name:                     ev.name,
+        description:              ev.description ?? '',
+        eventDateTime:            this.toDateTimeLocal(ev.eventDateTime),
+        eventEndDateTime:         ev.eventEndDateTime ? this.toDateTimeLocal(ev.eventEndDateTime) : '',
+        eventType:                ev.eventType ?? 'VENUE_EVENT',
+        locationName:             ev.locationName ?? '',
+        locationAddress:          ev.locationAddress ?? '',
+        externalOrganizerName:    ev.externalOrganizerName ?? '',
+        externalOrganizerInstagram: '',
+        featured:               ev.featured ?? false,
+        imageUrl:                 ev.imageUrl ?? '',
+        latitude:                 ev.latitude ?? null,
+        longitude:                ev.longitude ?? null,
       };
+      this.tickets = (ev.ticketTypes ?? []).map(t => ({
+        name:         t.name,
+        description:  t.description ?? '',
+        price:        t.price != null ? String(t.price) : '',
+        currency:     t.currency ?? 'BAM',
+        purchaseUrl:  t.purchaseUrl,
+        displayOrder: t.displayOrder,
+        active:       true,
+      }));
     }
 
     this.loadVenues();
@@ -115,8 +168,20 @@ export class AdminEventModalComponent implements OnInit {
       });
   }
 
+  onEventTypeChange(): void {
+    if (this.isVenueEvent) {
+      this.formData.locationName    = '';
+      this.formData.locationAddress = '';
+      this.formData.externalOrganizerName = '';
+      this.formData.externalOrganizerInstagram = '';
+    } else {
+      this.selectedVenue = null;
+    }
+    this.cdr.markForCheck();
+  }
+
   selectVenue(venue: VenueResponseDto): void {
-    this.selectedVenue = venue;
+    this.selectedVenue    = venue;
     this.venueDropdownOpen = false;
     this.venueSearchQuery  = '';
     this.cdr.markForCheck();
@@ -127,19 +192,35 @@ export class AdminEventModalComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  toggleVenueDropdown(): void {
-    this.venueDropdownOpen = !this.venueDropdownOpen;
-    if (this.venueDropdownOpen) {
-      this.venueSearchQuery = '';
-    }
-    this.cdr.markForCheck();
-  }
-
   closeVenueDropdown(): void {
     this.venueDropdownOpen = false;
     this.cdr.markForCheck();
   }
 
+  // ── Tickets ───────────────────────────────────────────────────────────
+
+  addTicket(): void {
+    this.tickets.push({
+      name:         '',
+      description:  '',
+      price:        '',
+      currency:     'BAM',
+      purchaseUrl:  '',
+      displayOrder: this.tickets.length + 1,
+      active:       true,
+    });
+    this.cdr.markForCheck();
+  }
+
+  removeTicket(index: number): void {
+    this.tickets.splice(index, 1);
+    this.tickets.forEach((t, i) => t.displayOrder = i + 1);
+    this.cdr.markForCheck();
+  }
+
+  trackByIndex(index: number): number { return index; }
+
+  // ── Image ─────────────────────────────────────────────────────────────
 
   onDragOver(e: DragEvent): void  { e.preventDefault(); e.stopPropagation(); this.isDragOver = true; }
   onDragLeave(e: DragEvent): void { e.preventDefault(); e.stopPropagation(); this.isDragOver = false; }
@@ -170,40 +251,40 @@ export class AdminEventModalComponent implements OnInit {
     }
     this.selectedFile = file;
     const reader = new FileReader();
-    reader.onload = e => {
-      this.selectedFilePreview = e.target?.result as string;
+    reader.onload = ev => {
+      this.selectedFilePreview = ev.target?.result as string;
       this.cdr.markForCheck();
     };
     reader.readAsDataURL(file);
   }
 
   clearSelectedFile(): void {
-    this.selectedFile = null;
+    this.selectedFile        = null;
     this.selectedFilePreview = null;
-    this.uploadError = '';
+    this.uploadError         = '';
     this.cdr.markForCheck();
   }
 
   uploadImage(): void {
     if (!this.selectedFile || !this.eventId) return;
     this.isUploadingImage = true;
-    this.uploadError = '';
+    this.uploadError      = '';
     this.cdr.markForCheck();
 
     this.eventService.uploadEventImage(this.eventId, this.selectedFile)
       .pipe(take(1))
       .subscribe({
         next: (updated) => {
-          this.formData.imageUrl = updated.imageUrl ?? '';
-          this.selectedFile = null;
+          this.formData.imageUrl   = updated.imageUrl ?? '';
+          this.selectedFile        = null;
           this.selectedFilePreview = null;
-          this.isUploadingImage = false;
+          this.isUploadingImage    = false;
           this.toastService.show('Slika uspješno uploadovana', 'success');
           this.cdr.markForCheck();
           window.dispatchEvent(new CustomEvent('event-updated'));
         },
         error: () => {
-          this.uploadError = 'Upload nije uspio. Pokušaj ponovo.';
+          this.uploadError      = 'Upload nije uspio. Pokušaj ponovo.';
           this.isUploadingImage = false;
           this.toastService.show('Greška pri uploadu slike', 'error');
           this.cdr.markForCheck();
@@ -221,7 +302,7 @@ export class AdminEventModalComponent implements OnInit {
       .subscribe({
         next: () => {
           this.formData.imageUrl = '';
-          this.isDeletingImage = false;
+          this.isDeletingImage   = false;
           this.toastService.show('Slika obrisana', 'success');
           this.cdr.markForCheck();
           window.dispatchEvent(new CustomEvent('event-updated'));
@@ -234,11 +315,23 @@ export class AdminEventModalComponent implements OnInit {
       });
   }
 
+  // ── Submit ────────────────────────────────────────────────────────────
 
   onSubmit(): void {
-    if (!this.formData.name.trim()) { this.toastService.show('Naziv je obavezan', 'error'); return; }
-    if (!this.formData.eventDateTime) { this.toastService.show('Datum i vrijeme su obavezni', 'error'); return; }
-    if (this.mode === 'create' && !this.selectedVenue) { this.toastService.show('Odaberite lokal', 'error'); return; }
+    if (!this.formData.name.trim()) {
+      this.toastService.show('Naziv je obavezan', 'error'); return;
+    }
+    if (!this.formData.eventDateTime) {
+      this.toastService.show('Datum i vrijeme su obavezni', 'error'); return;
+    }
+    if (this.isVenueEvent && !this.selectedVenue) {
+      this.toastService.show('Odaberite lokal za ovaj tip događaja', 'error'); return;
+    }
+    for (const t of this.tickets) {
+      if (!t.name.trim() || !t.purchaseUrl.trim()) {
+        this.toastService.show('Svaka karta mora imati naziv i link za kupovinu', 'error'); return;
+      }
+    }
 
     this.isSubmitting = true;
     this.cdr.markForCheck();
@@ -246,12 +339,34 @@ export class AdminEventModalComponent implements OnInit {
     this.mode === 'edit' ? this.updateEvent() : this.createEvent();
   }
 
+  private buildTicketDtos(): EventTicketTypeRequest[] {
+    return this.tickets.map((t, i) => ({
+      name:         t.name.trim(),
+      description:  t.description.trim() || undefined,
+      price:        t.price ? parseFloat(t.price) : null,
+      currency:     t.currency || 'BAM',
+      purchaseUrl:  t.purchaseUrl.trim(),
+      displayOrder: i + 1,
+      active:       t.active,
+    }));
+  }
+
   private createEvent(): void {
     const dto: CreateEventDto = {
-      venueId:       this.selectedVenue!.id,
-      name:          this.formData.name.trim(),
-      description:   this.formData.description.trim() || undefined,
-      eventDateTime: this.formData.eventDateTime,
+      venueId:                   this.isVenueEvent ? (this.selectedVenue?.id ?? null) : null,
+      name:                      this.formData.name.trim(),
+      description:               this.formData.description.trim() || undefined,
+      eventDateTime:             this.formData.eventDateTime,
+      eventEndDateTime:          this.formData.eventEndDateTime || null,
+      eventType:                 this.formData.eventType,
+      locationName:              this.formData.locationName.trim() || null,
+      locationAddress:           this.formData.locationAddress.trim() || null,
+      externalOrganizerName:     this.formData.externalOrganizerName.trim() || null,
+      externalOrganizerInstagram: this.formData.externalOrganizerInstagram.trim() || null,
+      featured:                this.formData.featured ?? false,
+      ticketTypes:               this.buildTicketDtos(),
+      latitude:  this.formData.latitude  ?? null,
+      longitude: this.formData.longitude ?? null,
     };
 
     this.eventService.createEvent(dto).pipe(take(1)).subscribe({
@@ -280,7 +395,10 @@ export class AdminEventModalComponent implements OnInit {
       return;
     }
     this.eventService.uploadEventImage(this.eventId, this.selectedFile).pipe(take(1)).subscribe({
-      next: () => { this.modalService.close(); window.dispatchEvent(new CustomEvent('event-updated')); },
+      next: () => {
+        this.modalService.close();
+        window.dispatchEvent(new CustomEvent('event-updated'));
+      },
       error: () => {
         this.toastService.show('Događaj kreiran, ali upload slike nije uspio', 'error');
         this.modalService.close();
@@ -292,9 +410,19 @@ export class AdminEventModalComponent implements OnInit {
   private updateEvent(): void {
     if (!this.eventId) return;
     const dto: UpdateEventDto = {
-      name:          this.formData.name.trim(),
-      description:   this.formData.description.trim() || undefined,
-      eventDateTime: this.formData.eventDateTime,
+      name:                      this.formData.name.trim(),
+      description:               this.formData.description.trim() || undefined,
+      eventDateTime:             this.formData.eventDateTime,
+      eventEndDateTime:          this.formData.eventEndDateTime || null,
+      eventType:                 this.formData.eventType,
+      locationName:              this.formData.locationName.trim() || null,
+      locationAddress:           this.formData.locationAddress.trim() || null,
+      externalOrganizerName:     this.formData.externalOrganizerName.trim() || null,
+      externalOrganizerInstagram: this.formData.externalOrganizerInstagram.trim() || null,
+      featured:                this.formData.featured ?? false,
+      ticketTypes:               this.buildTicketDtos(),
+      latitude:                  this.formData.latitude ?? null,
+      longitude:                 this.formData.longitude ?? null,
     };
     this.eventService.updateEvent(this.eventId, dto).pipe(take(1)).subscribe({
       next: () => {

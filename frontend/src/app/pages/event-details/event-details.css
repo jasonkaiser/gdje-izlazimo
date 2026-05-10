@@ -11,3 +11,786 @@
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   EVENT DETAILS — Redesigned CSS
+   Companion to event-details.html (Angular component styles)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── ROOT ──────────────────────────────────────────────────────── */
+.ev-root {
+  position: relative;
+  min-height: 100svh;
+  overflow-x: hidden;
+}
+
+/* ── AMBIENT GLOWS ─────────────────────────────────────────────── */
+.ev-glows {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.ev-glow {
+  position: absolute;
+  border-radius: 50%;
+}
+.ev-glow--top {
+  top: -160px; left: -160px;
+  width: 640px; height: 640px;
+  background: radial-gradient(circle,
+    rgba(109,40,217,0.30) 0%,
+    rgba(91,33,182,0.10) 30%,
+    transparent 70%);
+  filter: blur(72px);
+  opacity: 0.6;
+}
+.ev-glow--mid {
+  bottom: 10%; left: 50%;
+  transform: translateX(-50%);
+  width: 1000px; height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse,
+    rgba(91,33,182,0.35) 0%,
+    transparent 55%);
+  filter: blur(90px);
+  opacity: 0.4;
+}
+.ev-glow--right {
+  top: 0; right: 0;
+  width: 360px; height: 360px;
+  background: radial-gradient(circle,
+    rgba(255,255,255,0.06) 0%,
+    transparent 65%);
+  filter: blur(50px);
+}
+
+/* ── CONTENT WRAPPER ───────────────────────────────────────────── */
+.ev-content {
+  position: relative;
+  z-index: 10;
+}
+
+/* ── SKELETON / LOADING ────────────────────────────────────────── */
+.ev-skeleton {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 5rem 1.5rem 3rem;
+}
+.sk-pill {
+  height: 28px; width: 160px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  animation: sk-pulse 1.4s ease-in-out infinite;
+  margin-bottom: 1.25rem;
+}
+.sk-title {
+  height: 52px; width: 70%;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  animation: sk-pulse 1.4s ease-in-out infinite 0.1s;
+  margin-bottom: 1.5rem;
+}
+.sk-hero {
+  height: 420px;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.03);
+  animation: sk-pulse 1.4s ease-in-out infinite 0.2s;
+  margin-bottom: 1rem;
+}
+.sk-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.sk-bar-item {
+  height: 80px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.03);
+  animation: sk-pulse 1.4s ease-in-out infinite 0.3s;
+}
+@keyframes sk-pulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.7; }
+}
+
+/* ── ERROR ─────────────────────────────────────────────────────── */
+.ev-error-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 8rem 1.5rem;
+}
+.ev-error-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  background: rgba(239,68,68,0.04);
+  border: 1px solid rgba(239,68,68,0.14);
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+  backdrop-filter: blur(12px);
+}
+.ev-error-icon {
+  width: 48px; height: 48px;
+  border-radius: 16px;
+  background: rgba(239,68,68,0.10);
+  border: 1px solid rgba(239,68,68,0.20);
+  display: flex; align-items: center; justify-content: center;
+}
+.ev-error-icon svg { width: 20px; height: 20px; color: rgb(252,165,165); }
+.ev-error-msg {
+  font-size: 13px;
+  color: rgba(252,165,165,0.80);
+  line-height: 1.65;
+}
+.ev-retry-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.55);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.ev-retry-btn:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.08); }
+
+/* ── LAYOUT ────────────────────────────────────────────────────── */
+.ev-layout {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.65s ease, transform 0.65s ease;
+}
+.ev-layout.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── HERO ──────────────────────────────────────────────────────── */
+.ev-hero {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 0;
+}
+
+/* ── TOP BAR (back + pill) ─────────────────────────────────────── */
+.ev-topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.ev-back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: rgba(255,255,255,0.30);
+  font-size: 12px;
+  letter-spacing: 0.07em;
+  cursor: pointer;
+  background: none; border: none; padding: 0;
+  transition: color 0.2s;
+}
+.ev-back-btn:hover { color: rgba(255,255,255,0.75); }
+.ev-back-btn svg { width: 14px; height: 14px; transition: transform 0.2s; }
+.ev-back-btn:hover svg { transform: translateX(-2px); }
+
+.ev-type-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+  text-decoration: none;
+}
+.ev-type-pill--venue {
+  border: 1px solid rgba(124,58,237,0.25);
+  background: rgba(124,58,237,0.09);
+  color: rgba(196,181,253,0.85);
+  transition: border-color 0.2s, background 0.2s;
+}
+.ev-type-pill--venue:hover {
+  border-color: rgba(124,58,237,0.50);
+  background: rgba(124,58,237,0.15);
+}
+.ev-type-pill--external {
+  border: 1px solid rgba(16,185,129,0.25);
+  background: rgba(16,185,129,0.08);
+  color: rgba(110,231,183,0.85);
+}
+.ev-pill-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(167,139,250,1);
+  animation: blink 2s ease-in-out infinite;
+}
+.ev-pill-dot--emerald { background: rgba(52,211,153,1); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.ev-pill-divider { color: rgba(255,255,255,0.25); }
+
+/* ── TITLE ─────────────────────────────────────────────────────── */
+.ev-title {
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.06;
+  margin-bottom: 1.25rem;
+  background: linear-gradient(130deg, #fff 0%, rgba(255,255,255,0.88) 50%, rgba(255,255,255,0.48) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── HERO IMAGE ────────────────────────────────────────────────── */
+.ev-img-wrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.07);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.55);
+}
+.ev-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.7s ease;
+}
+.ev-img-wrap:hover .ev-img { transform: scale(1.025); }
+
+.ev-img-placeholder {
+  height: 380px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(109,40,217,0.15) 0%, rgba(8,7,15,0.80) 100%);
+}
+.ev-img-placeholder svg { width: 56px; height: 56px; color: rgba(255,255,255,0.10); }
+
+.ev-img-overlay {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom,
+    transparent 30%,
+    rgba(8,7,15,0.85) 100%);
+}
+
+/* ── DATE BADGE (floats over image bottom-left) ──────────────── */
+.ev-date-badge {
+  position: absolute;
+  bottom: 18px; left: 18px;
+  display: flex; align-items: flex-end; gap: 10px;
+  /* Dark pill so it's readable over ANY image, including white/bright ones */
+  background: rgba(8,7,15,0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 18px;
+  padding: 12px 18px 12px 16px;
+}
+.ev-date-badge__day {
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  letter-spacing: -0.04em;
+}
+.ev-date-badge__meta {
+  display: flex; flex-direction: column;
+  margin-bottom: 4px; gap: 2px;
+}
+.ev-date-badge__month {
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(167,139,250,1);
+  line-height: 1;
+}
+.ev-date-badge__year {
+  font-size: 12px;
+  color: rgba(255,255,255,0.40);
+}
+
+/* ── SHARE BUTTON (floats over image bottom-right) ───────────── */
+.ev-share-btn {
+  position: absolute;
+  bottom: 20px; right: 20px;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(8,7,15,0.55);
+  backdrop-filter: blur(12px);
+  color: rgba(255,255,255,0.55);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s, border-color 0.2s;
+}
+.ev-share-btn svg { width: 13px; height: 13px; }
+.ev-share-btn:hover {
+  color: rgba(255,255,255,0.90);
+  background: rgba(8,7,15,0.75);
+  border-color: rgba(255,255,255,0.25);
+}
+
+/* ── INFO BAR ──────────────────────────────────────────────────── */
+/* Outer wrapper: same max-width + side padding as .ev-body */
+.ev-infobar-wrap {
+  max-width: 900px;
+  margin: 12px auto 0;
+  padding: 0 1.5rem;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s;
+}
+.ev-infobar-wrap.is-visible { opacity: 1; transform: translateY(0); }
+
+/* Inner card — flex row, no extra padding so width matches body cards */
+.ev-infobar {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  border-radius: 20px;
+  border: 1px solid rgba(124,58,237,0.20);
+  background: linear-gradient(135deg,
+    rgba(109,40,217,0.12) 0%,
+    rgba(8,7,15,0.82) 100%);
+  overflow: hidden;
+}
+
+.ev-infobar__item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 20px 24px;
+  flex: 1;
+  min-width: 0;
+}
+.ev-infobar__item--location { flex: 1.5; }
+
+.ev-infobar__sep {
+  width: 1px;
+  background: rgba(255,255,255,0.07);
+  align-self: stretch;
+  margin: 12px 0;
+}
+
+.ev-infobar__icon {
+  flex-shrink: 0;
+  width: 36px; height: 36px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(124,58,237,0.25);
+  background: rgba(124,58,237,0.12);
+}
+.ev-infobar__icon svg { width: 15px; height: 15px; color: rgba(167,139,250,1); }
+
+.ev-infobar__label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 3px;
+}
+.ev-infobar__value {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.90);
+  white-space: nowrap;
+}
+.ev-infobar__sub {
+  color: rgba(255,255,255,0.38);
+  font-size: 13px;
+  font-weight: 400;
+}
+.ev-infobar__sub--addr {
+  display: block;
+  font-size: 11.5px;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ev-infobar__location-text { min-width: 0; overflow: hidden; }
+
+.ev-infobar__cta {
+  display: flex; align-items: center;
+  padding: 16px 20px;
+  flex-shrink: 0;
+}
+
+.ev-reserve-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 22px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 60%, #5b21b6 100%);
+  box-shadow: 0 4px 20px rgba(109,40,217,0.40),
+              inset 0 1px 0 rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.ev-reserve-btn svg { width: 15px; height: 15px; }
+.ev-reserve-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(109,40,217,0.55),
+              inset 0 1px 0 rgba(255,255,255,0.15);
+}
+.ev-reserve-btn:active { transform: scale(0.98); }
+
+/* ── BODY ──────────────────────────────────────────────────────── */
+.ev-body {
+  max-width: 900px;
+  margin: 12px auto 0;
+  padding: 0 1.5rem 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── SECTIONS (cards) ──────────────────────────────────────────── */
+.ev-section {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.07);
+  background: rgba(255,255,255,0.02);
+  padding: 28px 28px 24px;
+}
+
+/* Top shimmer line per section */
+.ev-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg,
+    transparent, rgba(124,58,237,0.45), transparent);
+}
+
+.ev-section--tickets {
+  border-color: rgba(16,185,129,0.18);
+  background: linear-gradient(135deg,
+    rgba(5,60,45,0.10) 0%,
+    rgba(8,7,15,0.82) 100%);
+}
+.ev-section--tickets::before {
+  background: linear-gradient(90deg,
+    transparent, rgba(16,185,129,0.40), transparent);
+}
+
+.ev-section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px;
+}
+
+.ev-section-icon {
+  width: 34px; height: 34px;
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ev-section-icon svg { width: 15px; height: 15px; }
+
+.ev-section-icon--ticket {
+  border: 1px solid rgba(16,185,129,0.30);
+  background: rgba(16,185,129,0.12);
+}
+.ev-section-icon--ticket svg { color: rgb(52,211,153); }
+
+.ev-section-icon--info {
+  border: 1px solid rgba(124,58,237,0.28);
+  background: rgba(124,58,237,0.12);
+}
+.ev-section-icon--info svg { color: rgba(167,139,250,1); }
+
+.ev-section-icon--pin {
+  border: 1px solid rgba(124,58,237,0.28);
+  background: rgba(124,58,237,0.12);
+}
+.ev-section-icon--pin svg { color: rgba(167,139,250,1); }
+
+.ev-section-title {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+}
+
+/* ── TICKET LIST & ACCORDION ───────────────────────────────────── */
+.ev-ticket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Card shell */
+.ev-ticket-row {
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  overflow: hidden;
+  transition: border-color 0.25s;
+}
+.ev-ticket-row.has-desc:hover {
+  border-color: rgba(255,255,255,0.11);
+}
+.ev-ticket-row.is-open {
+  border-color: rgba(16,185,129,0.22);
+  background: rgba(16,185,129,0.04);
+}
+
+/* Trigger button — full-width clickable row */
+.ev-ticket-trigger {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.2s;
+}
+.ev-ticket-row.has-desc .ev-ticket-trigger:hover {
+  background: rgba(255,255,255,0.025);
+}
+/* Rows without description: no pointer cursor */
+.ev-ticket-row:not(.has-desc) .ev-ticket-trigger {
+  cursor: default;
+}
+
+.ev-ticket-info { flex: 1; min-width: 0; }
+.ev-ticket-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.88);
+}
+
+/* "Prikaži detalje" hint — fades out when open */
+.ev-ticket-hint {
+  font-size: 11px;
+  color: rgba(52,211,153,0.55);
+  margin-top: 3px;
+  transition: opacity 0.2s;
+}
+.ev-ticket-row.is-open .ev-ticket-hint {
+  opacity: 0;
+}
+
+.ev-ticket-right {
+  display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+}
+
+/* Chevron icon — rotates on open */
+.ev-ticket-chevron {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s, transform 0.32s cubic-bezier(0.34,1.56,0.64,1);
+}
+.ev-ticket-chevron svg {
+  width: 14px; height: 14px;
+  color: rgba(255,255,255,0.35);
+  transition: color 0.2s;
+}
+.ev-ticket-row.is-open .ev-ticket-chevron {
+  transform: rotate(180deg);
+  background: rgba(16,185,129,0.10);
+  border-color: rgba(16,185,129,0.25);
+}
+.ev-ticket-row.is-open .ev-ticket-chevron svg {
+  color: rgb(52,211,153);
+}
+
+/* ── Collapsible body — grid-rows trick for smooth height animation */
+.ev-ticket-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ev-ticket-row.is-open .ev-ticket-body {
+  grid-template-rows: 1fr;
+}
+
+/* Inner wrapper must have overflow: hidden to clip during animation */
+.ev-ticket-body__inner {
+  overflow: hidden;
+}
+
+.ev-ticket-desc {
+  padding: 0 20px 18px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.65;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 14px;
+}
+
+.ev-ticket-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgb(52,211,153);
+  white-space: nowrap;
+}
+.ev-ticket-currency {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(52,211,153,0.65);
+  margin-left: 2px;
+}
+.ev-ticket-price--unknown {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.28);
+}
+
+.ev-buy-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(16,185,129,0.30);
+  background: rgba(16,185,129,0.08);
+  color: rgb(110,231,183);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+.ev-buy-btn svg { width: 12px; height: 12px; }
+.ev-buy-btn:hover {
+  background: rgba(16,185,129,0.16);
+  border-color: rgba(16,185,129,0.50);
+  transform: translateY(-1px);
+}
+
+/* ── DESCRIPTION ───────────────────────────────────────────────── */
+.ev-desc-text {
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.90;
+  font-style: italic;
+}
+
+/* ── VENUE CARD ────────────────────────────────────────────────── */
+.ev-venue-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(124,58,237,0.16);
+  background: rgba(109,40,217,0.07);
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+.ev-venue-card:hover {
+  background: rgba(109,40,217,0.13);
+  border-color: rgba(124,58,237,0.32);
+}
+
+.ev-venue-card__icon {
+  width: 42px; height: 42px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgba(124,58,237,0.30);
+  background: rgba(124,58,237,0.12);
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.ev-venue-card__icon svg { width: 18px; height: 18px; color: rgba(167,139,250,1); }
+.ev-venue-card:hover .ev-venue-card__icon { background: rgba(124,58,237,0.20); }
+
+.ev-venue-card__body { flex: 1; min-width: 0; }
+.ev-venue-card__name {
+  font-size: 15px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  transition: color 0.2s;
+}
+.ev-venue-card:hover .ev-venue-card__name { color: #fff; }
+.ev-venue-card__addr {
+  font-size: 12px;
+  color: rgba(167,139,250,0.60);
+  margin-top: 3px;
+  transition: color 0.2s;
+}
+.ev-venue-card:hover .ev-venue-card__addr { color: rgba(167,139,250,0.80); }
+
+.ev-venue-card__arrow { flex-shrink: 0; }
+.ev-venue-card__arrow svg {
+  width: 16px; height: 16px;
+  color: rgba(167,139,250,0.45);
+  transition: transform 0.2s, color 0.2s;
+}
+.ev-venue-card:hover .ev-venue-card__arrow svg {
+  transform: translateX(2px);
+  color: rgba(167,139,250,0.80);
+}
+
+/* ── EXTERNAL LOCATION ─────────────────────────────────────────── */
+.ev-location-block { padding: 4px 0 0; }
+.ev-location-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.82);
+}
+.ev-location-addr {
+  font-size: 13px;
+  color: rgba(255,255,255,0.40);
+  margin-top: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — MOBILE (<= 640px)
+════════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .ev-hero { padding: 1.25rem 1rem 0; }
+  .ev-infobar-wrap,
+  .ev-body { padding-left: 1rem; padding-right: 1rem; }
+
+  /* Stack infobar vertically on mobile */
+  .ev-infobar {
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: 18px;
+    gap: 0;
+  }
+  .ev-infobar__sep {
+    width: auto; height: 1px;
+    margin: 0 16px;
+  }
+  .ev-infobar__item { padding: 16px 18px; }
+  .ev-infobar__item--location { flex: auto; }
+  .ev-infobar__cta { padding: 14px 18px; }
+  .ev-reserve-btn { width: 100%; justify-content: center; }
+
+  .ev-date-badge__day { font-size: 48px; }
+  .ev-date-badge__month { font-size: 18px; }
+
+  .ev-section { padding: 22px 18px 20px; }
+  .ev-ticket-trigger { padding: 14px 16px; gap: 12px; }
+  .ev-ticket-right { gap: 10px; }
+  .ev-ticket-desc { padding: 0 16px 16px; padding-top: 12px; }
+
+  .ev-title { font-size: 28px; }
+}
