@@ -124,27 +124,28 @@
 
       </div>
 
-      <!-- location row -->
-      <div class="flex items-center flex-wrap gap-[6px]">
-        <span class="inline-flex items-center gap-[4px] text-white/40 text-[11px]">
+      <!-- MOBILE location row — fixed with min-w-0 and truncation -->
+      <div class="flex items-center flex-wrap gap-[6px] min-w-0">
+        <span class="inline-flex items-center gap-[4px] text-white/40 text-[11px] min-w-0">
           @if (isVenueEvent) {
             <svg class="w-[10px] h-[10px] shrink-0 text-violet-500/60" viewBox="0 0 20 20" fill="currentColor">
               <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
             </svg>
           } @else {
-            <svg class="w-[10px] h-[10px] shrink-0 text-emerald-500/60" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+            <!-- map marker / navigation icon — violet -->
+            <svg class="w-[10px] h-[10px] shrink-0 text-violet-500/60" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
             </svg>
           }
-          {{ displayName }}
+          <span class="truncate">{{ displayName }}</span>
         </span>
         @if (displayAddress) {
           <span class="w-[2px] h-[2px] rounded-full bg-white/35 shrink-0"></span>
-          <span class="inline-flex items-center gap-[4px] text-white/40 text-[11px]">
+          <span class="inline-flex items-center gap-[4px] text-white/40 text-[11px] min-w-0">
             <svg class="w-[10px] h-[10px] shrink-0 text-violet-500/60" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
             </svg>
-            {{ displayAddress }}
+            <span class="truncate">{{ displayAddress }}</span>
           </span>
         }
       </div>
@@ -225,8 +226,9 @@
               <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
             </svg>
           } @else {
-            <svg class="w-[10px] h-[10px] shrink-0 text-emerald-500/60" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
+            <!-- heart / map pin alternative — violet -->
+            <svg class="w-[10px] h-[10px] shrink-0 text-violet-500/60" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
             </svg>
           }
           <span class="max-w-[120px] truncate">{{ displayName }}</span>
