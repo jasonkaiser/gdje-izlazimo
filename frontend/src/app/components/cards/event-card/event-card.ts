@@ -90,7 +90,6 @@ export class EventCard {
       FESTIVAL: 'Festival',
       CONCERT:  'Koncert',
       PARTY:    'Žurka',
-      OTHER:    'Događaj',
     };
     return labels[this.eventType ?? ''] ?? 'Događaj';
   }
