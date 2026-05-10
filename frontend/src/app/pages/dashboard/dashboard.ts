@@ -175,6 +175,10 @@ private loadPopularVenues(): void {
       });
   }
 
+  get featuredEvents(): EventResponseDto[] {
+    return this.events.filter(e => e.featured);
+  }
+
   goToVenuesByCategory(venueType: VenueCategory | null): void {
     if (!venueType) return;
     this.router.navigate(['/venues'], {
