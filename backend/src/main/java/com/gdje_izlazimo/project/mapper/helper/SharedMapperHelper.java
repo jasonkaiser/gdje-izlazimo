@@ -5,6 +5,7 @@ import com.gdje_izlazimo.project.entity.User;
 import com.gdje_izlazimo.project.entity.Venue;
 import com.gdje_izlazimo.project.entity.Reservation;
 import com.gdje_izlazimo.project.exception.custom.UserNotFoundException;
+import com.gdje_izlazimo.project.exception.custom.VenueNotFoundException;
 import com.gdje_izlazimo.project.repository.TableTypeRepository;
 import com.gdje_izlazimo.project.repository.UserRepository;
 import com.gdje_izlazimo.project.repository.VenueRepository;
@@ -30,6 +31,13 @@ public class SharedMapperHelper {
     public Venue resolveVenue(UUID venueId) {
         return venueRepository.findById(venueId)
                 .orElseThrow(() -> new RuntimeException("Venue not found"));
+    }
+
+    @Named("resolveVenueNullable")
+    public Venue resolveVenueNullable(UUID venueId) {
+        if (venueId == null) return null;
+        return venueRepository.findById(venueId)
+                .orElseThrow(() -> new VenueNotFoundException("Venue not found"));
     }
 
     @Named("resolveTableType")

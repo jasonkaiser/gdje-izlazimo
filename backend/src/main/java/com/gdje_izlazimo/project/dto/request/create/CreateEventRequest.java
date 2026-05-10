@@ -1,18 +1,18 @@
 package com.gdje_izlazimo.project.dto.request.create;
 
-import jakarta.validation.constraints.Min;
+import com.gdje_izlazimo.project.enums.EventType;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
-
-import jakarta.validation.constraints.*;
-
 
 public record CreateEventRequest(
 
-        @NotNull(message = "Venue ID is required")
         UUID venueId,
 
         @NotBlank(message = "Event name is required")
@@ -25,6 +25,21 @@ public record CreateEventRequest(
         @Future(message = "Event date/time must be in the future")
         LocalDateTime eventDateTime,
 
-        String imageUrl
+        LocalDateTime eventEndDateTime,
 
+        String locationName,
+        String locationAddress,
+
+        EventType eventType,
+
+        String externalOrganizerName,
+        String externalOrganizerInstagram,
+
+        Boolean featured,
+
+        Double latitude,
+        Double longitude,
+
+        @Valid
+        List<EventTicketTypeRequest> ticketTypes
 ) {}

@@ -55,21 +55,6 @@ public class EventService {
         this.eventViewRepository = eventViewRepository;
     }
 
-    public List<EventResponse> searchEvents(
-            String query,
-            LocalDateTime dateFrom,
-            LocalDateTime dateTo,
-            Pageable pageable
-    ) {
-        LocalDateTime effectiveDateFrom = (dateFrom != null) ? dateFrom : LocalDateTime.now();
-
-        boolean hasQuery = query != null && !query.isBlank();
-        List<Event> events = hasQuery
-                ? eventRepository.searchByQuery(query, effectiveDateFrom, dateTo, pageable).getContent()
-                : eventRepository.findAllFiltered(effectiveDateFrom, dateTo, pageable).getContent();
-
-        return enrichWithStats(events);
-    }
 
     public List<EventResponse> findAllEvents(Pageable pageable) {
         List<Event> events = eventRepository.findAllWithDetails(LocalDateTime.now(), pageable).getContent();
@@ -94,6 +79,22 @@ public class EventService {
 
     public List<EventResponse> findUpcomingEvents() {
         List<Event> events = eventRepository.findUpcomingEvents(LocalDateTime.now());
+        return enrichWithStats(events);
+    }
+
+    public List<EventResponse> searchEvents(
+            String query,
+            LocalDateTime dateFrom,
+            LocalDateTime dateTo,
+            Pageable pageable
+    ) {
+        LocalDateTime effectiveDateFrom = (dateFrom != null) ? dateFrom : LocalDateTime.now();
+
+        boolean hasQuery = query != null && !query.isBlank();
+        List<Event> events = hasQuery
+                ? eventRepository.searchByQuery(query, effectiveDateFrom, dateTo, pageable).getContent()
+                : eventRepository.findAllFiltered(effectiveDateFrom, dateTo, pageable).getContent();
+
         return enrichWithStats(events);
     }
 
@@ -138,12 +139,19 @@ public class EventService {
                 .collect(Collectors.toSet());
     }
 
+
     @Transactional
     @CacheEvict(value = {"dashboardStats"}, allEntries = true)
     public EventResponse createEvent(CreateEventRequest dto, String keycloakSub, List<String> roles) {
         boolean isAdmin = roles != null && roles.contains("admin");
 
-        if (!isAdmin) {
+        if (isAdmin) {
+
+        } else {
+            if (dto.venueId() == null) {
+                throw new ReservationAccessDeniedException(
+                        "venue_owner must specify a venueId; only admins may create venue-less events");
+            }
             Venue venue = venueRepository.findByIdWithOwner(dto.venueId())
                     .orElseThrow(() -> new VenueNotFoundException("Venue not found"));
 
@@ -152,6 +160,10 @@ public class EventService {
                     !venue.getVenueOwner().getId().equals(requesterId)) {
                 throw new ReservationAccessDeniedException("You can only create events for your own venue");
             }
+        }
+
+        if (!isAdmin && Boolean.TRUE.equals(dto.featured())) {
+            throw new ReservationAccessDeniedException("Only admins may feature events");
         }
 
         Event event = eventMapper.toEntity(dto);
@@ -163,12 +175,7 @@ public class EventService {
         Event event = eventRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
-        boolean isAdmin = roles != null && roles.contains("admin");
-        if (!isAdmin) {
-            if (!event.getVenue().getVenueOwner().getId().equals(UUID.fromString(keycloakSub))) {
-                throw new ReservationAccessDeniedException("Access denied");
-            }
-        }
+        assertCanModify(event, keycloakSub, roles);
 
         if (event.getImageFileId() != null) {
             imageKitService.deleteImage(event.getImageFileId());
@@ -186,12 +193,7 @@ public class EventService {
         Event event = eventRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
-        boolean isAdmin = roles != null && roles.contains("admin");
-        if (!isAdmin) {
-            if (!event.getVenue().getVenueOwner().getId().equals(UUID.fromString(keycloakSub))) {
-                throw new ReservationAccessDeniedException("Access denied");
-            }
-        }
+        assertCanModify(event, keycloakSub, roles);
 
         if (event.getImageFileId() != null) {
             imageKitService.deleteImage(event.getImageFileId());
@@ -209,14 +211,30 @@ public class EventService {
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
         boolean isAdmin = roles != null && roles.contains("admin");
-        if (!isAdmin) {
+
+        if (isAdmin) {
+        } else {
+            if (event.getVenue() == null) {
+                throw new ReservationAccessDeniedException("Only admins may modify venue-less events");
+            }
             UUID requesterId = UUID.fromString(keycloakSub);
             if (!event.getVenue().getVenueOwner().getId().equals(requesterId)) {
                 throw new ReservationAccessDeniedException("You can only update events for your own venue");
             }
+            if (dto.venueId() == null) {
+                throw new ReservationAccessDeniedException("Only admins may remove the venue from an event");
+            }
+            if (Boolean.TRUE.equals(dto.featured())) {
+                throw new ReservationAccessDeniedException("Only admins may feature events");
+            }
         }
 
         eventMapper.updateEntity(dto, event);
+
+        if (dto.ticketTypes() != null) {
+            event.replaceTicketTypes(eventMapper.toTicketEntityList(dto.ticketTypes()));
+        }
+
         return eventMapper.toResponse(eventRepository.save(event));
     }
 
@@ -226,15 +244,22 @@ public class EventService {
         Event event = eventRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new EventNotFoundException("Event not found"));
 
-        boolean isAdmin = roles != null && roles.contains("admin");
-        if (!isAdmin) {
-            UUID requesterId = UUID.fromString(keycloakSub);
-            if (!event.getVenue().getVenueOwner().getId().equals(requesterId)) {
-                throw new ReservationAccessDeniedException("You can only delete events for your own venue");
-            }
-        }
-
+        assertCanModify(event, keycloakSub, roles);
         eventRepository.deleteById(id);
+    }
+
+
+    private void assertCanModify(Event event, String keycloakSub, List<String> roles) {
+        boolean isAdmin = roles != null && roles.contains("admin");
+        if (isAdmin) return;
+
+        if (event.getVenue() == null) {
+            throw new ReservationAccessDeniedException("Only admins may modify venue-less events");
+        }
+        UUID requesterId = UUID.fromString(keycloakSub);
+        if (!event.getVenue().getVenueOwner().getId().equals(requesterId)) {
+            throw new ReservationAccessDeniedException("Access denied");
+        }
     }
 
     private List<EventResponse> enrichWithStats(List<Event> events) {
