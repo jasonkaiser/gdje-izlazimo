@@ -98,9 +98,9 @@ export class EventCard {
     const all: BadgeKey[] = [];
     if (this.featured)                                   all.push('featured');
     if (this.trending)                                   all.push('trending');
-    if (!this.isVenueEvent && this.eventTypeBadgeLabel)  all.push('eventType');
     if (this.isTonight)                                  all.push('tonight');
     if (this.hoursUntil !== null)                        all.push('hours');
+    if (!this.isVenueEvent && this.eventTypeBadgeLabel)  all.push('eventType');
     return all.slice(0, 2);
   }
 
