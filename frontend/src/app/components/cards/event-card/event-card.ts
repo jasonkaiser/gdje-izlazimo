@@ -91,7 +91,7 @@ export class EventCard {
       CONCERT:  'Koncert',
       PARTY:    'Žurka',
     };
-    return labels[this.eventType ?? ''] ?? 'Događaj';
+    return labels[this.eventType ?? ''] ?? null;
   }
 
   get badges(): BadgeKey[] {
