@@ -96,7 +96,7 @@
       @for (page of pagedEvents; track $index) {
         <div
           data-card
-          class="shrink-0 w-full grid grid-cols-3 gap-3 [scroll-snap-align:start]"
+          class="shrink-0 w-full grid grid-cols-2 gap-3 [scroll-snap-align:start]"
         >
           @for (e of page; track e.id) {
             <app-event-card
