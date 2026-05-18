@@ -2,32 +2,32 @@
 
   <!-- ── BACKGROUND GLOWS ─────────────────────────────────────────────── -->
   <div class="pointer-events-none fixed inset-0 z-5 overflow-hidden">
-    <div class="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-30"
+    <div class="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full opacity-25"
       style="background: radial-gradient(circle, rgba(124,58,237,0.35) 0%, rgba(109,40,217,0.12) 20%, transparent 70%);
              filter: blur(60px);"></div>
-    <div class="absolute -top-20 right-0 w-[400px] h-[400px] rounded-full opacity-40"
-      style="background: radial-gradient(circle, rgba(255,255,255,0.15) 10%, transparent 65%);
+    <div class="absolute -top-20 right-0 w-[400px] h-[400px] rounded-full opacity-30"
+      style="background: radial-gradient(circle, rgba(255,255,255,0.12) 10%, transparent 65%);
              filter: blur(50px);"></div>
   </div>
 
-  <div class="absolute bottom-60 left-1/2 -translate-x-1/2 w-[1600px] h-[800px] max-sm:bottom-0 max-sm:left-120 rounded-full opacity-45"
-    style="background: radial-gradient(ellipse, rgba(91,33,182,0.5) 0%, transparent 45%);
+  <div class="absolute bottom-60 left-1/2 -translate-x-1/2 w-[1600px] h-[800px] max-sm:bottom-0 rounded-full opacity-35"
+    style="background: radial-gradient(ellipse, rgba(91,33,182,0.45) 0%, transparent 45%);
            filter: blur(70px);"></div>
 
   <div class="relative z-10">
     @if (vm$ | async; as vm) {
 
-      <!-- ── LOADING ───────────────────────────────────────────────────── -->
+      <!-- ── LOADING ─────────────────────────────────────────────────── -->
       @if (vm.loading) {
-        <div class="mx-auto max-w-[1280px] px-4 sm:px-8 lg:px-16 pt-20 space-y-6">
-          <div class="text-center space-y-4">
-            <div class="h-14 w-[320px] rounded-2xl bg-white/[0.04] border border-white/[0.05] animate-pulse mx-auto"></div>
-            <div class="h-5 w-20 rounded-xl bg-white/[0.04] border border-white/[0.05] animate-pulse mx-auto"></div>
+        <div class="mx-auto max-w-[1280px] px-4 sm:px-8 lg:px-16 pt-16 space-y-5">
+          <div class="text-center space-y-3">
+            <div class="h-10 w-[260px] rounded-2xl bg-white/[0.06] border border-white/[0.08] animate-pulse mx-auto"></div>
+            <div class="h-4 w-16 rounded-xl bg-white/[0.06] border border-white/[0.08] animate-pulse mx-auto"></div>
           </div>
-          <div class="h-[260px] sm:h-[400px] lg:h-[520px] rounded-[28px] bg-white/[0.03] border border-white/[0.05] animate-pulse"></div>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="h-[220px] sm:h-[380px] lg:h-[500px] rounded-[24px] bg-white/[0.04] border border-white/[0.08] animate-pulse"></div>
+          <div class="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
             @for (i of [1,2,3,4]; track i) {
-              <div class="h-20 rounded-2xl bg-white/[0.03] border border-white/[0.05] animate-pulse"></div>
+              <div class="h-16 rounded-2xl bg-white/[0.04] border border-white/[0.08] animate-pulse"></div>
             }
           </div>
         </div>
@@ -35,18 +35,18 @@
 
       <!-- ── ERROR ─────────────────────────────────────────────────────── -->
       @if (!vm.loading && vm.errorMsg) {
-        <div class="mx-auto max-w-[1280px] px-4 sm:px-8 lg:px-16 pt-28 flex justify-center">
-          <div class="inline-flex flex-col items-center gap-5 rounded-3xl border border-red-500/15 bg-red-500/[0.04] backdrop-blur-sm px-10 py-8 max-w-sm w-full text-center">
-            <div class="h-12 w-12 rounded-2xl border border-red-500/20 bg-red-500/10 flex items-center justify-center">
+        <div class="mx-auto max-w-[1280px] px-4 sm:px-8 lg:px-16 pt-24 flex justify-center">
+          <div class="inline-flex flex-col items-center gap-4 rounded-3xl border border-red-500/20 bg-red-500/[0.06] backdrop-blur-sm px-8 py-7 max-w-sm w-full text-center">
+            <div class="h-11 w-11 rounded-2xl border border-red-500/25 bg-red-500/12 flex items-center justify-center">
               <svg class="h-5 w-5 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <circle cx="12" cy="12" r="9"/><path d="M12 8v4m0 4h.01" stroke-linecap="round"/>
               </svg>
             </div>
-            <p class="font-dm text-[13px] text-red-300/80 leading-relaxed">{{ vm.errorMsg }}</p>
+            <p class="font-dm text-[13px] text-red-300/90 leading-relaxed">{{ vm.errorMsg }}</p>
             <button type="button" (click)="retry()"
-              class="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04]
-                     px-5 py-2.5 font-dm text-[11px] tracking-[0.14em] uppercase text-white/50
-                     hover:text-white/80 hover:bg-white/[0.07] transition-all duration-200">
+              class="inline-flex items-center gap-2 rounded-full border border-white/[0.10] bg-white/[0.05]
+                     px-5 py-2.5 font-dm text-[11px] tracking-[0.14em] uppercase text-white/60
+                     hover:text-white/90 hover:bg-white/[0.09] transition-all duration-200">
               Pokušaj ponovo
             </button>
           </div>
@@ -56,32 +56,35 @@
       @if (!vm.loading && !vm.errorMsg) {
 
         <!-- ══════════════════════════════════════════════════════════════
-             TITLE
+             HERO
         ═══════════════════════════════════════════════════════════════ -->
         <div
           inView (inViewChange)="onTitleInView($event)"
-          class="pt-20 sm:pt-28 pb-8 text-center transition-all duration-700 ease-out"
+          class="pt-14 sm:pt-20 pb-4 sm:pb-6 text-center transition-all duration-700 ease-out px-4"
           [style.opacity]="titleShown ? '1' : '0'"
-          [style.transform]="titleShown ? 'translateY(0)' : 'translateY(24px)'"
+          [style.transform]="titleShown ? 'translateY(0)' : 'translateY(20px)'"
         >
-          <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
-            <span class="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-500/[0.07] backdrop-blur-sm
-                         px-4 py-1.5 font-dm text-[10px] tracking-[0.2em] uppercase text-violet-300/70">
+          <div class="flex flex-wrap items-center justify-center gap-2 mb-4">
+            <span class="inline-flex items-center gap-2 rounded-full border border-violet-400/25 bg-violet-500/[0.10] backdrop-blur-sm
+                         px-3.5 py-1.5 font-dm text-[10px] tracking-[0.18em] uppercase text-violet-300/85">
               <span class="h-1.5 w-1.5 rounded-full bg-violet-400 animate-pulse"></span>
               {{ vm.category }}
             </span>
           </div>
 
-          <h1 class="font-sora font-regular text-5xl sm:text-7xl lg:text-[96px] tracking-[-0.03em] leading-[0.95]
-                     hero-title from-white via-white/90 to-white/40 -mb-5 bg-clip-text text-transparent px-4">
+          <h1 class="font-sora font-regular
+                     text-[38px] sm:text-6xl lg:text-[88px]
+                     tracking-[-0.03em] leading-[0.95]
+                     hero-title from-white via-white/90 to-white/50 bg-clip-text text-transparent
+                     px-2 mb-4 sm:mb-5">
             {{ vm.venueName }}
           </h1>
 
-          <div class="mt-7 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-4">
+          <div class="hidden sm:flex items-center justify-center flex-wrap gap-2 px-2">
             @if (vm.address) {
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.03] backdrop-blur-sm
-                           px-3.5 py-1.5 font-dm text-[11px] text-white/40">
-                <svg class="h-3 w-3 text-white/25 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-white/[0.05]
+                           px-3 py-1.5 font-dm text-[12px] text-white/70">
+                <svg class="h-3 w-3 text-violet-400/70 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M12 22c3.7-3.2 8-7.6 8-12.2A8 8 0 1 0 4 9.8C4 14.4 8.3 18.8 12 22Z" stroke-linecap="round"/>
                   <circle cx="12" cy="10" r="2.5"/>
                 </svg>
@@ -89,27 +92,18 @@
               </span>
             }
             @if (vm.workingHours) {
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.03] backdrop-blur-sm
-                           px-3.5 py-1.5 font-dm text-[11px] text-white/40">
-                <svg class="h-3 w-3 text-white/25 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-white/[0.12] bg-white/[0.05]
+                           px-3 py-1.5 font-dm text-[12px] text-white/70">
+                <svg class="h-3 w-3 text-violet-400/70 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 {{ vm.workingHours }}
               </span>
             }
-            @if (vm.phone) {
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-white/[0.07] bg-white/[0.03] backdrop-blur-sm
-                           px-3.5 py-1.5 font-dm text-[11px] text-white/40">
-                <svg class="h-3 w-3 text-white/25 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8Z" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                {{ vm.phone }}
-              </span>
-            }
             @if (vm.totalRatings > 0) {
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-amber-500/20 bg-amber-500/[0.06] backdrop-blur-sm
-                           px-3.5 py-1.5 font-dm text-[11px] text-amber-300/70">
-                <svg class="h-3 w-3 flex-shrink-0" viewBox="0 0 24 24" fill="rgba(251,191,36,0.8)">
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-amber-500/25 bg-amber-500/[0.10]
+                           px-3 py-1.5 font-dm text-[12px] text-amber-300/90">
+                <svg class="h-3 w-3 flex-shrink-0" viewBox="0 0 24 24" fill="rgba(251,191,36,0.9)">
                   <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
                 </svg>
                 {{ vm.averageRating | number:'1.1-1' }} ({{ vm.totalRatings }})
@@ -125,26 +119,28 @@
           inView (inViewChange)="onSliderInView($event)"
           class="mx-auto max-w-[1280px] px-4 sm:px-8 lg:px-16 transition-all duration-700 ease-out delay-100"
           [style.opacity]="sliderShown ? '1' : '0'"
-          [style.transform]="sliderShown ? 'translateY(0)' : 'translateY(32px)'"
+          [style.transform]="sliderShown ? 'translateY(0)' : 'translateY(28px)'"
         >
-          <div class="relative overflow-hidden rounded-[28px] border border-white/[0.06] group shadow-[0_32px_80px_rgba(0,0,0,0.6)] slider-swipe"
+          <div class="relative overflow-hidden rounded-[22px] sm:rounded-[28px] border border-white/[0.09] group shadow-[0_24px_64px_rgba(0,0,0,0.65)] slider-swipe"
                (touchstart)="onTouchStart($event)"
-     (touchend)="onTouchEnd($event, vm.images.length)">
+               (touchend)="onTouchEnd($event, vm.images.length)">
+
             <div
-              class="h-[240px] sm:h-[390px] lg:h-[540px] w-full bg-cover bg-center transition-all duration-700 ease-in-out"
+              class="h-[220px] sm:h-[370px] lg:h-[520px] w-full bg-cover bg-center transition-all duration-700 ease-in-out"
               [style.backgroundImage]="
                 vm.images.length
-                  ? 'linear-gradient(to bottom, rgba(8,7,15,0.0) 40%, rgba(8,7,15,0.95) 100%), url(' + vm.images[sliderIndex] + ')'
+                  ? 'linear-gradient(to bottom, rgba(8,7,15,0.0) 35%, rgba(8,7,15,0.92) 100%), url(' + vm.images[sliderIndex] + ')'
                   : 'none'
               "
             ></div>
 
+            <!-- Favorite button -->
             @if (authService.hasRole('user') || !authService.authenticated()) {
               <button
                 type="button"
                 (click)="toggleFavorite(vm)"
                 [disabled]="favoriteLoading"
-                class="favorite-btn absolute top-4 right-4 sm:top-5 sm:right-5 z-20
+                class="favorite-btn absolute top-3.5 right-3.5 sm:top-5 sm:right-5 z-20
                        inline-flex items-center gap-2 rounded-2xl
                        font-dm text-[11px] tracking-[0.05em] font-medium
                        transition-all duration-350 ease-out
@@ -152,12 +148,12 @@
                        hover:scale-[1.04] active:scale-[0.97]"
                 [class.is-favorite]="vm.isFavorite"
                 [style]="vm.isFavorite
-                  ? 'padding: 8px 14px 8px 10px; border: 1px solid rgba(244,63,94,0.50); background: rgba(10,6,18,0.72); backdrop-filter: blur(16px); box-shadow: 0 0 0 1px rgba(244,63,94,0.08), 0 8px 24px rgba(244,63,94,0.20); color: rgba(253,164,175,0.95);'
-                  : 'padding: 8px 14px 8px 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(10,6,18,0.60); backdrop-filter: blur(16px); box-shadow: 0 4px 16px rgba(0,0,0,0.4); color: rgba(255,255,255,0.50);'"
+                  ? 'padding: 7px 13px 7px 9px; border: 1px solid rgba(244,63,94,0.55); background: rgba(10,6,18,0.80); backdrop-filter: blur(16px); box-shadow: 0 0 0 1px rgba(244,63,94,0.10), 0 8px 24px rgba(244,63,94,0.22); color: rgba(253,164,175,1);'
+                  : 'padding: 7px 13px 7px 9px; border: 1px solid rgba(255,255,255,0.15); background: rgba(10,6,18,0.65); backdrop-filter: blur(16px); box-shadow: 0 4px 16px rgba(0,0,0,0.4); color: rgba(255,255,255,0.65);'"
               >
                 @if (favoriteLoading) {
                   <span class="h-7 w-7 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);">
+                        style="background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.10);">
                     <svg class="h-3.5 w-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                       <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-linecap="round"/>
                     </svg>
@@ -165,17 +161,17 @@
                   <span>Učitavanje...</span>
                 } @else if (vm.isFavorite) {
                   <span class="heart-icon-wrap h-7 w-7 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style="background: rgba(244,63,94,0.20); border: 1px solid rgba(244,63,94,0.35); box-shadow: 0 0 12px rgba(244,63,94,0.20);">
+                        style="background: rgba(244,63,94,0.22); border: 1px solid rgba(244,63,94,0.40); box-shadow: 0 0 12px rgba(244,63,94,0.22);">
                     <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="rgba(253,164,175,1)">
                       <path d="M12 21.593c-.425-.439-8.993-8.104-8.993-12.097C3.007 6.211 5.19 4 8 4c1.726 0 3.267.857 4.25 2.175C13.233 4.857 14.774 4 16.5 4c2.81 0 4.993 2.211 4.993 5.496 0 3.993-8.568 11.658-8.993 12.097a.74.74 0 0 1-1 0Z"/>
                     </svg>
                   </span>
                   <span>Sačuvano</span>
-                  <span class="w-px h-3 flex-shrink-0" style="background: rgba(244,63,94,0.25);"></span>
-                  <span class="remove-label text-[10px]" style="color: rgba(253,164,175,0.45); letter-spacing:0.04em;">Ukloni</span>
+                  <span class="w-px h-3 flex-shrink-0" style="background: rgba(244,63,94,0.30);"></span>
+                  <span class="remove-label text-[10px]" style="color: rgba(253,164,175,0.55); letter-spacing:0.04em;">Ukloni</span>
                 } @else {
                   <span class="heart-icon-wrap h-7 w-7 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);">
+                        style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.13);">
                     <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78Z" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -185,192 +181,172 @@
               </button>
             }
 
-            <!-- LEFT ARROW -->
+            <!-- Arrows -->
             <button type="button" (click)="prevImage(vm.images.length)"
-              class="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2
-                    h-10 w-10 sm:h-11 sm:w-11 rounded-full
-                    border border-white/[0.12] bg-black/50 backdrop-blur-xl
-                    flex items-center justify-center text-white/60
-                    hover:text-white hover:border-white/30 hover:bg-black/80
+              class="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2
+                    h-9 w-9 sm:h-11 sm:w-11 rounded-full
+                    border border-white/[0.15] bg-black/55 backdrop-blur-xl
+                    flex items-center justify-center text-white/75
+                    hover:text-white hover:border-white/35 hover:bg-black/80
                     transition-all duration-200
                     sm:opacity-0 sm:group-hover:opacity-100 opacity-100">
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M15 18l-6-6 6-6"/>
               </svg>
             </button>
 
-            <!-- RIGHT ARROW -->
             <button type="button" (click)="nextImage(vm.images.length)"
-              class="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2
-                    h-10 w-10 sm:h-11 sm:w-11 rounded-full
-                    border border-white/[0.12] bg-black/50 backdrop-blur-xl
-                    flex items-center justify-center text-white/60
-                    hover:text-white hover:border-white/30 hover:bg-black/80
+              class="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2
+                    h-9 w-9 sm:h-11 sm:w-11 rounded-full
+                    border border-white/[0.15] bg-black/55 backdrop-blur-xl
+                    flex items-center justify-center text-white/75
+                    hover:text-white hover:border-white/35 hover:bg-black/80
                     transition-all duration-200
                     sm:opacity-0 sm:group-hover:opacity-100 opacity-100">
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 6l6 6-6 6"/>
               </svg>
             </button>
 
-            <div class="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+            <!-- Dots -->
+            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
               @for (img of vm.images; track $index) {
                 <button type="button" (click)="sliderIndex = $index"
                   class="h-1 rounded-full transition-all duration-300"
-                  [style.width]="$index === sliderIndex ? '24px' : '6px'"
-                  [style.background]="$index === sliderIndex ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.25)'">
+                  [style.width]="$index === sliderIndex ? '22px' : '6px'"
+                  [style.background]="$index === sliderIndex ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.30)'">
                 </button>
               }
             </div>
           </div>
 
-          <!-- ── PHOTO DISCLAIMER ──────────────────────────────────────── -->
+          <!-- Photo disclaimer -->
           @if (vm.images.length > 0) {
-            <p class="mt-2.5 text-center font-dm text-[10px] tracking-[0.04em] text-white/20 leading-relaxed px-2">
+            <p class="mt-2 text-center font-dm text-[10px] tracking-[0.03em] text-white/30 leading-relaxed px-2">
               Fotografije preuzete s javno dostupnih izvora (Instagram, Google) isključivo u svrhu prikaza lokala.
-              Sva prava na fotografijama pripadaju njihovim vlasnicima.
-              Ukoliko ste vlasnik fotografije i ne želite da bude prikazana, kontaktirajte nas na
               <a href="mailto:info@gdjeizelazimo.ba"
-                 class="text-white/35 hover:text-white/60 underline underline-offset-2 transition-colors duration-200">
+                 class="text-white/45 hover:text-white/70 underline underline-offset-2 transition-colors duration-200">
                 info@gdjeizelazimo.ba
               </a>.
             </p>
           }
-          <!-- ── END PHOTO DISCLAIMER ─────────────────────────────────── -->
-
         </div>
 
         <!-- ══════════════════════════════════════════════════════════════
-             STAT CARDS
+             MOBILE QUICK-ACTION GRID  (lg:hidden)
         ═══════════════════════════════════════════════════════════════ -->
-        <div class="mx-auto max-w-[1280px] px-4 sm:px-8 lg:px-16 mt-5">
+        <div class="lg:hidden mx-auto max-w-[1280px] px-4 mt-6 space-y-3">
 
-          @if (vm.isPartner) {
-            <div class="grid gap-2.5 grid-cols-2 sm:grid-cols-4">
-              <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
-                          group hover:border-violet-500/25 hover:bg-violet-500/[0.04] transition-all duration-300 cursor-default">
-                <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-violet-500/10 blur-2xl -translate-y-6 translate-x-6 group-hover:bg-violet-500/20 transition-colors duration-300"></div>
-                <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/25 mb-2">Vrste Stolova</p>
-                <p class="font-sora text-[32px] font-bold text-white leading-none">{{ vm.tableTypes.length }}</p>
-              </div>
-              <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
-                          group hover:border-emerald-500/25 hover:bg-emerald-500/[0.04] transition-all duration-300 cursor-default">
-                <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-emerald-500/8 blur-2xl -translate-y-6 translate-x-6 group-hover:bg-emerald-500/18 transition-colors duration-300"></div>
-                <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/25 mb-2">Status</p>
-                <div class="flex items-center gap-2 mt-1.5">
-                  <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span>
-                  <span class="font-dm text-[14px] font-medium text-emerald-300">Otvoreno</span>
-                </div>
-              </div>
-              <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
-                          group hover:border-yellow-500/25 hover:bg-yellow-500/[0.04] transition-all duration-300 cursor-default">
-                <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-yellow-500/8 blur-2xl -translate-y-6 translate-x-6 group-hover:bg-yellow-500/18 transition-colors duration-300"></div>
-                <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/25 mb-2">Ocjena</p>
-                @if (vm.totalRatings > 0) {
-                  <div class="flex items-end gap-1.5">
-                    <p class="font-sora text-[32px] font-bold text-white leading-none">{{ vm.averageRating | number:'1.1-1' }}</p>
-                    <span class="font-dm text-[13px] text-white/25 mb-1">/ 5</span>
-                  </div>
-                  <button
-                    type="button"
-                    (click)="scrollToReviews()"
-                    class="relative z-10 mt-1.5 inline-flex items-center gap-1 font-dm text-[10px] text-amber-400/60
-                          hover:text-amber-300 transition-colors duration-200 group/link"
-                  >
-                    <span>{{ vm.totalRatings }} recenzija</span>
-                    <svg class="h-2.5 w-2.5 transition-transform duration-200 group-hover/link:translate-y-[2px]"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12 5v14M5 12l7 7 7-7"/>
-                    </svg>
-                  </button>
-                } @else {
-                  <p class="font-dm text-[14px] text-white/25 mt-1.5">Nema ocjena</p>
-                }
-              </div>
-            </div>
-          } @else {
-            <div class="grid gap-2.5 grid-cols-2">
-              <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-4
-                          group hover:border-emerald-500/25 hover:bg-emerald-500/[0.04] transition-all duration-300 cursor-default">
-                <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-emerald-500/8 blur-2xl -translate-y-6 translate-x-6"></div>
-                <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/25 mb-2">Status</p>
-                <div class="flex items-center gap-2 mt-1.5">
-                  <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse flex-shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.6)]"></span>
-                  <span class="font-dm text-[14px] font-medium text-emerald-300">Otvoreno</span>
-                </div>
-              </div>
-              <div class="relative overflow-hidden rounded-2xl border border-amber-500/[0.18] bg-amber-500/[0.04] px-5 py-4
-                          group hover:border-amber-500/30 hover:bg-amber-500/[0.07] transition-all duration-300 cursor-default">
-                <div class="absolute top-0 right-0 h-20 w-20 rounded-full bg-amber-500/8 blur-2xl -translate-y-6 translate-x-6"></div>
-                <p class="font-dm text-[10px] tracking-[0.15em] uppercase text-white/25 mb-2">Ocjena</p>
-                @if (vm.totalRatings > 0) {
-                  <div class="flex items-end gap-1.5">
-                    <p class="font-sora text-[32px] font-bold text-white leading-none">{{ vm.averageRating | number:'1.1-1' }}</p>
-                    <span class="font-dm text-[13px] text-white/25 mb-1">/ 5</span>
-                  </div>
-                  <button
-                    type="button"
-                    (click)="scrollToReviews()"
-                    class="relative z-10 mt-1.5 inline-flex items-center gap-1 font-dm text-[10px] text-amber-400/60
-                          hover:text-amber-300 transition-colors duration-200 group/link"
-                  >
-                    <span>{{ vm.totalRatings }} recenzija</span>
-                    <svg class="h-2.5 w-2.5 transition-transform duration-200 group-hover/link:translate-y-[2px]"
-                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12 5v14M5 12l7 7 7-7"/>
-                    </svg>
-                  </button>
-                } @else {
-                  <p class="font-dm text-[14px] text-white/25 mt-1.5">Nema ocjena</p>
-                }
-              </div>
-            </div>
-          }
+          <!-- Action grid -->
+          <div class="grid gap-3" [ngClass]="getCtaGridClass(vm)">
+
+            <!-- PRIMARY: Reserve (partner) or Call -->
+            @if (vm.isPartner) {
+              <button type="button" (click)="toggleReservation(vm)"
+                class="inline-flex flex-col items-center justify-center gap-2 rounded-[20px] h-[84px] px-3
+                       font-dm text-[12px] font-semibold text-white transition-all duration-200 active:scale-[0.97]"
+                style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+                       box-shadow: 0 6px 24px rgba(124,58,237,0.45), 0 1px 0 rgba(255,255,255,0.12) inset;">
+                <svg class="h-[22px] w-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
+                </svg>
+                <span>Rezerviši</span>
+              </button>
+            } @else if (vm.phone) {
+              <a [href]="'tel:' + vm.phone"
+                class="inline-flex flex-col items-center justify-center gap-2 rounded-[20px] h-[84px] px-3
+                       font-dm text-[12px] font-semibold text-white transition-all duration-200 active:scale-[0.97]"
+                style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+                       box-shadow: 0 6px 24px rgba(124,58,237,0.45), 0 1px 0 rgba(255,255,255,0.12) inset;">
+                <svg class="h-[22px] w-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8Z"/>
+                </svg>
+                <span>Pozovi</span>
+              </a>
+            }
+
+            <!-- Instagram -->
+            @if (vm.instagram) {
+              <a [href]="vm.instagram" target="_blank" rel="noopener noreferrer"
+                class="inline-flex flex-col items-center justify-center gap-2 rounded-[20px] h-[84px] px-3
+                       font-dm text-[12px] font-medium transition-all duration-200 active:scale-[0.97]"
+                style="border: 1px solid rgba(217,70,239,0.30); background: rgba(217,70,239,0.08); color: rgba(240,171,252,0.92);">
+                <svg class="h-[22px] w-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                  <circle cx="12" cy="12" r="4"/>
+                  <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
+                </svg>
+                <span>Instagram</span>
+              </a>
+            }
+
+            <!-- Mapa -->
+            @if (vm.latitude && vm.longitude) {
+              <button type="button" (click)="scrollToMap()"
+                class="inline-flex flex-col items-center justify-center gap-2 rounded-[20px] h-[84px] px-3
+                       font-dm text-[12px] font-medium transition-all duration-200 active:scale-[0.97]"
+                style="border: 1px solid rgba(255,255,255,0.09); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.65);">
+                <svg class="h-[22px] w-[22px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22c3.7-3.2 8-7.6 8-12.2A8 8 0 1 0 4 9.8C4 14.4 8.3 18.8 12 22Z"/>
+                  <circle cx="12" cy="10" r="2.5"/>
+                </svg>
+                <span>Mapa</span>
+              </button>
+            }
+
+            <!-- Rating tile -->
+            @if (vm.totalRatings > 0) {
+              <button type="button" (click)="scrollToReviews()"
+                class="inline-flex flex-col items-center justify-center gap-1 rounded-[20px] h-[84px] px-3
+                       font-dm transition-all duration-200 active:scale-[0.97]"
+                style="border: 1px solid rgba(250,204,21,0.22); background: rgba(250,204,21,0.05); color: rgba(250,204,21,0.90);">
+                <svg class="h-[22px] w-[22px]" viewBox="0 0 24 24" fill="rgba(250,204,21,0.9)">
+                  <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+                </svg>
+                <span class="text-[15px] font-bold leading-none">{{ vm.averageRating | number:'1.1-1' }}</span>
+                <span class="text-[10px] leading-none" style="color: rgba(250,204,21,0.50);">Recenzije</span>
+              </button>
+            }
+
+          </div>
+
         </div>
+        <!-- ── END MOBILE QUICK-ACTION GRID ── -->
 
         <!-- ══════════════════════════════════════════════════════════════
              MAIN CONTENT GRID
         ═══════════════════════════════════════════════════════════════ -->
-        <div class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 sm:mt-10 max-w-[1280px]">
-          <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-6 lg:gap-7 items-start">
+        <div class="mx-auto px-4 sm:px-8 lg:px-16 mt-9 sm:mt-10 max-w-[1280px]">
+          <div class="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr] gap-5 lg:gap-7 items-start">
 
             <!-- ── LEFT COLUMN ──────────────────────────────────────── -->
             <div
               inView (inViewChange)="onReserveInView($event)"
-              class="space-y-5 transition-all duration-700 ease-out delay-100"
+              class="space-y-6 lg:space-y-5 transition-all duration-700 ease-out delay-100"
               [style.opacity]="reserveShown ? '1' : '0'"
               [style.transform]="reserveShown ? 'translateX(0)' : 'translateX(-20px)'"
             >
 
-              <!-- ═══════════════════════════════════════════════════════
-                   PARTNER LEFT COLUMN
-              ════════════════════════════════════════════════════════ -->
+              <!-- ═══ PARTNER LEFT COLUMN ══════════════════════════════ -->
               @if (vm.isPartner) {
-                <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-7">
+                <div class="relative overflow-hidden rounded-3xl border border-white/[0.09] bg-white/[0.035] p-6 sm:p-7">
                   <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
-                    style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.5), transparent);"></div>
+                    style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.55), transparent);"></div>
                   <div class="absolute -top-16 -right-16 w-48 h-48 rounded-full"
                     style="background: radial-gradient(circle, rgba(124,58,237,0.12) 0%, transparent 70%);"></div>
 
-                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-2.5">Rezerviraj Stol</p>
-                  <h2 class="font-sora font-semibold text-[26px] sm:text-[30px] leading-[1.05] tracking-[-0.02em] mb-6 hero-title">
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/42 mb-2">Rezerviraj Stol</p>
+                  <h2 class="font-sora font-semibold text-[24px] sm:text-[28px] leading-[1.05] tracking-[-0.02em] mb-5 hero-title">
                     Osiguraj svoje<br/>mjesto večeras
                   </h2>
 
-                  <!-- Reserve CTA -->
                   <button type="button" (click)="toggleReservation(vm)"
-                    class="group relative w-full inline-flex items-center justify-center gap-2.5
+                    class="group relative w-full hidden lg:inline-flex items-center justify-center gap-2.5
                            px-6 py-4 rounded-2xl overflow-hidden
                            font-dm font-semibold text-[14px] text-white
-                           transition-all duration-300
-                           hover:scale-[1.015] active:scale-[0.98]"
+                           transition-all duration-300 hover:scale-[1.015] active:scale-[0.98]"
                     style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
-                           box-shadow: 0 4px 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);"
-                  >
+                           box-shadow: 0 4px 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);">
                     <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
                     </svg>
@@ -379,17 +355,13 @@
                       style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);"></div>
                   </button>
 
-                  <!-- Instagram button — PARTNER -->
                   @if (vm.instagram) {
                     <a [href]="vm.instagram" target="_blank" rel="noopener noreferrer"
-                      class="mt-3 w-full inline-flex items-center justify-center gap-2.5 rounded-2xl px-6 py-3
-                             font-dm font-medium text-[13px] transition-all duration-300
-                             hover:scale-[1.015] active:scale-[0.98]"
-                      style="border: 1px solid rgba(217,70,239,0.28); background: rgba(217,70,239,0.07); color: rgba(240,171,252,0.85);"
-                      onmouseenter="this.style.background='rgba(217,70,239,0.14)'; this.style.borderColor='rgba(217,70,239,0.45)';"
-                      onmouseleave="this.style.background='rgba(217,70,239,0.07)'; this.style.borderColor='rgba(217,70,239,0.28)';"
-                    >
-                      <!-- Instagram icon -->
+                      class="mt-2.5 w-full hidden lg:inline-flex items-center justify-center gap-2.5 rounded-2xl px-6 py-3
+                             font-dm font-medium text-[13px] transition-all duration-300 hover:scale-[1.015] active:scale-[0.98]"
+                      style="border: 1px solid rgba(217,70,239,0.32); background: rgba(217,70,239,0.09); color: rgba(240,171,252,0.92);"
+                      onmouseenter="this.style.background='rgba(217,70,239,0.16)'; this.style.borderColor='rgba(217,70,239,0.48)';"
+                      onmouseleave="this.style.background='rgba(217,70,239,0.09)'; this.style.borderColor='rgba(217,70,239,0.32)';">
                       <svg class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
                         <circle cx="12" cy="12" r="4"/>
@@ -399,73 +371,115 @@
                     </a>
                   }
 
-                  <!-- Rate button -->
-                  @if (authService.authenticated() && !alreadyRated) {
-                    <button type="button" (click)="openRatingModal()"
-                      class="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3
-                             font-dm font-medium text-[13px]
-                             border border-amber-500/25 bg-amber-500/[0.07] text-amber-400/80
-                             transition-all duration-300
-                             hover:bg-amber-500/15 hover:border-amber-500/40 hover:text-amber-300">
-                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
-                        <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
-                      </svg>
-                      Ocijeni lokal
-                    </button>
-                  }
-                  @if (alreadyRated) {
-                    <div class="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3
-                                border border-amber-500/15 bg-amber-500/[0.04]">
-                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(251,191,36,0.5)">
-                        <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
-                      </svg>
-                      <span class="font-dm text-[13px] text-white/30">Već si ocijenio ovaj lokal</span>
-                    </div>
-                  }
-
-                  <!-- Info rows — unified violet icon color -->
-                  <div class="mt-6 pt-6 border-t border-white/[0.05] space-y-3">
+                  <!-- Info rows -->
+                  <div class="mt-6 pt-6 border-t border-white/[0.07] space-y-4">
                     @if (vm.address) {
-                      <div class="flex items-center gap-3 group/row cursor-default">
-                        <div class="flex-shrink-0 h-8 w-8 rounded-xl border border-violet-500/20 bg-violet-500/[0.07]
-                                    flex items-center justify-center transition-all duration-200">
-                          <svg class="h-3.5 w-3.5 text-violet-400/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <div class="flex items-center gap-3">
+                        <div class="info-row-icon">
+                          <svg class="h-3.5 w-3.5 text-violet-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                             <path d="M12 22c3.7-3.2 8-7.6 8-12.2A8 8 0 1 0 4 9.8C4 14.4 8.3 18.8 12 22Z" stroke-linecap="round"/>
                             <circle cx="12" cy="10" r="2.5"/>
                           </svg>
                         </div>
-                        <span class="font-dm text-[13px] text-white/45 group-hover/row:text-white/70 transition-colors">{{ vm.address }}</span>
+                        <span class="font-dm text-[13px] text-white/70">{{ vm.address }}</span>
                       </div>
                     }
                     @if (vm.workingHours) {
-                      <div class="flex items-center gap-3 group/row cursor-default">
-                        <div class="flex-shrink-0 h-8 w-8 rounded-xl border border-violet-500/20 bg-violet-500/[0.07]
-                                    flex items-center justify-center transition-all duration-200">
-                          <svg class="h-3.5 w-3.5 text-violet-400/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <div class="flex items-center gap-3">
+                        <div class="info-row-icon">
+                          <svg class="h-3.5 w-3.5 text-violet-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                             <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round"/>
                           </svg>
                         </div>
-                        <span class="font-dm text-[13px] text-white/45 group-hover/row:text-white/70 transition-colors">{{ vm.workingHours }}</span>
+                        <span class="font-dm text-[13px] text-white/70">{{ vm.workingHours }}</span>
                       </div>
                     }
                     @if (vm.phone) {
-                      <div class="flex items-center gap-3 group/row cursor-default">
-                        <div class="flex-shrink-0 h-8 w-8 rounded-xl border border-violet-500/20 bg-violet-500/[0.07]
-                                    flex items-center justify-center transition-all duration-200">
-                          <svg class="h-3.5 w-3.5 text-violet-400/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                      <div class="flex items-center gap-3">
+                        <div class="info-row-icon">
+                          <svg class="h-3.5 w-3.5 text-violet-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                             <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8Z" stroke-linecap="round" stroke-linejoin="round"/>
                           </svg>
                         </div>
-                        <span class="font-dm text-[13px] text-white/45 group-hover/row:text-white/70 transition-colors">{{ vm.phone }}</span>
+                        <span class="font-dm text-[13px] text-white/70">{{ vm.phone }}</span>
                       </div>
+                    }
+                  </div>
+                  <!-- Reviews / rating CTA — placed under contact info -->
+                  <div class="mt-6 pt-6 border-t border-white/[0.07]">
+                    @if (authService.authenticated() && !alreadyRated) {
+                      <div class="relative overflow-hidden rounded-[22px] p-px"
+                           style="background: linear-gradient(135deg, rgba(251,191,36,0.55) 0%, rgba(245,158,11,0.18) 42%, rgba(251,191,36,0.06) 100%);">
+                        <div class="relative rounded-[21px] px-5 py-5 overflow-hidden"
+                             style="background: linear-gradient(145deg, rgba(18,14,30,0.98) 0%, rgba(10,8,18,0.99) 100%);">
+                          <div class="absolute -top-10 -right-10 w-36 h-36 rounded-full pointer-events-none"
+                               style="background: radial-gradient(circle, rgba(251,191,36,0.17) 0%, transparent 65%); filter: blur(18px);"></div>
+
+                          <div class="relative z-10 flex items-start justify-between gap-4 mb-4">
+                            <div>
+                              <p class="font-dm text-[9px] tracking-[0.22em] uppercase mb-1"
+                                 style="color: rgba(251,191,36,0.48);">Recenzije</p>
+                              <p class="font-sora font-semibold text-[17px] leading-tight text-white/90">
+                                Ocijeni ovaj lokal
+                              </p>
+                            </div>
+
+                            <div class="flex items-center gap-0.5 flex-shrink-0 pt-0.5">
+                              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(251,191,36,0.92)"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(251,191,36,0.92)"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(251,191,36,0.92)"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(251,191,36,0.92)"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(255,255,255,0.14)"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                            </div>
+                          </div>
+
+                          <button type="button" (click)="openRatingModal()"
+                            class="relative z-10 w-full inline-flex items-center justify-center gap-2.5 rounded-[14px] py-3.5 px-5
+                                   font-dm font-semibold text-[13px] transition-all duration-250
+                                   hover:scale-[1.015] active:scale-[0.98]"
+                            style="background: linear-gradient(135deg, rgba(251,191,36,0.22) 0%, rgba(245,158,11,0.14) 100%);
+                                   border: 1px solid rgba(251,191,36,0.38);
+                                   color: rgba(253,211,77,1);
+                                   box-shadow: 0 4px 20px rgba(251,191,36,0.12), 0 1px 0 rgba(251,191,36,0.20) inset;">
+                            <svg class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="rgba(253,211,77,1)">
+                              <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+                            </svg>
+                            Ostavi ocjenu
+                          </button>
+                        </div>
+                      </div>
+                    }
+
+                    @if (alreadyRated) {
+                      <div class="w-full inline-flex items-center justify-center gap-2.5 rounded-[18px] px-5 py-4
+                                  border border-yellow-400/18 bg-yellow-400/[0.05]">
+                        <svg class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="rgba(250,204,21,0.55)">
+                          <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+                        </svg>
+                        <span class="font-dm text-[13px] text-white/52">Već si ocijenio ovaj lokal</span>
+                      </div>
+                    }
+
+                    @if (!authService.authenticated()) {
+                      <button type="button" (click)="authService.login()"
+                        class="w-full inline-flex items-center justify-center gap-2 rounded-[18px] px-5 py-4
+                               font-dm text-[13px] text-white/65
+                               border border-white/[0.09] bg-white/[0.04]
+                               transition-all duration-300 hover:text-white/85 hover:bg-white/[0.07]">
+                        <svg class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="rgba(250,204,21,0.55)">
+                          <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+                        </svg>
+                        Prijavi se da ostaviš ocjenu
+                      </button>
                     }
                   </div>
                 </div>
 
-                <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7">
+                <!-- How it works card -->
+                <div class="relative overflow-hidden rounded-3xl border border-white/[0.09] bg-white/[0.035] p-6 sm:p-7">
                   <div class="absolute top-0 left-0 right-0 h-px"
-                    style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);"></div>
-                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-6">Kako Funkcioniše</p>
+                    style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);"></div>
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/42 mb-5">Kako Funkcioniše</p>
                   <div class="flex flex-col gap-0">
                     @for (step of [
                       { n: '1', title: 'Odaberi sto', desc: 'Pregledaj dostupne vrste stolova i pronađi koji ti odgovara.' },
@@ -475,17 +489,17 @@
                       <div class="flex gap-4 relative">
                         <div class="flex flex-col items-center flex-shrink-0">
                           <div class="h-8 w-8 rounded-full flex items-center justify-center text-[12px] font-sora font-bold text-violet-300 relative z-10"
-                            style="border: 1px solid rgba(124,58,237,0.35); background: rgba(124,58,237,0.12); box-shadow: 0 0 16px rgba(124,58,237,0.2);">
+                            style="border: 1px solid rgba(124,58,237,0.40); background: rgba(124,58,237,0.14); box-shadow: 0 0 16px rgba(124,58,237,0.20);">
                             {{ step.n }}
                           </div>
                           @if (step.n !== '3') {
                             <div class="w-px flex-1 mt-1 mb-1"
-                                 style="background: linear-gradient(to bottom, rgba(124,58,237,0.28), rgba(124,58,237,0.04));"></div>
+                                 style="background: linear-gradient(to bottom, rgba(124,58,237,0.30), rgba(124,58,237,0.04));"></div>
                           }
                         </div>
-                        <div class="pb-6" [class.pb-0]="step.n === '3'">
-                          <p class="font-dm text-[13px] font-semibold text-white/80 leading-none mb-1.5">{{ step.title }}</p>
-                          <p class="font-dm text-[12px] text-white/32 leading-relaxed">{{ step.desc }}</p>
+                        <div class="pb-5" [class.pb-0]="step.n === '3'">
+                          <p class="font-dm text-[13px] font-semibold text-white/85 leading-none mb-1.5">{{ step.title }}</p>
+                          <p class="font-dm text-[12px] text-white/52 leading-relaxed">{{ step.desc }}</p>
                         </div>
                       </div>
                     }
@@ -493,33 +507,26 @@
                 </div>
               }
 
-              <!-- ═══════════════════════════════════════════════════════
-                   NON-PARTNER LEFT COLUMN
-              ════════════════════════════════════════════════════════ -->
+              <!-- ═══ NON-PARTNER LEFT COLUMN ══════════════════════════ -->
               @if (!vm.isPartner) {
-
-                <!-- Contact card -->
-                <div class="relative overflow-hidden rounded-3xl p-7"
-                  style="border: 1px solid rgba(255,255,255,0.08);
-                         background: linear-gradient(145deg, rgba(15,12,28,0.9) 0%, rgba(8,7,15,0.95) 100%);">
+                <div class="relative overflow-hidden rounded-3xl p-7 sm:p-8"
+                  style="border: 1px solid rgba(255,255,255,0.10);
+                         background: linear-gradient(145deg, rgba(15,12,28,0.92) 0%, rgba(8,7,15,0.96) 100%);">
                   <div class="absolute top-0 left-0 right-0 h-px"
-                    style="background: linear-gradient(90deg, transparent 0%, rgba(124,58,237,0.6) 30%, rgba(255,255,255,0.3) 50%, rgba(124,58,237,0.6) 70%, transparent 100%);"></div>
+                    style="background: linear-gradient(90deg, transparent 0%, rgba(124,58,237,0.65) 30%, rgba(255,255,255,0.35) 50%, rgba(124,58,237,0.65) 70%, transparent 100%);"></div>
                   <div class="absolute -top-12 -right-12 w-40 h-40 rounded-full pointer-events-none"
                     style="background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);"></div>
 
-                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-5">Kontakt</p>
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/42 mb-4">Kontakt</p>
 
-                  <!-- Call CTA -->
                   @if (vm.phone) {
                     <a [href]="'tel:' + vm.phone"
-                      class="group relative w-full inline-flex items-center justify-center gap-2.5
-                            px-6 py-4 rounded-2xl overflow-hidden mb-3
+                      class="group relative w-full hidden lg:inline-flex items-center justify-center gap-2.5
+                            px-6 py-4 rounded-2xl overflow-hidden mb-2.5
                             font-dm font-semibold text-[14px] text-white
-                            transition-all duration-300
-                            hover:scale-[1.015] active:scale-[0.98]"
+                            transition-all duration-300 hover:scale-[1.015] active:scale-[0.98]"
                       style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 50%, #5b21b6 100%);
-                            box-shadow: 0 4px 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);"
-                    >
+                            box-shadow: 0 4px 24px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);">
                       <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8Z"/>
                       </svg>
@@ -528,16 +535,14 @@
                         style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);"></div>
                     </a>
                   }
-                  <!-- Instagram button — NON-PARTNER -->
+
                   @if (vm.instagram) {
                     <a [href]="vm.instagram" target="_blank" rel="noopener noreferrer"
-                      class="w-full inline-flex items-center justify-center gap-2.5 rounded-2xl px-6 py-3 mb-3
-                             font-dm font-medium text-[13px] transition-all duration-300
-                             hover:scale-[1.015] active:scale-[0.98]"
-                      style="border: 1px solid rgba(217,70,239,0.28); background: rgba(217,70,239,0.07); color: rgba(240,171,252,0.85);"
-                      onmouseenter="this.style.background='rgba(217,70,239,0.14)'; this.style.borderColor='rgba(217,70,239,0.45)';"
-                      onmouseleave="this.style.background='rgba(217,70,239,0.07)'; this.style.borderColor='rgba(217,70,239,0.28)';"
-                    >
+                      class="w-full hidden lg:inline-flex items-center justify-center gap-2.5 rounded-2xl px-6 py-3 mb-2.5
+                             font-dm font-medium text-[13px] transition-all duration-300 hover:scale-[1.015] active:scale-[0.98]"
+                      style="border: 1px solid rgba(217,70,239,0.32); background: rgba(217,70,239,0.09); color: rgba(240,171,252,0.92);"
+                      onmouseenter="this.style.background='rgba(217,70,239,0.16)'; this.style.borderColor='rgba(217,70,239,0.48)';"
+                      onmouseleave="this.style.background='rgba(217,70,239,0.09)'; this.style.borderColor='rgba(217,70,239,0.32)';">
                       <svg class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
                         <circle cx="12" cy="12" r="4"/>
@@ -547,105 +552,148 @@
                     </a>
                   }
 
-                  <!-- Rate button -->
-                  @if (authService.authenticated() && !alreadyRated) {
-                    <button type="button" (click)="openRatingModal()"
-                      class="w-full inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 mb-3
-                             font-dm font-medium text-[13px]
-                             border border-amber-500/25 bg-amber-500/[0.07] text-amber-400/80
-                             transition-all duration-300
-                             hover:bg-amber-500/15 hover:border-amber-500/40 hover:text-amber-300">
-                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">
-                        <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
-                      </svg>
-                      Ocijeni lokal
-                    </button>
-                  }
-                  @if (alreadyRated) {
-                    <div class="w-full inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 mb-3
-                                border border-amber-500/15 bg-amber-500/[0.04]">
-                      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(251,191,36,0.5)">
-                        <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
-                      </svg>
-                      <span class="font-dm text-[13px] text-white/30">Već si ocijenio ovaj lokal</span>
-                    </div>
-                  }
-                  @if (!authService.authenticated()) {
-                    <button type="button" (click)="authService.login()"
-                      class="w-full inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-3 mb-3
-                             font-dm text-[13px] text-white/40
-                             border border-white/[0.07] bg-white/[0.02]
-                             transition-all duration-300 hover:text-white/60 hover:bg-white/[0.04]">
-                      <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-                        <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
-                      </svg>
-                      Prijavi se da ostaviš ocjenu
-                    </button>
-                  }
-
-                  <!-- Info rows — unified violet icon color -->
-                  <div class="pt-5 border-t border-white/[0.05] space-y-3">
+                  <div class="pt-6 border-t border-white/[0.07] space-y-4">
                     @if (vm.address) {
                       <div class="flex items-center gap-3">
-                        <div class="flex-shrink-0 h-8 w-8 rounded-xl border border-violet-500/20 bg-violet-500/[0.07] flex items-center justify-center">
-                          <svg class="h-3.5 w-3.5 text-violet-400/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <div class="info-row-icon">
+                          <svg class="h-3.5 w-3.5 text-violet-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                             <path d="M12 22c3.7-3.2 8-7.6 8-12.2A8 8 0 1 0 4 9.8C4 14.4 8.3 18.8 12 22Z" stroke-linecap="round"/>
                             <circle cx="12" cy="10" r="2.5"/>
                           </svg>
                         </div>
-                        <span class="font-dm text-[13px] text-white/50 leading-snug">{{ vm.address }}</span>
+                        <span class="font-dm text-[13px] text-white/70 leading-snug">{{ vm.address }}</span>
                       </div>
                     }
                     @if (vm.workingHours) {
                       <div class="flex items-center gap-3">
-                        <div class="flex-shrink-0 h-8 w-8 rounded-xl border border-violet-500/20 bg-violet-500/[0.07] flex items-center justify-center">
-                          <svg class="h-3.5 w-3.5 text-violet-400/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <div class="info-row-icon">
+                          <svg class="h-3.5 w-3.5 text-violet-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                             <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3" stroke-linecap="round" stroke-linejoin="round"/>
                           </svg>
                         </div>
-                        <span class="font-dm text-[13px] text-white/50">{{ vm.workingHours }}</span>
+                        <span class="font-dm text-[13px] text-white/70">{{ vm.workingHours }}</span>
                       </div>
                     }
                     @if (vm.phone) {
                       <div class="flex items-center gap-3">
-                        <div class="flex-shrink-0 h-8 w-8 rounded-xl border border-violet-500/20 bg-violet-500/[0.07] flex items-center justify-center">
-                          <svg class="h-3.5 w-3.5 text-violet-400/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <div class="info-row-icon">
+                          <svg class="h-3.5 w-3.5 text-violet-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                             <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8Z" stroke-linecap="round" stroke-linejoin="round"/>
                           </svg>
                         </div>
-                        <span class="font-dm text-[13px] text-white/50">{{ vm.phone }}</span>
+                        <span class="font-dm text-[13px] text-white/70">{{ vm.phone }}</span>
                       </div>
+                    }
+                  </div>
+                  <!-- Reviews / rating CTA — placed under contact info -->
+                  <div class="mt-6 pt-6 border-t border-white/[0.07]">
+                    @if (authService.authenticated() && !alreadyRated) {
+                      <div class="relative overflow-hidden rounded-[22px] p-px"
+                           style="background: linear-gradient(135deg, rgba(251,191,36,0.55) 0%, rgba(245,158,11,0.18) 42%, rgba(251,191,36,0.06) 100%);">
+                        <div class="relative rounded-[21px] px-5 py-5 overflow-hidden"
+                             style="background: linear-gradient(145deg, rgba(18,14,30,0.98) 0%, rgba(10,8,18,0.99) 100%);">
+                          <div class="absolute -top-10 -right-10 w-36 h-36 rounded-full pointer-events-none"
+                               style="background: radial-gradient(circle, rgba(251,191,36,0.17) 0%, transparent 65%); filter: blur(18px);"></div>
+
+                          <div class="relative z-10 flex items-start justify-between gap-4 mb-4">
+                            <div>
+                              <p class="font-dm text-[9px] tracking-[0.22em] uppercase mb-1"
+                                 style="color: rgba(251,191,36,0.48);">Recenzije</p>
+                              <p class="font-sora font-semibold text-[17px] leading-tight text-white/90">
+                                Ocijeni ovaj lokal
+                              </p>
+                            </div>
+
+                            <div class="flex items-center gap-0.5 flex-shrink-0 pt-0.5">
+                              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(251,191,36,0.92)"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(251,191,36,0.92)"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(251,191,36,0.92)"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(251,191,36,0.92)"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="rgba(255,255,255,0.14)"><path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                            </div>
+                          </div>
+
+                          <button type="button" (click)="openRatingModal()"
+                            class="relative z-10 w-full inline-flex items-center justify-center gap-2.5 rounded-[14px] py-3.5 px-5
+                                   font-dm font-semibold text-[13px] transition-all duration-250
+                                   hover:scale-[1.015] active:scale-[0.98]"
+                            style="background: linear-gradient(135deg, rgba(251,191,36,0.22) 0%, rgba(245,158,11,0.14) 100%);
+                                   border: 1px solid rgba(251,191,36,0.38);
+                                   color: rgba(253,211,77,1);
+                                   box-shadow: 0 4px 20px rgba(251,191,36,0.12), 0 1px 0 rgba(251,191,36,0.20) inset;">
+                            <svg class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="rgba(253,211,77,1)">
+                              <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+                            </svg>
+                            Ostavi ocjenu
+                          </button>
+                        </div>
+                      </div>
+                    }
+
+                    @if (alreadyRated) {
+                      <div class="w-full inline-flex items-center justify-center gap-2.5 rounded-[18px] px-5 py-4
+                                  border border-yellow-400/18 bg-yellow-400/[0.05]">
+                        <svg class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="rgba(250,204,21,0.55)">
+                          <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+                        </svg>
+                        <span class="font-dm text-[13px] text-white/52">Već si ocijenio ovaj lokal</span>
+                      </div>
+                    }
+
+                    @if (!authService.authenticated()) {
+                      <button type="button" (click)="authService.login()"
+                        class="w-full inline-flex items-center justify-center gap-2 rounded-[18px] px-5 py-4
+                               font-dm text-[13px] text-white/65
+                               border border-white/[0.09] bg-white/[0.04]
+                               transition-all duration-300 hover:text-white/85 hover:bg-white/[0.07]">
+                        <svg class="h-4 w-4 flex-shrink-0" viewBox="0 0 24 24" fill="rgba(250,204,21,0.55)">
+                          <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
+                        </svg>
+                        Prijavi se da ostaviš ocjenu
+                      </button>
                     }
                   </div>
                 </div>
 
-                <!-- About card -->
-                <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6">
-                  <div class="absolute top-0 left-0 right-0 h-px"
-                    style="background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);"></div>
-                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-4">O Lokalu</p>
-                  <p class="font-dm text-[13px] font-light leading-[1.85] text-white/50 italic">
-                    {{ shortText(vm.description, 280) }}
-                  </p>
-                  @if (vm.description && vm.description.length > 280) {
-                    <button type="button" (click)="openDescriptionModal(vm.description)"
-                      class="mt-4 inline-flex items-center gap-1.5 font-dm text-[12px] tracking-[0.04em] text-violet-400/80 hover:text-violet-300 transition-colors duration-200">
-                      Prikaži više
-                      <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 6l6 6-6 6"/>
-                      </svg>
-                    </button>
-                  }
-                </div>
+                <!-- About card — collapsible on mobile -->
+                <div class="accordion-card">
+                  <button type="button" (click)="toggleMobileSection('about')"
+                    class="lg:hidden w-full flex items-center justify-between px-5 py-5 mobile-accordion-trigger"
+                    [class.is-open]="mobileSection === 'about'">
+                    <p class="font-dm text-[11px] tracking-[0.2em] uppercase text-white/55">O Lokalu</p>
+                    <svg class="h-4 w-4 text-white/40 transition-transform duration-200"
+                         [style.transform]="mobileSection === 'about' ? 'rotate(90deg)' : 'rotate(0)'"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M9 6l6 6-6 6"/>
+                    </svg>
+                  </button>
+                  <p class="hidden lg:block font-dm text-[10px] tracking-[0.2em] uppercase text-white/42 px-6 pt-6 mb-4">O Lokalu</p>
 
+                  <div class="lg:block" [class.hidden]="mobileSection !== 'about'" [class.mobile-section-body]="mobileSection === 'about'">
+                    <div class="px-6 pb-6">
+                      <div class="glow-divider lg:hidden"></div>
+                      <p class="font-dm text-[13px] font-light leading-[1.85] text-white/62 italic">
+                        {{ shortText(vm.description, 280) }}
+                      </p>
+                      @if (vm.description && vm.description.length > 280) {
+                        <button type="button" (click)="openDescriptionModal(vm.description)"
+                          class="mt-4 inline-flex items-center gap-1.5 font-dm text-[12px] tracking-[0.04em] text-violet-400/85 hover:text-violet-300 transition-colors duration-200">
+                          Prikaži više
+                          <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 6l6 6-6 6"/>
+                          </svg>
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
               }
             </div>
-            <!-- ── END LEFT COLUMN ──────────────────────────────────── -->
+            <!-- ── END LEFT COLUMN ─────────────────────────────────── -->
 
-            <!-- ── RIGHT COLUMN ─────────────────────────────────────── -->
-            <div class="space-y-5">
+            <!-- ── RIGHT COLUMN ────────────────────────────────────── -->
+            <div class="space-y-6 lg:space-y-5">
 
-              <!-- PARTNER right column -->
               @if (vm.isPartner) {
                 <div
                   inView (inViewChange)="onAboutInView($event)"
@@ -653,14 +701,14 @@
                   [style.opacity]="aboutShown ? '1' : '0'"
                   [style.transform]="aboutShown ? 'translateY(0)' : 'translateY(24px)'"
                 >
-                  <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7">
+                  <div class="relative overflow-hidden rounded-3xl border border-white/[0.09] bg-white/[0.035] p-6 sm:p-7">
                     <div class="absolute inset-0 rounded-3xl pointer-events-none"
                       style="background: radial-gradient(70% 50% at 70% 120%, rgba(124,58,237,0.10) 0%, transparent 70%);"></div>
-                    <p class="relative z-10 font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-5">Vrste Stolova</p>
+                    <p class="relative z-10 font-dm text-[10px] tracking-[0.2em] uppercase text-white/42 mb-5">Vrste Stolova</p>
                     @if (vm.tableTypesLoading) {
                       <div class="space-y-2">
                         @for (i of [1,2,3]; track i) {
-                          <div class="h-14 animate-pulse rounded-2xl bg-white/[0.04]"></div>
+                          <div class="h-14 animate-pulse rounded-2xl bg-white/[0.05]"></div>
                         }
                       </div>
                     }
@@ -669,19 +717,19 @@
                         <div
                           class="rounded-2xl overflow-hidden cursor-pointer transition-all duration-250"
                           [style]="isOpen(tt.id)
-                            ? 'border: 1px solid rgba(124,58,237,0.45); background: linear-gradient(135deg, rgba(109,40,217,0.18) 0%, rgba(8,7,15,0.8) 100%); box-shadow: inset 0 0 32px rgba(124,58,237,0.07), 0 8px 32px rgba(124,58,237,0.12);'
-                            : 'border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02);'"
+                            ? 'border: 1px solid rgba(124,58,237,0.48); background: linear-gradient(135deg, rgba(109,40,217,0.18) 0%, rgba(8,7,15,0.8) 100%); box-shadow: inset 0 0 32px rgba(124,58,237,0.07), 0 8px 32px rgba(124,58,237,0.12);'
+                            : 'border: 1px solid rgba(255,255,255,0.09); background: rgba(255,255,255,0.03);'"
                           (click)="toggleAccordion(tt.id)"
                         >
                           <div class="flex items-center justify-between px-4 py-4">
                             <div class="flex items-center gap-3">
                               <div class="h-9 w-9 rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0"
                                 [style]="isOpen(tt.id)
-                                  ? 'border: 1px solid rgba(124,58,237,0.45); background: rgba(124,58,237,0.18); box-shadow: 0 0 16px rgba(124,58,237,0.2);'
-                                  : 'border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04);'"
+                                  ? 'border: 1px solid rgba(124,58,237,0.48); background: rgba(124,58,237,0.20); box-shadow: 0 0 16px rgba(124,58,237,0.22);'
+                                  : 'border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.05);'"
                               >
                                 <svg class="h-4 w-4 transition-colors duration-200"
-                                     [style.color]="isOpen(tt.id) ? 'rgba(167,139,250,1)' : 'rgba(255,255,255,0.35)'"
+                                     [style.color]="isOpen(tt.id) ? 'rgba(167,139,250,1)' : 'rgba(255,255,255,0.50)'"
                                      viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                                   <path d="M7 10V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3" stroke-linecap="round"/>
                                   <path d="M6 12h12v4H6v-4Z" stroke-linejoin="round"/>
@@ -690,19 +738,19 @@
                               </div>
                               <div>
                                 <p class="font-dm text-[13px] font-semibold transition-colors duration-200"
-                                   [style.color]="isOpen(tt.id) ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.6)'">
+                                   [style.color]="isOpen(tt.id) ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.75)'">
                                   {{ tt.title }}
                                 </p>
                                 <p class="font-dm text-[11px] mt-0.5 transition-colors duration-200"
-                                   [style.color]="isOpen(tt.id) ? 'rgba(167,139,250,0.6)' : 'rgba(255,255,255,0.25)'">
+                                   [style.color]="isOpen(tt.id) ? 'rgba(167,139,250,0.75)' : 'rgba(255,255,255,0.42)'">
                                   {{ tt.capacityLabel }}
                                 </p>
                               </div>
                             </div>
                             <div class="h-7 w-7 rounded-lg flex items-center justify-center transition-all duration-200 flex-shrink-0"
-                                 [style]="isOpen(tt.id) ? 'background: rgba(124,58,237,0.18);' : ''">
+                                 [style]="isOpen(tt.id) ? 'background: rgba(124,58,237,0.20);' : ''">
                               <svg class="h-3.5 w-3.5 transition-all duration-200"
-                                   [style]="isOpen(tt.id) ? 'transform: rotate(90deg); color: rgba(167,139,250,1);' : 'color: rgba(255,255,255,0.22);'"
+                                   [style]="isOpen(tt.id) ? 'transform: rotate(90deg); color: rgba(167,139,250,1);' : 'color: rgba(255,255,255,0.35);'"
                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M9 6l6 6-6 6"/>
                               </svg>
@@ -713,13 +761,13 @@
                             [style.opacity]="isOpen(tt.id) ? '1' : '0'"
                           >
                             <div class="px-4 pb-5">
-                              <div class="h-px w-full mb-4" style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.25), transparent);"></div>
-                              <p class="font-dm text-[13px] text-white/42 leading-relaxed">{{ tt.description }}</p>
+                              <div class="h-px w-full mb-4" style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.28), transparent);"></div>
+                              <p class="font-dm text-[13px] text-white/60 leading-relaxed">{{ tt.description }}</p>
                               <div class="mt-4">
                                 <button type="button" (click)="$event.stopPropagation(); toggleReservation()"
                                   class="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 font-dm text-[11px] font-medium text-violet-300
                                          transition-all duration-200 hover:scale-[1.02]"
-                                  style="border: 1px solid rgba(124,58,237,0.35); background: rgba(124,58,237,0.12);">
+                                  style="border: 1px solid rgba(124,58,237,0.38); background: rgba(124,58,237,0.14);">
                                   <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M5 12h14M12 5l7 7-7 7"/>
                                   </svg>
@@ -734,55 +782,85 @@
                   </div>
                 </div>
 
-                <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7">
-                  <div class="absolute top-0 right-0 h-40 w-40 rounded-full -translate-y-10 translate-x-10"
-                    style="background: radial-gradient(circle, rgba(124,58,237,0.10) 0%, transparent 70%);"></div>
-                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-3">O Lokalu</p>
-                  <p class="font-dm text-[14px] font-light leading-[1.8] text-white/45 italic">
-                    {{ shortText(vm.description, 180) }}
-                  </p>
-                  @if (vm.description && vm.description.length > 180) {
-                    <button type="button" (click)="openDescriptionModal(vm.description)"
-                      class="mt-4 inline-flex items-center gap-1.5 font-dm text-[12px] tracking-[0.04em] text-violet-400/80 hover:text-violet-300 transition-colors duration-200">
-                      Prikaži više
-                      <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 6l6 6-6 6"/>
-                      </svg>
-                    </button>
-                  }
+                <!-- About card (partner) — collapsible on mobile -->
+                <div class="accordion-card">
+                  <button type="button" (click)="toggleMobileSection('about-partner')"
+                    class="lg:hidden w-full flex items-center justify-between px-5 py-5 mobile-accordion-trigger"
+                    [class.is-open]="mobileSection === 'about-partner'">
+                    <p class="font-dm text-[11px] tracking-[0.2em] uppercase text-white/55">O Lokalu</p>
+                    <svg class="h-4 w-4 text-white/40 transition-transform duration-200"
+                         [style.transform]="mobileSection === 'about-partner' ? 'rotate(90deg)' : 'rotate(0)'"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M9 6l6 6-6 6"/>
+                    </svg>
+                  </button>
+                  <p class="hidden lg:block font-dm text-[10px] tracking-[0.2em] uppercase text-white/42 px-6 pt-6 mb-3">O Lokalu</p>
+
+                  <div class="lg:block" [class.hidden]="mobileSection !== 'about-partner'" [class.mobile-section-body]="mobileSection === 'about-partner'">
+                    <div class="px-6 pb-6">
+                      <div class="glow-divider lg:hidden"></div>
+                      <p class="font-dm text-[13px] sm:text-[14px] font-light leading-[1.8] text-white/62 italic">
+                        {{ shortText(vm.description, 180) }}
+                      </p>
+                      @if (vm.description && vm.description.length > 180) {
+                        <button type="button" (click)="openDescriptionModal(vm.description)"
+                          class="mt-4 inline-flex items-center gap-1.5 font-dm text-[12px] tracking-[0.04em] text-violet-400/85 hover:text-violet-300 transition-colors duration-200">
+                          Prikaži više
+                          <svg class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 6l6 6-6 6"/>
+                          </svg>
+                        </button>
+                      }
+                    </div>
+                  </div>
                 </div>
 
+                <!-- Why GI card — collapsible on mobile -->
                 <div
                   inView (inViewChange)="onTablesInView($event)"
-                  class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-7 transition-all duration-700 ease-out delay-200"
+                  class="accordion-card transition-all duration-700 ease-out delay-200"
                   [style.opacity]="tablesShown ? '1' : '0'"
                   [style.transform]="tablesShown ? 'translateX(0)' : 'translateX(20px)'"
                 >
-                  <div class="absolute bottom-0 right-0 w-[300px] h-[200px] translate-x-16 translate-y-16"
-                    style="background: radial-gradient(ellipse, rgba(0,212,90,0.10) 0%, transparent 70%);"></div>
-                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-6">Zašto Gdje Izlazimo?</p>
-                  <ul class="relative z-10 space-y-0">
-                    @for (item of [
-                      { title: 'Potvrda rezervacije u par klikova', sub: 'Bez čekanja, bez poziva.' },
-                      { title: 'Brzo i jednostavno', sub: 'Cijeli proces traje manje od minute.' },
-                      { title: 'Bez poziva i nepotrebnog čekanja', sub: 'Sve riješiš online, odmah.' },
-                      { title: 'Sigurno mjesto za tvoju ekipu', sub: 'Garantovano rezervisano.' }
-                    ]; track item.title; let last = $last) {
-                      <li class="flex items-start gap-4 py-4" [class.border-b]="!last"
-                          [style.borderColor]="!last ? 'rgba(255,255,255,0.04)' : 'transparent'">
-                        <span class="flex-shrink-0 mt-0.5 h-5 w-5 rounded-full flex items-center justify-center"
-                              style="background: rgba(0,212,90,0.10); box-shadow: 0 0 12px rgba(0,212,90,0.15); border: 1px solid rgba(0,212,90,0.22);">
-                          <svg class="h-2.5 w-2.5" viewBox="0 0 14 14" fill="none">
-                            <path d="M2 7.5L5.5 11 12 4" stroke="#00D45A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                          </svg>
-                        </span>
-                        <div>
-                          <p class="font-dm text-[13px] font-semibold text-white/80 leading-none mb-1.5">{{ item.title }}</p>
-                          <p class="font-dm text-[12px] text-white/32">{{ item.sub }}</p>
-                        </div>
-                      </li>
-                    }
-                  </ul>
+                  <button type="button" (click)="toggleMobileSection('why-gi')"
+                    class="lg:hidden w-full flex items-center justify-between px-5 py-5 mobile-accordion-trigger"
+                    [class.is-open]="mobileSection === 'why-gi'">
+                    <p class="font-dm text-[11px] tracking-[0.2em] uppercase text-white/55">Zašto Gdje Izlazimo?</p>
+                    <svg class="h-4 w-4 text-white/40 transition-transform duration-200"
+                         [style.transform]="mobileSection === 'why-gi' ? 'rotate(90deg)' : 'rotate(0)'"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M9 6l6 6-6 6"/>
+                    </svg>
+                  </button>
+                  <p class="hidden lg:block font-dm text-[10px] tracking-[0.2em] uppercase text-white/42 px-6 pt-6 mb-5">Zašto Gdje Izlazimo?</p>
+
+                  <div class="lg:block" [class.hidden]="mobileSection !== 'why-gi'" [class.mobile-section-body]="mobileSection === 'why-gi'">
+                    <div class="px-6 pb-6">
+                      <div class="glow-divider lg:hidden"></div>
+                      <ul class="relative z-10 space-y-0">
+                        @for (item of [
+                          { title: 'Potvrda rezervacije u par klikova', sub: 'Bez čekanja, bez poziva.' },
+                          { title: 'Brzo i jednostavno', sub: 'Cijeli proces traje manje od minute.' },
+                          { title: 'Bez poziva i nepotrebnog čekanja', sub: 'Sve riješiš online, odmah.' },
+                          { title: 'Sigurno mjesto za tvoju ekipu', sub: 'Garantovano rezervisano.' }
+                        ]; track item.title; let last = $last) {
+                          <li class="flex items-start gap-4 py-4" [class.border-b]="!last"
+                              [style.borderColor]="!last ? 'rgba(255,255,255,0.06)' : 'transparent'">
+                            <span class="flex-shrink-0 mt-0.5 h-5 w-5 rounded-full flex items-center justify-center"
+                                  style="background: rgba(0,212,90,0.12); box-shadow: 0 0 12px rgba(0,212,90,0.16); border: 1px solid rgba(0,212,90,0.28);">
+                              <svg class="h-2.5 w-2.5" viewBox="0 0 14 14" fill="none">
+                                <path d="M2 7.5L5.5 11 12 4" stroke="#00D45A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                              </svg>
+                            </span>
+                            <div>
+                              <p class="font-dm text-[13px] font-semibold text-white/85 leading-none mb-1.5">{{ item.title }}</p>
+                              <p class="font-dm text-[12px] text-white/50">{{ item.sub }}</p>
+                            </div>
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               }
 
@@ -790,54 +868,65 @@
               @if (!vm.isPartner) {
                 <div
                   inView (inViewChange)="onAboutInView($event)"
-                  class="space-y-5 transition-all duration-700 ease-out"
+                  class="space-y-6 lg:space-y-5 transition-all duration-700 ease-out"
                   [style.opacity]="aboutShown ? '1' : '0'"
                   [style.transform]="aboutShown ? 'translateY(0)' : 'translateY(24px)'"
                 >
-                  <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6">
-                    <div class="absolute top-0 left-0 right-0 h-px"
-                      style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.35), transparent);"></div>
-                    <div class="absolute -bottom-8 -left-8 w-32 h-32 rounded-full pointer-events-none"
-                      style="background: radial-gradient(circle, rgba(124,58,237,0.10) 0%, transparent 70%);"></div>
+                  <div class="accordion-card">
+                    <button type="button" (click)="toggleMobileSection('why-visit')"
+                      class="lg:hidden w-full flex items-center justify-between px-5 py-5 mobile-accordion-trigger"
+                      [class.is-open]="mobileSection === 'why-visit'">
+                      <p class="font-dm text-[11px] tracking-[0.2em] uppercase text-white/55">Zašto posjetiti</p>
+                      <svg class="h-4 w-4 text-white/40 transition-transform duration-200"
+                           [style.transform]="mobileSection === 'why-visit' ? 'rotate(90deg)' : 'rotate(0)'"
+                           viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 6l6 6-6 6"/>
+                      </svg>
+                    </button>
+                    <p class="hidden lg:block font-dm text-[10px] tracking-[0.2em] uppercase text-white/42 px-6 pt-6 mb-4">Zašto posjetiti</p>
 
-                    <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-5">Zašto posjetiti</p>
-
-                    <div class="space-y-0">
-                      @for (tip of [
-                        { icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8 4a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87', text: 'Popularan izbor lokalne zajednice', accent: 'rgba(167,139,250', borderColor: 'rgba(124,58,237' },
-                        { icon: 'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z', text: 'Visoko ocijenjen od posjetilaca', accent: 'rgba(251,191,36', borderColor: 'rgba(234,179,8' },
-                        { icon: 'M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z', text: 'Radi i večeras — dođi kad ti odgovara', accent: 'rgba(52,211,153', borderColor: 'rgba(16,185,129' },
-                        { icon: 'M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .948.684l1.498 4.493a1 1 0 0 1-.502 1.21l-2.257 1.13a11.042 11.042 0 0 0 5.516 5.516l1.13-2.257a1 1 0 0 1 1.21-.502l4.493 1.498a1 1 0 0 1 .684.949V19a2 2 0 0 1-2 2h-1C9.716 21 3 14.284 3 6V5z', text: 'Jedan poziv — sve informacije odmah', accent: 'rgba(96,165,250', borderColor: 'rgba(59,130,246' }
-                      ]; track tip.text; let last = $last) {
-                        <div class="flex items-center gap-3.5 py-3.5"
-                             [class.border-b]="!last"
-                             [style.borderColor]="!last ? 'rgba(255,255,255,0.05)' : 'transparent'">
-                          <div class="flex-shrink-0 h-8 w-8 rounded-xl flex items-center justify-center"
-                               [style.background]="tip.accent + ',0.12)'"
-                               [style.border]="'1px solid ' + tip.borderColor + ',0.22)'">
-                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                                 stroke-linecap="round" stroke-linejoin="round"
-                                 [style.color]="tip.accent + ',0.80)'">
-                              <path [attr.d]="tip.icon"/>
-                            </svg>
-                          </div>
-                          <p class="font-dm text-[13px] text-white/55 leading-snug">{{ tip.text }}</p>
+                    <div class="lg:block" [class.hidden]="mobileSection !== 'why-visit'" [class.mobile-section-body]="mobileSection === 'why-visit'">
+                      <div class="px-6 pb-6">
+                        <div class="glow-divider lg:hidden"></div>
+                        <div class="space-y-0">
+                          @for (tip of [
+                            { icon: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8 4a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87', text: 'Popularan izbor lokalne zajednice', accent: 'rgba(167,139,250', borderColor: 'rgba(124,58,237' },
+                            { icon: 'M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z', text: 'Visoko ocijenjen od posjetilaca', accent: 'rgba(250,204,21', borderColor: 'rgba(234,179,8' },
+                            { icon: 'M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z', text: 'Radi i večeras — dođi kad ti odgovara', accent: 'rgba(52,211,153', borderColor: 'rgba(16,185,129' },
+                            { icon: 'M3 5a2 2 0 0 1 2-2h3.28a1 1 0 0 1 .948.684l1.498 4.493a1 1 0 0 1-.502 1.21l-2.257 1.13a11.042 11.042 0 0 0 5.516 5.516l1.13-2.257a1 1 0 0 1 1.21-.502l4.493 1.498a1 1 0 0 1 .684.949V19a2 2 0 0 1-2 2h-1C9.716 21 3 14.284 3 6V5z', text: 'Jedan poziv — sve informacije odmah', accent: 'rgba(96,165,250', borderColor: 'rgba(59,130,246' }
+                          ]; track tip.text; let last = $last) {
+                            <div class="flex items-center gap-3.5 py-3.5"
+                                 [class.border-b]="!last"
+                                 [style.borderColor]="!last ? 'rgba(255,255,255,0.06)' : 'transparent'">
+                              <div class="flex-shrink-0 h-8 w-8 rounded-xl flex items-center justify-center"
+                                   [style.background]="tip.accent + ',0.14)'"
+                                   [style.border]="'1px solid ' + tip.borderColor + ',0.28)'">
+                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                     stroke-linecap="round" stroke-linejoin="round"
+                                     [style.color]="tip.accent + ',0.90)'">
+                                  <path [attr.d]="tip.icon"/>
+                                </svg>
+                              </div>
+                              <p class="font-dm text-[13px] text-white/68 leading-snug">{{ tip.text }}</p>
+                            </div>
+                          }
                         </div>
-                      }
+                      </div>
                     </div>
                   </div>
                 </div>
               }
-
             </div>
-            <!-- ── END RIGHT COLUMN ─────────────────────────────────── -->
+            <!-- ── END RIGHT COLUMN ────────────────────────────────── -->
 
           </div>
         </div>
 
-        <!-- MAP -->
+        <!-- ══════════════════════════════════════════════════════════════
+             MAP
+        ═══════════════════════════════════════════════════════════════ -->
         @if (vm.latitude && vm.longitude) {
-          <div class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 max-w-[1280px]">
+          <div id="venue-map-section" class="mx-auto px-4 sm:px-8 lg:px-16 mt-6 max-w-[1280px]">
             <app-venue-map
               [lat]="vm.latitude"
               [lng]="vm.longitude"
@@ -847,32 +936,34 @@
           </div>
         }
 
-        <!-- EVENTS -->
+        <!-- ══════════════════════════════════════════════════════════════
+             EVENTS
+        ═══════════════════════════════════════════════════════════════ -->
         @if (vm.events.length > 0) {
           <div
             inView (inViewChange)="onEventsInView($event)"
-            class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 max-w-[1280px]
+            class="mx-auto px-4 sm:px-8 lg:px-16 mt-6 max-w-[1280px]
                    transition-all duration-700 ease-out"
             [style.opacity]="eventsShown ? '1' : '0'"
             [style.transform]="eventsShown ? 'translateY(0)' : 'translateY(24px)'"
           >
-            <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-8">
+            <div class="relative overflow-hidden rounded-3xl border border-white/[0.09] bg-white/[0.035] p-5 sm:p-8">
               <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px"
-                style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.4), transparent);"></div>
+                style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.45), transparent);"></div>
               <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full pointer-events-none"
                 style="background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);"></div>
 
-              <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center justify-between mb-5">
                 <div>
-                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-2">Nadolazeći Događaji</p>
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/42 mb-2">Nadolazeći Događaji</p>
                   <div class="flex items-center gap-2.5">
                     <div class="h-7 w-7 rounded-xl flex items-center justify-center"
-                         style="background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.30);">
+                         style="background: rgba(124,58,237,0.16); border: 1px solid rgba(124,58,237,0.32);">
                       <svg class="h-3.5 w-3.5 text-violet-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
                       </svg>
                     </div>
-                    <h3 class="font-sora font-semibold text-[18px] text-white/85 tracking-[-0.02em]">
+                    <h3 class="font-sora font-semibold text-[17px] sm:text-[18px] text-white/90 tracking-[-0.02em]">
                       Događaji u {{ vm.venueName }}
                     </h3>
                   </div>
@@ -895,7 +986,6 @@
                     [viewCount]="event.viewCount"
                     [trending]="event.trending"
                     [featured]="event.featured ?? false"
-
                   />
                 }
               </div>
@@ -903,65 +993,67 @@
           </div>
         }
 
-        <!-- RATINGS -->
+        <!-- ══════════════════════════════════════════════════════════════
+             RATINGS
+        ═══════════════════════════════════════════════════════════════ -->
         @if (vm.ratings.length > 0) {
-          <div id="venue-reviews" class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 max-w-[1280px]">
-            <div class="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-8">
+          <div id="venue-reviews" class="mx-auto px-4 sm:px-8 lg:px-16 mt-6 max-w-[1280px]">
+            <div class="relative overflow-hidden rounded-3xl border border-white/[0.09] bg-white/[0.035] p-5 sm:p-8">
               <div class="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-px"
-                style="background: linear-gradient(90deg, transparent, rgba(250,204,21,0.3), transparent);"></div>
+                style="background: linear-gradient(90deg, transparent, rgba(250,204,21,0.35), transparent);"></div>
               <div class="absolute -top-20 -right-20 w-64 h-64 rounded-full pointer-events-none"
                 style="background: radial-gradient(circle, rgba(250,204,21,0.05) 0%, transparent 70%);"></div>
 
-              <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center justify-between mb-5">
                 <div>
-                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-2">Recenzije Gostiju</p>
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/42 mb-2">Recenzije Gostiju</p>
                   <div class="flex items-center gap-3">
                     <div class="flex items-center gap-0.5">
                       @for (n of [1,2,3,4,5]; track n) {
                         <svg class="h-4 w-4" viewBox="0 0 24 24"
-                             [style.fill]="n <= vm.averageRating ? 'rgba(250,204,21,1)' : 'rgba(255,255,255,0.08)'">
+                             [style.fill]="n <= vm.averageRating ? 'rgba(250,204,21,1)' : 'rgba(255,255,255,0.12)'">
                           <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
                         </svg>
                       }
                     </div>
                     <span class="font-sora font-bold text-[20px] text-white">{{ vm.averageRating | number:'1.1-1' }}</span>
-                    <span class="font-dm text-[12px] text-white/30">{{ vm.totalRatings }} recenzija</span>
+                    <span class="font-dm text-[12px] text-white/45">{{ vm.totalRatings }} recenzija</span>
                   </div>
                 </div>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 @for (r of vm.ratings; track r.id) {
-                  <div class="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4
-                              hover:border-white/[0.10] hover:bg-white/[0.03] transition-all duration-200">
+                  <div class="rounded-2xl border border-white/[0.09] bg-white/[0.03] p-4
+                              hover:border-white/[0.13] hover:bg-white/[0.05] transition-all duration-200">
                     <div class="flex items-center justify-between mb-3">
                       <div class="flex items-center gap-2.5">
                         @if (r.profileImageUrl) {
                           <img [src]="r.profileImageUrl" [alt]="r.userName"
                             class="h-8 w-8 rounded-full flex-shrink-0 object-cover"
-                            style="border: 1px solid rgba(124,58,237,0.25);" />
+                            style="border: 1px solid rgba(124,58,237,0.28);" />
                         } @else {
                           <div class="h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0
                                       font-sora font-bold text-[12px] text-violet-300"
-                              style="background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.25);">
+                              style="background: rgba(124,58,237,0.16); border: 1px solid rgba(124,58,237,0.28);">
                             {{ r.userName.charAt(0).toUpperCase() }}
                           </div>
                         }
-                        <span class="font-dm text-[12px] font-medium text-white/70">{{ r.userName }}</span>
+                        <span class="font-dm text-[12px] font-medium text-white/78">{{ r.userName }}</span>
                       </div>
                       <div class="flex items-center gap-0.5">
                         @for (n of [1,2,3,4,5]; track n) {
                           <svg class="h-3 w-3" viewBox="0 0 24 24"
-                               [style.fill]="n <= r.rating ? 'rgba(250,204,21,1)' : 'rgba(255,255,255,0.08)'">
+                               [style.fill]="n <= r.rating ? 'rgba(250,204,21,1)' : 'rgba(255,255,255,0.12)'">
                             <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>
                           </svg>
                         }
                       </div>
                     </div>
                     @if (r.comment) {
-                      <p class="font-dm text-[12px] text-white/40 leading-relaxed italic">"{{ r.comment }}"</p>
+                      <p class="font-dm text-[12px] text-white/52 leading-relaxed italic">"{{ r.comment }}"</p>
                     }
-                    <p class="font-dm text-[10px] text-white/20 mt-2">
+                    <p class="font-dm text-[10px] text-white/32 mt-2">
                       {{ r.createdAt | date:'d. MMM yyyy.' }}
                     </p>
                   </div>
@@ -971,27 +1063,26 @@
           </div>
         }
 
-        <!-- ── BOTTOM DISCLAIMER ──────────────────────────────────────────── -->
+        <!-- BOTTOM DISCLAIMER -->
         <div class="mx-auto px-4 sm:px-8 lg:px-16 mt-8 mb-4 max-w-[1280px]">
           @if (!vm.isPartner) {
-            <p class="text-center font-dm text-[11px] text-white/20 tracking-[0.06em] mb-3">
+            <p class="text-center font-dm text-[11px] text-white/30 tracking-[0.05em] mb-3">
               Nije partnerski lokal · Informacije preuzete s interneta · Podaci mogu biti nepotpuni ili zastarjeli
             </p>
           }
-          <p class="text-center font-dm text-[10px] text-white/15 tracking-[0.04em] leading-relaxed">
+          <p class="text-center font-dm text-[10px] text-white/22 tracking-[0.03em] leading-relaxed">
             Fotografije prikazane na ovoj stranici preuzete su s javno dostupnih izvora (Instagram, Google i sl.)
             isključivo u svrhu informativnog prikaza lokala i nisu korištene u komercijalne svrhe.
             Sva autorska prava na fotografijama ostaju vlasništvo originalnih autora.
             Ukoliko ste nositelj prava i ne želite da vaša fotografija bude prikazana,
             molimo kontaktirajte nas na
             <a href="mailto:info@gdjeizelazimo.ba"
-               class="text-white/30 hover:text-white/55 underline underline-offset-2 transition-colors duration-200">
+               class="text-white/40 hover:text-white/65 underline underline-offset-2 transition-colors duration-200">
               info@gdjeizelazimo.ba
             </a>
             i fotografija će biti uklonjena u najkraćem mogućem roku.
           </p>
         </div>
-        <!-- ── END BOTTOM DISCLAIMER ─────────────────────────────────────── -->
 
         <!-- MODALS -->
         @if (reservationModalShown && vm.isPartner) {
@@ -1016,8 +1107,8 @@
         }
 
         @if (reservationErrorMsg) {
-          <div class="fixed bottom-24 lg:bottom-8 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl border border-red-500/20 bg-red-500/[0.08] backdrop-blur-xl">
-            <p class="font-dm text-[13px] text-red-300/90">{{ reservationErrorMsg }}</p>
+          <div class="fixed bottom-24 lg:bottom-8 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl border border-red-500/22 bg-red-500/[0.09] backdrop-blur-xl">
+            <p class="font-dm text-[13px] text-red-300/95">{{ reservationErrorMsg }}</p>
           </div>
         }
 
@@ -1026,30 +1117,30 @@
             class="fixed inset-0 z-[60] flex items-center justify-center p-4 modal-backdrop"
             (click)="descriptionModalShown = false"
           >
-            <div class="absolute inset-0 bg-black/70 backdrop-blur-md"></div>
+            <div class="absolute inset-0 bg-black/72 backdrop-blur-md"></div>
             <div
-              class="relative z-10 w-full max-w-lg rounded-3xl border border-white/[0.10] p-7 sm:p-9 shadow-[0_32px_80px_rgba(0,0,0,0.7)] modal-panel"
+              class="relative z-10 w-full max-w-lg rounded-3xl border border-white/[0.12] p-7 sm:p-9 shadow-[0_32px_80px_rgba(0,0,0,0.7)] modal-panel"
               style="background: rgba(14,12,22,0.97);"
               (click)="$event.stopPropagation()"
             >
               <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-px"
-                style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.5), transparent);"></div>
+                style="background: linear-gradient(90deg, transparent, rgba(124,58,237,0.55), transparent);"></div>
 
               <div class="flex items-center justify-between mb-6">
                 <div>
-                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/25 mb-0.5">O Lokalu</p>
-                  <h3 class="font-sora font-bold text-[20px] tracking-[-0.02em] text-white/90">{{ vm.venueName }}</h3>
+                  <p class="font-dm text-[10px] tracking-[0.2em] uppercase text-white/42 mb-0.5">O Lokalu</p>
+                  <h3 class="font-sora font-bold text-[20px] tracking-[-0.02em] text-white/92">{{ vm.venueName }}</h3>
                 </div>
                 <button type="button" (click)="descriptionModalShown = false"
-                  class="h-9 w-9 rounded-xl border border-white/[0.08] bg-white/[0.04] flex items-center justify-center
-                         text-white/40 hover:text-white/80 hover:border-white/20 transition-all duration-200">
+                  class="h-9 w-9 rounded-xl border border-white/[0.10] bg-white/[0.05] flex items-center justify-center
+                         text-white/50 hover:text-white/85 hover:border-white/22 transition-all duration-200">
                   <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 6 6 18M6 6l12 12"/>
                   </svg>
                 </button>
               </div>
 
-              <p class="font-dm text-[14px] font-light leading-[1.85] text-white/55 italic max-h-[55vh] overflow-y-auto pr-1"
+              <p class="font-dm text-[14px] font-light leading-[1.85] text-white/65 italic max-h-[55vh] overflow-y-auto pr-1"
                  style="scrollbar-width: thin; scrollbar-color: rgba(124,58,237,0.3) transparent;">
                 {{ descriptionText }}
               </p>
@@ -1069,33 +1160,28 @@
           />
         }
 
-        <!-- FIXED MOBILE CALL BUTTON — NON-PARTNER -->
+        <!-- ── MOBILE STICKY CTA BAR ──────────────────────────────────── -->
         @if (!vm.isPartner && vm.phone) {
           <div class="fixed bottom-0 left-0 right-0 z-50 pointer-events-none lg:hidden">
-            <div class="pointer-events-auto">
-              <div class="border-t border-white/[0.05] px-4 py-3 backdrop-blur-2xl"
-                style="background: rgba(8,7,15,0.88); box-shadow: 0 -16px 40px rgba(0,0,0,0.5);">
-                <a [href]="'tel:' + vm.phone"
-                  class="group relative w-full inline-flex items-center justify-center gap-2.5
-                         px-6 py-4 rounded-2xl overflow-hidden
-                         font-dm font-semibold text-[15px] text-white
-                         transition-all duration-300 active:scale-[0.98]"
-                  style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
-                         box-shadow: 0 4px 20px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);"
-                >
-                  <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8Z"/>
-                  </svg>
-                  <span class="relative z-10">Pozovite Nas</span>
-                  <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);"></div>
-                </a>
-              </div>
+            <div class="pointer-events-auto quick-action-bar px-4 py-3">
+              <a [href]="'tel:' + vm.phone"
+                class="group relative w-full inline-flex items-center justify-center gap-2.5
+                       px-6 py-4 rounded-2xl overflow-hidden
+                       font-dm font-semibold text-[15px] text-white
+                       transition-all duration-300 active:scale-[0.98]"
+                style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+                       box-shadow: 0 4px 20px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);">
+                <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8Z"/>
+                </svg>
+                <span class="relative z-10">Pozovite Nas</span>
+                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);"></div>
+              </a>
             </div>
           </div>
         }
 
-        <!-- FIXED RESERVE BUTTON — PARTNER ONLY -->
         @if (vm.isPartner) {
           <div class="fixed bottom-0 left-0 right-0 z-50 pointer-events-none">
             <div class="hidden lg:block absolute bottom-8 right-8 pointer-events-auto">
@@ -1104,8 +1190,7 @@
                        font-dm font-semibold text-[14px] text-white
                        transition-all duration-300 hover:scale-[1.03] active:scale-[0.97]"
                 style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
-                       box-shadow: 0 8px 32px rgba(124,58,237,0.45), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);"
-              >
+                       box-shadow: 0 8px 32px rgba(124,58,237,0.45), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);">
                 <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
                 </svg>
@@ -1115,25 +1200,21 @@
               </button>
             </div>
 
-            <div class="lg:hidden pointer-events-auto">
-              <div class="border-t border-white/[0.05] px-4 py-3 backdrop-blur-2xl"
-                style="background: rgba(8,7,15,0.88); box-shadow: 0 -16px 40px rgba(0,0,0,0.5);">
-                <button type="button" (click)="toggleReservation()"
-                  class="group relative w-full inline-flex items-center justify-center gap-2.5
-                         px-6 py-4 rounded-2xl overflow-hidden
-                         font-dm font-semibold text-[15px] text-white
-                         transition-all duration-300 active:scale-[0.98]"
-                  style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
-                         box-shadow: 0 4px 20px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);"
-                >
-                  <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
-                  </svg>
-                  <span class="relative z-10">Rezerviši Sad</span>
-                  <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);"></div>
-                </button>
-              </div>
+            <div class="lg:hidden pointer-events-auto quick-action-bar px-4 py-3">
+              <button type="button" (click)="toggleReservation()"
+                class="group relative w-full inline-flex items-center justify-center gap-2.5
+                       px-6 py-4 rounded-2xl overflow-hidden
+                       font-dm font-semibold text-[15px] text-white
+                       transition-all duration-300 active:scale-[0.98]"
+                style="background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+                       box-shadow: 0 4px 20px rgba(124,58,237,0.4), inset 0 1px 0 rgba(255,255,255,0.12);">
+                <svg class="relative z-10 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2Z"/>
+                </svg>
+                <span class="relative z-10">Rezerviši Sad</span>
+                <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);"></div>
+              </button>
             </div>
           </div>
         }

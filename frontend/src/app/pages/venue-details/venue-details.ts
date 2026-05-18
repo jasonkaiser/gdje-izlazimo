@@ -13,6 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { take } from 'rxjs/operators';
 import { InViewDirective } from '../../core/animations/in-view.directive';
 import { VenueService } from '../../core/api/venue-service';
+import { CommonModule } from '@angular/common';
 import { VenueTableTypeService } from '../../core/api/venue-table-type-service';
 import { VenueOperatingHoursService } from '../../core/api/venue-operating-hours-service';
 import { VenueOperatingHoursResponseDto } from '../../core/models/venue-operating-hours/venue-operating-hours-response.dto';
@@ -124,7 +125,7 @@ const EMPTY_VM: Omit<Vm, 'venueId' | 'loading' | 'errorMsg'> = {
 @Component({
   selector: 'app-venue-details',
   standalone: true,
-  imports: [InViewDirective, AsyncPipe, ReservationModal, ReservationSuccessModal, DecimalPipe, DatePipe, VenueMapComponent, FormsModule, RatingModal, EventCard],
+  imports: [InViewDirective, AsyncPipe, ReservationModal, ReservationSuccessModal, DecimalPipe, DatePipe, VenueMapComponent, FormsModule, RatingModal, EventCard, CommonModule],
   templateUrl: './venue-details.html',
   styleUrls: ['./venue-details.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -175,6 +176,7 @@ export class VenueDetails {
   ratingModalShown = false;
   ratingSubmitting = false;
   alreadyRated = false;
+  mobileSection: string | null = null;
 
   private readonly retry$ = new BehaviorSubject<void>(undefined);
 
@@ -523,6 +525,18 @@ export class VenueDetails {
     });
   }
 
+  getCtaGridClass(vm: any): string {
+    const count =
+      (vm.isPartner || vm.phone ? 1 : 0) +
+      (vm.instagram ? 1 : 0) +
+      (vm.latitude && vm.longitude ? 1 : 0) +
+      (vm.totalRatings > 0 ? 1 : 0);
+
+    if (count >= 4) return 'grid-cols-4';
+    if (count === 3) return 'grid-cols-3';
+    return 'grid-cols-2';
+  }
+
   private formatWorkingHours(oh: VenueOperatingHoursResponseDto): string {
     const dayMap: Record<string, string> = {
       MONDAY: 'PON', TUESDAY: 'UTO', WEDNESDAY: 'SRI',
@@ -540,6 +554,25 @@ export class VenueDetails {
     }
 
     return `${start}–${end}   ${openNormalized} – ${closeNormalized}`;
+  }
+
+ 
+ 
+   toggleMobileSection(key: string): void {
+      this.mobileSection = this.mobileSection === key ? null : key;
+    }
+
+    scrollToMap(): void {
+    const mapSection = document.getElementById('venue-map-section');
+    if (!mapSection) return;
+
+    const yOffset = -90;
+    const y = mapSection.getBoundingClientRect().top + window.scrollY + yOffset;
+
+    window.scrollTo({
+      top: y,
+      behavior: 'smooth'
+    });
   }
 
   private getDefaultVenueImages(type: string): string[] {
