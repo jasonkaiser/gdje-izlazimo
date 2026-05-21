@@ -43,7 +43,7 @@ Ditch the Instagram DMs and phone calls — discover venues, check availability,
 
 **gdje-izlazimo.ba** *(lit. "where are we going out")* is a production-grade, full-stack web platform built for young, socially active people in Bosnia & Herzegovina. It solves a real problem — venue discovery and reservation management was fragmented across Instagram DMs, phone calls, and word of mouth. This platform consolidates everything into a single, seamless experience.
 
-> Built end-to-end as a solo project using Scrum methodology, sprint planning, and iterative delivery — from product conception to production deployment.
+> Built end-to-end using Scrum methodology, sprint planning, and iterative delivery — from product conception to production deployment.
 
 ---
 
