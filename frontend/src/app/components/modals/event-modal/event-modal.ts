@@ -44,6 +44,8 @@ export class EventModalComponent implements OnInit {
   isDeletingImage                  = false;
   uploadError                      = '';
   isDragOver                       = false;
+  isGeneratingAi = false;
+  aiError        = '';
 
   formData = {
     name:          '',
@@ -281,6 +283,40 @@ export class EventModalComponent implements OnInit {
 
   onClose(): void {
     this.modalService.close();
+  }
+
+  generateFromImage(): void {
+    if (!this.selectedFile) return;
+
+    this.isGeneratingAi = true;
+    this.aiError = '';
+    this.cdr.markForCheck();
+
+    this.eventService.generateEventFromImage(this.selectedFile)
+      .pipe(take(1))
+      .subscribe({
+        next: (res) => {
+          if (res.name)        this.formData.name        = res.name;
+          if (res.description) this.formData.description = res.description;
+
+          if (res.eventDateTime) {
+            const dt = res.eventDateTime.length >= 16
+              ? res.eventDateTime.substring(0, 16)
+              : res.eventDateTime;
+            this.formData.eventDateTime = dt;
+          }
+
+          this.isGeneratingAi = false;
+          this.toastService.show('AI prijedlog generisan uspješno', 'success');
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.aiError = 'AI generisanje nije uspjelo. Pokušaj ponovo.';
+          this.isGeneratingAi = false;
+          this.toastService.show('Greška pri AI generisanju', 'error');
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   private toDateTimeLocal(iso: string): string {

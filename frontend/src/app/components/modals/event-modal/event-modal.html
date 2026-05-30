@@ -111,44 +111,72 @@
               <span class="font-dm text-[11px] text-white/20 mt-1">PNG, JPG, WEBP · max 10MB</span>
             </label>
           } @else {
-            <!-- File preview + upload button -->
-            <div class="relative rounded-2xl overflow-hidden border border-white/10 h-32 mb-2">
-              <img [src]="selectedFilePreview" alt="Preview" class="w-full h-full object-cover"/>
-              <div class="absolute inset-0 bg-black/40"></div>
-              <button type="button" (click)="clearSelectedFile()" class="absolute top-2 right-2 h-7 w-7 rounded-lg bg-black/60 border border-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors">
-                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-              </button>
-              <div class="absolute bottom-2 left-3">
-                <span class="font-dm text-[11px] text-white/70">{{ selectedFile?.name }}</span>
-              </div>
+          <div class="relative rounded-2xl overflow-hidden border border-white/10 h-32 mb-2">
+            <img [src]="selectedFilePreview" alt="Preview" class="w-full h-full object-cover"/>
+            <div class="absolute inset-0 bg-black/40"></div>
+            <button type="button" (click)="clearSelectedFile()" class="absolute top-2 right-2 h-7 w-7 rounded-lg bg-black/60 border border-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+            <div class="absolute bottom-2 left-3">
+              <span class="font-dm text-[11px] text-white/70">{{ selectedFile?.name }}</span>
             </div>
-            <!-- Only show upload button in edit mode — in create mode it uploads automatically after save -->
-            @if (mode === 'edit') {
-              <button
-                type="button"
-                (click)="uploadImage()"
-                [disabled]="isUploadingImage"
-                class="w-full flex items-center justify-center gap-2 h-9 rounded-xl border border-purple-500/25 bg-purple-500/8 font-dm text-[11px] tracking-[0.08em] uppercase text-purple-300/80 transition-all duration-200 hover:bg-purple-500/15 hover:border-purple-500/40 disabled:opacity-40"
-              >
-                @if (isUploadingImage) {
-                  <svg class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                  </svg>
-                  Uploading...
-                } @else {
-                  <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
-                  </svg>
-                  Uploaduj sliku
-                }
-              </button>
+          </div>
+
+          <!-- ── AI GENERATE BUTTON ── -->
+          <button
+            type="button"
+            (click)="generateFromImage()"
+            [disabled]="isGeneratingAi || !selectedFile"
+            class="w-full flex items-center justify-center gap-2 h-9 rounded-xl border border-violet-500/30 bg-violet-500/8 font-dm text-[11px] tracking-[0.08em] uppercase text-violet-300/80 transition-all duration-200 hover:bg-violet-500/15 hover:border-violet-500/45 hover:text-violet-300 disabled:opacity-40 mb-2"
+          >
+            @if (isGeneratingAi) {
+              <svg class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              Generiše se...
             } @else {
-              <p class="font-dm text-[11px] text-white/30 text-center">Slika će biti uploadovana nakon kreiranja događaja</p>
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"/>
+              </svg>
+              Generiši naziv i opis
             }
+          </button>
+          <p class="font-dm text-[10px] text-amber-400/50 text-center mb-3">
+            ⚠ AI prijedlog provjeri prije objave.
+          </p>
+
+          @if (aiError) {
+            <p class="font-dm text-[12px] text-red-400 mb-2">{{ aiError }}</p>
           }
+
+          <!-- existing edit-mode upload button, unchanged -->
+          @if (mode === 'edit') {
+            <button
+              type="button"
+              (click)="uploadImage()"
+              [disabled]="isUploadingImage"
+              class="w-full flex items-center justify-center gap-2 h-9 rounded-xl border border-purple-500/25 bg-purple-500/8 font-dm text-[11px] tracking-[0.08em] uppercase text-purple-300/80 transition-all duration-200 hover:bg-purple-500/15 hover:border-purple-500/40 disabled:opacity-40"
+            >
+              @if (isUploadingImage) {
+                <svg class="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Uploading...
+              } @else {
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"/>
+                </svg>
+                Uploaduj sliku
+              }
+            </button>
+          } @else {
+            <p class="font-dm text-[11px] text-white/30 text-center">Slika će biti uploadovana nakon kreiranja događaja</p>
+          }
+        }
 
           @if (uploadError) {
             <p class="mt-2 font-dm text-[12px] text-red-400">{{ uploadError }}</p>
