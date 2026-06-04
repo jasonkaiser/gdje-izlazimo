@@ -28,8 +28,8 @@ Ditch the Instagram DMs and phone calls — discover venues, check availability,
 | 📊 Metric | 📈 Result |
 |:---|:---|
 | Registered Users | **200+** |
-| Unique Visitors (post-launch) | **2,500+** |
-| Peak Daily Active Users | **250–300** (weekends) |
+| Unique Visitors (post-launch) | **3000+** |
+| Peak Daily Active Users | **200–300** (weekends) |
 | Avg. Weekday Daily Users | **100–200** |
 | Analytics | Google Analytics (verified) |
 
@@ -87,6 +87,9 @@ Venues can publish upcoming events — themed nights, live music, DJ sets — so
 
 ### ⭐ Ratings & Reviews
 Post-visit reviews give future users social proof and give venue owners actionable feedback.
+
+###  AI Integration via Grok model
+Event description, title, date-time are automatically filled and generated in the Event Creation form via the Event Image provided
 
 ### 📊 Venue Owner Dashboard
 A clean, purpose-built management interface:
