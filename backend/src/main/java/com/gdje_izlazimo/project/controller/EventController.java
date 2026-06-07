@@ -26,7 +26,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -92,15 +94,18 @@ public class EventController {
     @GetMapping("/search")
     public ResponseEntity<List<EventResponse>> searchEvents(
             @RequestParam(required = false) String query,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateTo,
             @RequestParam(defaultValue = "eventDateTime") String sortBy,
             @RequestParam(defaultValue = "ASC") String sortDir,
             @RequestParam(defaultValue = "1") int pageNo,
             @RequestParam(defaultValue = "8") int pageSize) {
 
+        LocalDateTime from = dateFrom != null ? dateFrom.atStartOfDay()      : null;
+        LocalDateTime to   = dateTo   != null ? dateTo.atTime(LocalTime.MAX) : null;
+
         Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.Direction.fromString(sortDir), sortBy);
-        return ResponseEntity.ok(eventService.searchEvents(query, dateFrom, dateTo, pageable));
+        return ResponseEntity.ok(eventService.searchEvents(query, from, to, pageable));
     }
 
     @Operation(summary = "Get event by ID", description = "Returns a single event by its UUID. Public endpoint.")

@@ -1,0 +1,128 @@
+<div class="w-full">
+  <div class="mx-auto max-w-[665px] sm:max-w-none sm:px-8 lg:px-12 px-4">
+
+    <!-- ── Chips ── -->
+    <div class="flex items-center justify-center sm:justify-start gap-2 mb-7 mt-1">
+      @for (chip of chips; track chip.value) {
+        <button
+          type="button"
+          (click)="selectChip(chip.value)"
+          [class]="chipClass(chip.value)"
+        >
+          {{ chip.label }}
+        </button>
+      }
+    </div>
+
+    <!-- ── Calendar block ── -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
+
+      <!-- Month label + arrows -->
+      <div class="shrink-0 flex items-center justify-center sm:justify-start gap-2.5 mt-10">
+
+
+        <button
+          type="button"
+          (click)="prevMonth()"
+          [disabled]="weekOffset() === 0"
+          class="flex items-center justify-center w-8 h-8 rounded-full
+                 border border-white/[0.08] bg-white/[0.04]
+                 text-white/35 hover:text-white/80 hover:bg-white/[0.09]
+                 transition-all duration-200
+                 disabled:opacity-20 disabled:cursor-not-allowed"
+          aria-label="Prethodni mjesec"
+        >
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+            <path d="M9 11L5 7L9 3" stroke="currentColor" stroke-width="1.6"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <span class="font-dm text-[12px] font-medium tracking-[0.12em] uppercase
+                     text-white/50 whitespace-nowrap min-w-[82px] text-center">
+          {{ monthLabel() }}
+        </span>
+
+        <button
+          type="button"
+          (click)="nextMonth()"
+          class="flex items-center justify-center w-8 h-8 rounded-full
+                 border border-white/[0.08] bg-white/[0.04]
+                 text-white/35 hover:text-white/80 hover:bg-white/[0.09]
+                 transition-all duration-200"
+          aria-label="Sljedeći mjesec"
+        >
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+            <path d="M5 3L9 7L5 11" stroke="currentColor" stroke-width="1.6"
+                  stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+      </div>
+
+      <!-- Day strip wrapper with fade hint -->
+      <div class="relative flex-1 min-w-0">
+
+        <!-- Scrollable strip -->
+        <div
+          class="flex gap-2 overflow-x-auto sm:overflow-visible
+                 scroll-smooth snap-x scrollbar-hide pb-0.5"
+          style="-webkit-overflow-scrolling: touch;"
+        >
+          @for (day of days(); track day.date.getTime()) {
+            <button
+              type="button"
+              (click)="selectDay(day)"
+              [class]="dayClass(day)"
+            >
+              <!-- Day abbreviation -->
+              <span
+                class="text-[9px] tracking-[0.08em] uppercase leading-none
+                       transition-colors duration-150 font-medium"
+                [class]="
+                  day.isSelected  ? 'text-violet-200/70' :
+                  day.isWeekend   ? 'text-violet-400/55' :
+                  day.isFriday    ? 'text-violet-400/35' :
+                                    'text-white/25'
+                "
+              >
+                {{ day.dayLabel }}
+              </span>
+
+              <!-- Day number -->
+              <span
+                class="text-[19px] font-semibold leading-none mt-[6px] tracking-tight"
+                [class]="day.isSelected ? 'text-white' : day.isToday ? 'text-white' : 'text-white/70'"
+              >
+                {{ day.dayNumber }}
+              </span>
+
+              <!-- Dot -->
+              <span class="mt-[6px] h-[4px] flex items-center justify-center">
+                <span
+                  class="w-[4px] h-[4px] rounded-full transition-all duration-200"
+                  [class]="
+                    day.isSelected ? 'bg-white/50 opacity-100 scale-100' :
+                    day.isToday    ? 'bg-violet-400 opacity-100 scale-100' :
+                    day.hasEvents  ? 'bg-violet-500/60 opacity-100 scale-100' :
+                                     'opacity-0 scale-0'
+                  "
+                ></span>
+              </span>
+
+            </button>
+          }
+        </div>
+
+        <!-- Right fade — mobile only, hints scrollability -->
+        <div
+          class="sm:hidden pointer-events-none absolute right-0 top-0 h-full w-10
+                 bg-gradient-to-l from-[#0a0a0f] to-transparent"
+        ></div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

@@ -45,6 +45,13 @@
   </div>
 </section>
 
+<section class="relative w-full z-40 pb-4 sm:pb-6 -mt-10">
+  <app-event-date-filter
+  [eventDates]="eventDates()"
+  (filterChange)="onDateFilterChange($event)"
+/>
+</section>
+
 <!-- CARDS -->
 <section class="relative w-full pb-14 sm:pb-20 z-10">
   <div class="relative mx-auto max-w-[1660px] px-8 sm:px-6 lg:px-8">

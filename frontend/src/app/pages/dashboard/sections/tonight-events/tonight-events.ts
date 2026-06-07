@@ -206,12 +206,11 @@ export class TonightEventsCarouselComponent implements AfterViewInit, OnDestroy 
 
   goToTonightEvents(): void {
     const today = new Date();
-    const dateFrom = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 19, 0, 0).toISOString();
-    const dateTo   = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59).toISOString();
+    const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
     this.router.navigate(['/events'], {
-      queryParams: { dateFrom, dateTo }
-});
+      queryParams: { dateFrom: dateStr, dateTo: dateStr }
+    });
   }
   private toCardVm(e: EventResponseDto): EventCardVm {
     return {

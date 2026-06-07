@@ -1,14 +1,15 @@
 import { AsyncPipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, computed, DestroyRef, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { catchError, map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-
 import { EventSearchBarComponent } from '../../components/other/event-search-bar/event-search-bar';
 import { EventCard } from '../../components/cards/event-card/event-card';
 import { EventService } from '../../core/api/event-service';
 import { EventResponseDto } from '../../core/models/events/event-response.dto';
+import { DateFilterChange, EventDateFilterComponent } from '../../components/other/event-date-filter/event-date-filter';
+
 
 type SortValue = 'name_asc' | 'name_desc' | 'date_asc' | 'date_desc';
 
@@ -51,7 +52,7 @@ type Params = {
   selector: 'app-events',
   standalone: true,
   templateUrl: './events.html',
-  imports: [EventSearchBarComponent, EventCard, AsyncPipe],
+  imports: [EventSearchBarComponent, EventCard, AsyncPipe, EventDateFilterComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EventsComponent {
@@ -61,9 +62,10 @@ export class EventsComponent {
   private readonly destroyRef   = inject(DestroyRef);
 
   readonly skeleton = Array.from({ length: 8 }, (_, i) => i);
-
   private readonly pageCache    = new Map<number, EventCardVm[]>();
   private readonly hasMoreCache = new Map<number, boolean>();
+  private readonly allKnownEventDates = signal<Set<string>>(new Set());
+  readonly eventDates = computed<string[]>(() => [...this.allKnownEventDates()]);
 
   private readonly params$ = this.route.queryParamMap.pipe(
     map((p): Params => {
@@ -123,6 +125,13 @@ export class EventsComponent {
       map((events: EventResponseDto[]) => {
         this.pageCache.set(pageNo, events.map((e) => this.toCardVm(e)));
         this.hasMoreCache.set(pageNo, events.length === pageSize);
+
+        this.allKnownEventDates.update(existing => {
+          const updated = new Set(existing);
+          events.forEach(e => updated.add(e.eventDateTime.split('T')[0]));
+          return updated;
+        });
+
         return this.buildVm(pageNo);
       }),
       catchError(() => {
@@ -173,6 +182,19 @@ export class EventsComponent {
       replaceUrl:          true,
     });
   }
+
+  onDateFilterChange(e: DateFilterChange): void {
+  this.router.navigate([], {
+    relativeTo:          this.route,
+    queryParams: {
+      dateFrom: e.dateFrom ?? null,
+      dateTo:   e.dateTo   ?? null,
+      pageNo:   1,
+    },
+    queryParamsHandling: 'merge',
+    replaceUrl:          true,
+  });
+}
 
   prevPage(): void {
     const pageNo = Number(this.route.snapshot.queryParamMap.get('pageNo') ?? '1') || 1;
