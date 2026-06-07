@@ -25,6 +25,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.gdje_izlazimo.project.service.EventAiService;
+import com.gdje_izlazimo.project.dto.response.AiEventGenerateResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,10 +42,12 @@ import java.util.UUID;
 public class EventController {
 
     private final EventService eventService;
+    private final EventAiService eventAiService;
 
     @Autowired
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, EventAiService eventAiService) {
         this.eventService = eventService;
+        this.eventAiService = eventAiService;
     }
 
     private List<String> extractRoles(Authentication authentication) {
@@ -208,5 +214,20 @@ public class EventController {
             @Parameter(description = "Event UUID") @PathVariable UUID id) {
         eventService.deleteEvent(id, jwt.getSubject(), extractRoles(authentication));
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Generate event info from poster image using AI")
+    @PostMapping("/ai/generate-from-image")
+    @PreAuthorize("hasAnyRole('venue_owner', 'admin')")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<AiEventGenerateResponse> generateFromImage(
+            @RequestParam("file") MultipartFile file) {
+        try {
+            return ResponseEntity.ok(eventAiService.generateFromImage(file));
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, e.getMessage());
+        }
     }
 }

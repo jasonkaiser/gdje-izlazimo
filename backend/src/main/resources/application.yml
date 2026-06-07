@@ -1,6 +1,10 @@
 spring:
   application:
     name: gdje-izlazimo
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 12MB
 
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/gdje_izlazimo}
@@ -63,6 +67,10 @@ imagekit:
   public-key: ${IMAGEKIT_PUBLIC_KEY:}
   private-key: ${IMAGEKIT_PRIVATE_KEY:}
   url-endpoint: ${IMAGEKIT_URL_ENDPOINT:}
+
+gemini:
+  api-key: ${GEMINI_API_KEY:}
+  model: ${GEMINI_MODEL:}
 
 springdoc:
   api-docs:

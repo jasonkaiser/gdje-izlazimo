@@ -19,6 +19,7 @@ import { EventResponseDto } from '../../../core/models/events/event-response.dto
 import { VenueResponseDto } from '../../../core/models/venues/venue-response.dto';
 import { CreateEventDto, EventTicketTypeRequest } from '../../../core/models/events/create-event.request';
 import { UpdateEventDto } from '../../../core/models/events/update-event.request';
+import { AiEventGenerateResponse } from '../../../core/models/events/ai-event-generate.response';
 
 interface AdminEventModalData {
   mode: 'create' | 'edit';
@@ -78,6 +79,8 @@ export class AdminEventModalComponent implements OnInit {
   isDeletingImage                  = false;
   uploadError                      = '';
   isDragOver                       = false;
+  isGeneratingAi = false;
+  aiError        = '';
 
   formData = {
     name:                     '',
@@ -439,6 +442,38 @@ export class AdminEventModalComponent implements OnInit {
   }
 
   onClose(): void { this.modalService.close(); }
+
+  generateFromImage(): void {
+  if (!this.selectedFile) return;
+
+  this.isGeneratingAi = true;
+  this.aiError = '';
+  this.cdr.markForCheck();
+
+  this.eventService.generateEventFromImage(this.selectedFile)
+      .pipe(take(1))
+      .subscribe({
+        next: (res: AiEventGenerateResponse) => {
+          if (res.name)        this.formData.name        = res.name;
+          if (res.description) this.formData.description = res.description;
+          if (res.eventDateTime) {
+            const dt = res.eventDateTime.length >= 16
+              ? res.eventDateTime.substring(0, 16)
+              : res.eventDateTime;
+            this.formData.eventDateTime = dt;
+          }
+          this.isGeneratingAi = false;
+          this.toastService.show('AI prijedlog generisan uspješno', 'success');
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.aiError = 'AI generisanje nije uspjelo. Pokušaj ponovo.';
+          this.isGeneratingAi = false;
+          this.toastService.show('Greška pri AI generisanju', 'error');
+          this.cdr.markForCheck();
+        },
+      });
+  }
 
   private toDateTimeLocal(iso: string): string {
     if (!iso) return '';

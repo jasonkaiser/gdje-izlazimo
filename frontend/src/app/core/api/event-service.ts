@@ -6,6 +6,7 @@ import { EventResponseDto } from '../models/events/event-response.dto';
 import { CreateEventDto } from '../models/events/create-event.request';
 import { UpdateEventDto } from '../models/events/update-event.request';
 import { Observable } from 'rxjs';
+import { AiEventGenerateResponse } from '../models/events/ai-event-generate.response';
 
 
 export interface EventPageOptions {
@@ -67,6 +68,15 @@ export class EventService {
     return this.http.get<EventResponseDto[]>(`${this.baseUrl}/venue/${venueId}`, {
       params: this.buildPageParams(options),
     });
+  }
+
+  generateEventFromImage(file: File): Observable<AiEventGenerateResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<AiEventGenerateResponse>(
+      `${this.baseUrl}/ai/generate-from-image`,
+      formData
+    );
   }
 
   uploadEventImage(eventId: string, file: File): Observable<EventResponseDto> {
